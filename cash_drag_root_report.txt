@@ -1,0 +1,21 @@
+===== CASH DRAG ROOT CAUSE ANALYSIS =====
+rebalance_observations: 878
+total_unused_capital_sum: 404.6575677259
+
+Unused capital by reason:
+- volatility targeting: 55.5397% (224.745670)
+- exposure caps: 31.3277% (126.770057)
+- dual trend: 13.1325% (53.141841)
+- optimizer: 0.0000% (0.000000)
+- insufficient candidates: 0.0000% (0.000000)
+- concentration controls: 0.0000% (0.000000)
+- HHI: 0.0000% (0.000000)
+- governance: 0.0000% (0.000000)
+- residual/unexplained: 0.0000% (0.000000)
+
+Notes:
+- Sequential read-only attribution: volatility target first, exposure cap second, dual trend third.
+- Optimizer is 0 because Growth Champion bypasses optimizer in audited implementation.
+- Concentration/HHI is 0 because no active historical cash-forced-by-HHI field is stored.
+- Insufficient candidates only receives attribution if actual exposure is below all risk caps and selected count < 4.
+- No model, optimizer, allocation, volatility targeting, scheduler, ranking, forecast, parameter, paper, or execution logic modified.

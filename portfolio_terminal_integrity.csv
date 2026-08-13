@@ -1,0 +1,9 @@
+check,status,detail
+official_namespace_only,PASS,Portfolio terminal uses growth_official_* source map only
+holding_cards_render,PASS,"ARM,BABA,SE"
+treemap_sunburst_inputs,PASS,official holdings with weights
+sparklines_inputs,PASS,uses local yahoo_ohlcv_price_cache for mini chart only; no model data mutation
+timeline_inputs,PASS,growth_official_paper_actions.csv
+pnl_reconciles,PASS,growth_official_position_pnl.csv available
+weights_sum_to_one,PASS,weight_sum=1.0
+no_namespace_mixing,PASS,debug/reconstructed files are not referenced

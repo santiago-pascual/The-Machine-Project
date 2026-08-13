@@ -1,0 +1,3 @@
+source,cost_alpha,notes
+historical_reconstruction,0.0,net minus gross daily return
+official_forward_estimated_costs,-0.0048156913757275415,official estimated reporting-only costs / initial capital

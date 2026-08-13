@@ -1,0 +1,51 @@
+===== FINAL CHAMPION BACKTEST =====
+                     model  realized_return  annualized_volatility   Sharpe  Sortino   Calmar  max_drawdown  average_cash  average_exposure  average_selected_count  turnover  direction_accuracy  sample_size best_period_date  best_period_return worst_period_date  worst_period_return worst_drawdown_start worst_drawdown_end  worst_drawdown_value  TP_rate  SL_rate  TP_minus_SL  hit_rate
+baseline + old regime gate         0.213204               0.140665 1.644937 2.125002 4.507917     -0.054968      0.549091          0.450909                    3.85  0.699405            0.568182          847       2022-11-09            0.034213        2022-06-10            -0.040734           2022-11-09         2023-01-17             -0.054968  0.27745 0.180638     0.096812  0.596222
+
+===== FINAL CHAMPION STRESS TEST =====
+          section                    group  observations  realized_return  volatility    Sharpe  max_drawdown  average_cash  turnover
+             year                     2022            51         0.043904    0.182458  1.255542     -0.048026      0.564706  0.674230
+             year                     2023            50         0.036362    0.145432  1.310972     -0.042457      0.524000  0.740095
+             year                     2024            50         0.121223    0.112898  5.170152     -0.027359      0.530000  0.716571
+             year                     2025            50         0.003756    0.104089  0.233807     -0.034266      0.578000  0.672905
+             year                     2026            19        -0.003582    0.141373 -0.265600     -0.031651      0.547368  0.684461
+          quarter                   2022Q1            13         0.025168    0.119628  4.091454     -0.014777      0.523077  0.811355
+          quarter                   2022Q2            12        -0.026877    0.259505 -2.071264     -0.048026      0.550000  0.623413
+          quarter                   2022Q3            13         0.032536    0.114705  5.474870     -0.020599      0.615385  0.637729
+          quarter                   2022Q4            13         0.013427    0.194707  1.424835     -0.026837      0.569231  0.620513
+          quarter                   2023Q1            12         0.018003    0.189126  2.077657     -0.028904      0.525000  0.753968
+          quarter                   2023Q2            12         0.060494    0.133514  9.326815     -0.005070      0.525000  0.753968
+          quarter                   2023Q3            13        -0.027415    0.095881 -5.565850     -0.032619      0.546154  0.746520
+          quarter                   2023Q4            13        -0.012978    0.124995 -1.961874     -0.021777      0.500000  0.708059
+          quarter                   2024Q1            12         0.052799    0.117509  9.273300     -0.007255      0.500000  0.569841
+          quarter                   2024Q2            12         0.065485    0.097141 13.796978     -0.007157      0.525000  0.759127
+          quarter                   2024Q3            13        -0.002695    0.101808 -0.462688     -0.027359      0.569231  0.811722
+          quarter                   2024Q4            13         0.002239    0.107023  0.458589     -0.012551      0.523077  0.717582
+          quarter                   2025Q1            12         0.012397    0.095185  2.767110     -0.010958      0.575000  0.655159
+          quarter                   2025Q2            12         0.001761    0.098435  0.424650     -0.008185      0.650000  0.623214
+          quarter                   2025Q3            13         0.013563    0.069715  3.782759     -0.009605      0.523077  0.774359
+          quarter                   2025Q4            13        -0.023523    0.134780 -3.352332     -0.026203      0.569231  0.633700
+          quarter                   2026Q1            12         0.000328    0.131286  0.118980     -0.026136      0.575000  0.667857
+          quarter                   2026Q2             7        -0.003909    0.156999 -0.819721     -0.024869      0.500000  0.712925
+volatility_regime          high_volatility            54         0.082177    0.197645  1.965038     -0.054968      0.555556  0.679189
+volatility_regime           low_volatility            54         0.060870    0.086013  3.250631     -0.021739      0.538889  0.694665
+volatility_regime        normal_volatility           112         0.056753    0.127964  1.035019     -0.056488      0.550893  0.711437
+      cash_bucket                high_cash           217         0.200427    0.141440  1.571350     -0.054968      0.549770  0.699550
+      cash_bucket                 low_cash             3         0.010643    0.047031 18.966331      0.000000      0.500000  0.688889
+correlation_proxy   high_correlation_proxy            54         0.098908    0.196149  2.344136     -0.058426      0.555556  0.673192
+correlation_proxy normal_correlation_proxy           166         0.104008    0.116697  1.346060     -0.047520      0.546988  0.707932
+           regime                  neutral           171         0.233834    0.132475  2.405192     -0.045797      0.528070  0.718157
+           regime                 risk_off            44        -0.019913    0.172654 -0.580325     -0.076522      0.636364  0.615097
+           regime                  risk_on             5         0.003257    0.056550  2.927254     -0.005645      0.500000  0.800000
+
+===== FINAL CHAMPION ROBUSTNESS =====
+                             check     value  flag
+               depends_on_one_year  0.601118 False
+             depends_on_one_ticker  0.300726 False
+             depends_on_one_regime  1.076693  True
+returns_concentrated_in_few_trades  0.608471  True
+               drawdown_acceptable -0.054968  True
+
+===== FINAL CHAMPION GOVERNANCE =====
+                  champion             classification                                                                                                      reason   Sharpe  max_drawdown all_time_overfitting_warning governed_overfitting_warning  PBO_proxy  deflated_Sharpe                promotion_status  total_trials_logged production_change
+baseline + old regime gate eligible for paper trading positive historical validation with monitoring required; all-time research overfitting warning remains high 1.644937     -0.054968                         high                          low   0.184657         1.629937 eligible for paper trading only                14649              none

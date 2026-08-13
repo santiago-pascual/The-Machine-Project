@@ -1,0 +1,11 @@
+date,model_version,model,variant,frozen_parameters,target_volatility,minimum_exposure,exposure_cap,volatility_lookback_days,dual_trend_caps,max_positions,allocation_method,real_capital_status
+2026-07-10,growth_champion_final_v1_0_frozen,growth_champion_final,growth_v1_exposure_cap_60_dual_trend_filter,True,0.22,0.4,0.6,60,60/40/25,4,equal_weight_within_final_exposure,real_capital_blocked
+2026-07-13,growth_champion_final_v1_0_frozen,growth_champion_final,growth_v1_exposure_cap_60_dual_trend_filter,True,0.22,0.4,0.6,60,60/40/25,4,equal_weight_within_final_exposure,real_capital_blocked
+2026-07-14,growth_champion_final_v1_0_frozen,growth_champion_final,growth_v1_exposure_cap_60_dual_trend_filter,True,0.22,0.4,0.6,60,60/40/25,4,equal_weight_within_final_exposure,real_capital_blocked
+2026-07-15,growth_champion_final_v1_0_frozen,growth_champion_final,growth_v1_exposure_cap_60_dual_trend_filter,True,0.22,0.4,0.6,60,60/40/25,4,equal_weight_within_final_exposure,real_capital_blocked
+2026-07-17,growth_champion_final_v1_0_frozen,growth_champion_final,growth_v1_exposure_cap_60_dual_trend_filter,True,0.22,0.4,0.6,60,60/40/25,4,equal_weight_within_final_exposure,real_capital_blocked
+2026-07-20,growth_champion_final_v1_0_frozen,growth_champion_final,growth_v1_exposure_cap_60_dual_trend_filter,True,0.22,0.4,0.6,60,60/40/25,4,equal_weight_within_final_exposure,real_capital_blocked
+2026-07-23,growth_champion_final_v1_0_frozen,growth_champion_final,growth_v1_exposure_cap_60_dual_trend_filter,True,0.22,0.4,0.6,60,60/40/25,4,equal_weight_within_final_exposure,real_capital_blocked
+2026-07-24,growth_champion_final_v1_0_frozen,growth_champion_final,growth_v1_exposure_cap_60_dual_trend_filter,True,0.22,0.4,0.6,60,60/40/25,4,equal_weight_within_final_exposure,real_capital_blocked
+2026-07-27,growth_champion_final_v1_0_frozen,growth_champion_final,growth_v1_exposure_cap_60_dual_trend_filter,True,0.22,0.4,0.6,60,60/40/25,4,equal_weight_within_final_exposure,real_capital_blocked
+2026-08-13,growth_champion_final_v1_0_frozen,growth_champion_final,growth_v1_exposure_cap_60_dual_trend_filter,True,0.22,0.4,0.6,60,60/40/25,4,equal_weight_within_final_exposure,real_capital_blocked

@@ -1,0 +1,8 @@
+gap_type,severity,diagnosis,evidence,do_not_change_yet
+return_gap,none,raw target beats SPY total return,0.057234236367974756,True
+missed_winners,high,top forward winners often not selected or underweighted,"missed_count=946, missed_avg_20d=0.14794495628910523",True
+cash_drag,low,cash exists but is not the primary raw target gap,0.09818181818181845,True
+turnover,medium,turnover may cut winners before full trend capture,0.49818181818181817,True
+downside_protection,medium,raw protects drawdown better than SPY on full sample,0.09832176862981168,True
+worst_relative_year,diagnostic,"[{'year': 2026, 'raw_return': -0.07781772436686596, 'SPY_return': 0.07460930311221148, 'raw_minus_SPY': -0.15242702747907744, 'raw_Sharpe': -1.5178249439979656, 'SPY_Sharpe': 1.602476934508133, 'raw_max_drawdown': -0.11522532403927221, 'SPY_max_drawdown': -0.07237346825161595, 'raw_beats_SPY': False}]",,True
+best_relative_year,diagnostic,"[{'year': 2022, 'raw_return': 0.09732362212591328, 'SPY_return': -0.19945155111593804, 'raw_minus_SPY': 0.2967751732418513, 'raw_Sharpe': 0.5382841701200576, 'SPY_Sharpe': -0.8968932146108889, 'raw_max_drawdown': -0.13572263411436447, 'SPY_max_drawdown': -0.23404440274417615, 'raw_beats_SPY': True}]",,True

@@ -1,0 +1,2 @@
+candidate,classification,reason,candidate_sharpe,baseline_sharpe,old_gate_sharpe,candidate_max_drawdown,production_change
+regime_gate_v2,rejected,does_not_beat_baseline_or_old_gate_sharpe,1.640720974030515,1.6393324086995777,1.6449369115316776,-0.05496821296940235,none

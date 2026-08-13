@@ -1,0 +1,21 @@
+===== HISTORICAL BACKTEST BENCHMARK CHART REPAIR =====
+
+Issue:
+- Historical 2008 Backtest chart showed SPY near 0 and QQQ missing.
+
+Cause:
+- growth_champion_reconstructed_stress_daily.csv had blank spy_daily_return/qqq_daily_return columns.
+- Initial dashboard fallback used one-day returns on sparse strategy dates, which undercounted buy-and-hold benchmark returns.
+
+Fix:
+- Dashboard now reads SPY/QQQ adjusted prices from yahoo_ohlcv_price_cache.
+- Benchmarks are aligned to the exact historical backtest dates.
+- Returns are computed between consecutive strategy observation dates.
+- All cumulative series start at 0% on the first shared date.
+
+Audit:
+               series  points  first_pct    last_pct    min_pct     max_pct
+Growth Champion Final     878  -1.527528 1417.788575  -7.342759 1417.788575
+ Growth Estimated Net     878  -1.527528 1417.788575  -7.342759 1417.788575
+                  SPY     878   0.000000 1016.876125 -24.523454 1051.001462
+                  QQQ     878   0.000000 2654.266032 -13.449912 2803.413371

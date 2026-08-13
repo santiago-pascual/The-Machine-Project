@@ -1,0 +1,11 @@
+source_file,namespace,loaded,row_count,date_range
+growth_official_paper_state.csv,official_forward_paper,True,8,2026-07-10 to 2026-07-13
+growth_official_paper_performance.csv,official_forward_paper,True,2,2026-07-10 to 2026-07-13
+growth_official_paper_monitor.csv,official_forward_paper,True,2,2026-07-10 to 2026-07-13
+growth_official_live_tracking.csv,official_forward_paper,True,3,2026-07-10 to 2026-07-13
+growth_official_position_pnl.csv,official_forward_paper,True,6,2026-07-10 to 2026-07-13
+current_growth_features.csv,official_forward_paper,True,266,2026-07-13 to 2026-07-13
+growth_volatility_targeting_fresh.csv,official_forward_paper,True,16,2026-06-17 to 2026-07-13
+growth_volatility_pipeline_audit.csv,official_forward_paper,True,16,2026-06-17 to 2026-07-13
+official_market_data_integrity.csv,official_forward_paper,True,5,
+yahoo_ohlcv_price_cache,official_diagnostic_prices,True,256,local cache

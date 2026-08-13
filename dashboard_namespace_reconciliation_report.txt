@@ -1,0 +1,18 @@
+===== PHASE 103 DASHBOARD NAMESPACE RECONCILIATION =====
+governance: dashboard_namespace_pass
+root_cause: Costs tab used historical debug ledger growth_paper_estimated_cost_ledger.csv while Overview used official_forward files.
+files_incorrectly_mixed: growth_paper_estimated_cost_ledger.csv, growth_paper_estimated_net_performance.csv with official overview
+official_dates_retained: 2026-07-13
+official_order_count: 3
+official_cumulative_costs: 186.74
+gross_portfolio_value: 98845.81
+estimated_net_portfolio_value: 98661.23
+gross_cumulative_return: -0.011542
+estimated_net_cumulative_return: -0.013388
+position_level_pnl_rows: 6
+backup_before_rebuild: none
+production_changed: False
+model_parameters_changed: False
+ranking_changed: False
+optimizer_changed: False
+real_orders: False

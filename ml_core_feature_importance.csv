@@ -1,0 +1,13 @@
+model,feature,importance_raw,importance_normalized
+gradient_boosting_small,signal_strength,0.4831541844749243,0.4831541844749243
+gradient_boosting_small,expected_daily_return,0.2585335938326633,0.2585335938326633
+gradient_boosting_small,expected_total_return,0.25831222169241247,0.25831222169241247
+gradient_boosting_small,daily_volatility,0.0,0.0
+logistic_regression,expected_total_return,0.3315730641167522,0.5083172920476233
+logistic_regression,expected_daily_return,0.2719467867669665,0.41690737032174
+logistic_regression,signal_strength,0.04877561359103249,0.07477533763063668
+logistic_regression,daily_volatility,0.0,0.0
+random_forest_small,expected_total_return,0.3442982445198408,0.3442982445198408
+random_forest_small,expected_daily_return,0.34305923342452627,0.34305923342452627
+random_forest_small,signal_strength,0.312642522055633,0.312642522055633
+random_forest_small,daily_volatility,0.0,0.0

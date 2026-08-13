@@ -1,0 +1,11 @@
+factor,status,current_selected_average,universe_average,evidence
+Forecast,diagnostic,0.09093233921193877,0.06250974898600568,"raw_target_return_exact,raw_expected_daily_return_exact"
+Momentum,diagnostic,0.2538534739112164,0.2538534739112164,"return_20d,return_5d"
+Trend,diagnostic,0.17435550536521846,0.12139673327031801,raw_target_return_exact
+Quality,diagnostic,1.0,0.44382022471910115,"quality_pass,passed_tradability_filter"
+Volatility,diagnostic,0.6332772544242423,0.9233798524030465,"realized_vol_60d,rolling_volatility_used"
+Mean Reversion,diagnostic,-0.0034499873143813,-0.0008104539103801568,signal_strength_adjustment_value
+Risk,diagnostic,0.490172271299409,0.49017227129940905,"final_exposure,dual_trend_cap,volatility_target_exposure"
+expected_daily_return,historical_ic,,,avg_spearman_ic=0.0310664057916138
+expected_total_return,historical_ic,,,avg_spearman_ic=0.0310664057916138
+signal_strength,historical_ic,,,avg_spearman_ic=0.0116976893943964

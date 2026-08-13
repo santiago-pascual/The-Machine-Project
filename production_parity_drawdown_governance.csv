@@ -1,0 +1,2 @@
+classification,max_drawdown_explained_by_ticker,one_ticker_caused_most_damage,top5_ticker_loss_contribution,total_negative_ticker_contribution,exposure_too_high_at_drawdown_start,exposure_reduction_too_late,candidate_overlays,production_changed,growth_paper_changed,reason
+candidate_overlay_for_shadow_test,CCJ,False,-0.2328032515200224,-0.2667842504925189,False,False,"exposure_cap_60pct,drawdown_brake_18pct",False,False,Diagnostic-only attribution and fixed overlay tests; no production or paper settings changed.

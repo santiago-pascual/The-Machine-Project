@@ -1,0 +1,40 @@
+===== PURGED WALK-FORWARD AND LOCKED OUT-OF-SAMPLE VALIDATION =====
+
+Source series: growth_crisis_overlay_daily_returns.csv::dual_trend_filter
+Embargo days: 30
+Purge days: 30
+Model frozen: True
+Production changed: False
+Paper changed: False
+Parameter tuning: False
+
+===== FOLD SUMMARY =====
+Walk-forward folds: 28
+Result rows: 89
+
+===== LOCKED HOLDOUT =====
+Period: 2025-06-10 to 2026-06-09
+Observations: 51
+CAGR: 0.7618661899581078
+Sharpe: 2.666101717003784
+Max drawdown: -0.07651757334661125
+
+===== IC DECAY =====
+all 1d: mean rank IC=0.005298061761167781 positive_rate=0.509090909090909
+selected_only 1d: mean rank IC=0.01615163463659921 positive_rate=0.44660194174757284
+all 5d: mean rank IC=0.016326020499665143 positive_rate=0.55
+selected_only 5d: mean rank IC=0.008694495527961067 positive_rate=0.45145631067961167
+all 10d: mean rank IC=0.026358055936276832 positive_rate=0.5590909090909091
+selected_only 10d: mean rank IC=0.05020222853374755 positive_rate=0.5097087378640777
+all 20d: mean rank IC=0.03280625440297675 positive_rate=0.5863636363636363
+selected_only 20d: mean rank IC=0.016652241215243647 positive_rate=0.5
+all 30d: mean rank IC=0.033226020079986957 positive_rate=0.5779816513761468
+selected_only 30d: mean rank IC=0.036618213027172886 positive_rate=0.4803921568627451
+
+===== GOVERNANCE =====
+Classification: strong_oos_candidate
+Mean test Sharpe: 1.2381750078230702
+Positive test fold rate: 0.7857142857142857
+Locked holdout Sharpe: 2.666101717003784
+Locked holdout max drawdown: -0.07651757334661125
+Note: No tuning after locked holdout. Model frozen; folds evaluate temporal stability only.

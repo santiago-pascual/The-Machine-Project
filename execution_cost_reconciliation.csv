@@ -1,0 +1,12 @@
+control,status,detail
+weights sum to 1,PASS,1.0
+turnover matches absolute weight changes,PASS,"actions=0.0, report=0.0"
+action ledger matches cost ledger,PASS,"trades=186.74356279351593, ledger=186.74356279351593"
+no HOLD cost,PASS,0.0
+no duplicated cost rows,PASS,0
+cost charged once,PASS,186.74356279351596
+signal date vs application date correct,PASS,2026-07-13
+no missing SELL,PASS,covered by official action reconciliation
+no duplicated BUY,PASS,3
+cost_by_date,INFO,"date=2026-07-10 00:00:00, cost=186.74356279351593, cumulative=186.74356279351593"
+cost_by_date,INFO,"date=2026-07-13 00:00:00, cost=0.0, cumulative=186.74356279351593"

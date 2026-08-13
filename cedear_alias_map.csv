@@ -1,0 +1,6 @@
+model_ticker,cedear_underlying_ticker,match_type,confidence,notes,requires_manual_confirmation
+GOOG,GOOGL,alias_match,documented_share_class_alias,GOOG class C mapped to available GOOGL Alphabet CEDEAR only when GOOG is missing.,False
+NU,UN,alias_match,documented_byma_code_alias,BYMA CEDEAR code UN maps to NU Holdings Ltd/Cayman Islands.,False
+YPF,YPF,manual_allow_if_present,not_matched_in_current_source,Only allow if YPF is present in the CEDEAR source; current pasted list search did not confirm it.,True
+KEEL,KEEL,exact_if_present,verified_in_source_as_bitfarms_line,Source line: Bitfarms Ltd. KEEL NASDAQ GM 1:5. No BITF substitution needed.,False
+RGTI,RGTI,exact_if_present,verified_in_source,Source line: RIGETTI COMPUTING INC RGTI NASDAQ CM 2:1.,False

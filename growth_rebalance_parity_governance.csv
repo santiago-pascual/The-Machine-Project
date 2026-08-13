@@ -1,0 +1,2 @@
+classification,date_match_rate,holding_match_rate,weight_match_rate,production_changed,paper_parameters_changed,notes
+exact_rebalance_parity_ready,1.0,1.0,1.0,False,False,Parity checked on reconstructed 2022+ rows with identical inputs; daily monitoring freezes holdings between scheduled rows.

@@ -1,0 +1,18 @@
+module,category,Sharpe impact,return impact,risk impact,evidence strength,sample size,final decision,reason
+baseline + old regime gate,active,champion,champion,acceptable,moderate,847.0,current champion model,"best validated production candidate; Sharpe baseline=1.6393, old_gate=1.6449"
+raw_target_alpha,shadow,negative,positive,negative,moderate,880.0,research only,higher_return_but_sharpe_or_drawdown_not_superior
+raw_target_risk_budgeting,shadow,negative,positive,review,limited,,candidate for shadow mode,higher_return_but_sharpe_or_drawdown_not_enough
+regime_engine_v2,shadow,positive,neutral,diagnostic,limited,,"candidate for regime research, not gate replacement","better regime balance, but regime_gate_v2 backtest did not beat old gate"
+regime_gate_v2,rejected,neutral,neutral,neutral,moderate,,rejected,does_not_beat_baseline_or_old_gate_sharpe
+forecast_calibration_portfolio,rejected,negative,mixed,negative,limited,755.0,reject,does_not_improve_sharpe
+meta_filter,rejected,negative,negative,mixed,limited,,research only,reduced return and Sharpe in final candidate test
+factor_alpha_model,diagnostic,negative,diagnostic,diagnostic,limited,880.0,useful for research,expected_daily_return is main alpha; signal/volatility combinations did not improve portfolio
+kalman_features,diagnostic,unknown,unknown,diagnostic,limited,14.0,diagnostic only,keep as feature diagnostics until stronger walk-forward evidence
+alpha_factor:signal_strength,rejected,diagnostic,diagnostic,diagnostic,limited,,remove candidate,avg_abs_ic=0.0117; incremental=nan
+alpha_factor:expected_daily_return,diagnostic,diagnostic,diagnostic,diagnostic,limited,,supporting feature,avg_abs_ic=0.0311; incremental=0.0290
+alpha_factor:expected_total_return,diagnostic,diagnostic,diagnostic,diagnostic,limited,,supporting feature,avg_abs_ic=0.0311; incremental=0.0290
+growth_candidate_v1,growth_paper_candidate,positive,positive,controlled_growth_risk,moderate,220.0,extended paper trading candidate,"soft_exit_rule + volatility_target_22pct; CAGR 32.69%, Sharpe 1.25, Sortino 2.24, max DD -17.97%; beats SPY/QQQ in validation"
+growth_champion_v2,growth_paper_candidate,positive,positive,controlled_growth_risk,moderate,220.0,default growth paper model,"growth_v1_exposure_cap_60; raw_target exact + soft_exit + vol_target_22pct + exposure_cap_60; CAGR 30.30%, Sharpe 1.341, Sortino 2.266, max DD -19.76%; growth_champion_v2"
+growth_champion_final_v1_0_frozen,operational_paper_production,validated_operational_not_new_alpha,paper_monitoring_only,real_capital_blocked,governed_multi_gate,exact_history_short_reconstructed_stress_available,official_growth_daily_pipeline_paper_only,"5-session scheduler, frozen params, diagnostics/gates integrated; broker/orders disabled"
+growth_champion_final,growth_paper_candidate,positive,positive,controlled_growth_risk,moderate,220,default growth paper model,"growth_v1_exposure_cap_60; raw_target exact + soft_exit + vol_target_22pct + exposure_cap_60; CAGR 30.30%, Sharpe 1.341, Sortino 2.266, max DD -19.76%; growth_champion_v2"
+growth_v1_uncapped,research_only,positive,higher_return_higher_drawdown,uncapped_growth_risk,moderate,220,research only,Legacy uncapped growth_v1 kept available for research; not default paper mode.

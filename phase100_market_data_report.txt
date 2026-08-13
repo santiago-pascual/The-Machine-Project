@@ -1,0 +1,16 @@
+===== PHASE 100 MARKET DATA INTEGRITY REPORT =====
+cause_of_mismatch: official/forecast dates advanced beyond canonical yahoo cache; latest canonical date before refresh was stale relative to official signal date
+canonical_cache_path: C:\Users\Alejandra\Desktop\La Maquina Trading System (NO TOCAR)\yahoo_ohlcv_price_cache
+expected_signal_date: 2026-07-10
+latest_valid_market_date: 2026-07-10
+tickers_checked: ARM,BABA,SE,AFJK,ABTC,ABVX,AIXI,AKTX,ASTC,AARD,AIRE,ANPA,AMCI,AEHL,AIOS,ARTL,ANNA,AQMS,ABTS,AIIO,ARBK,ARTV,ALGS,SPY,QQQ
+market_data_governance: SINGLE_SOURCE_FRESH
+invalid_official_dates_found: none
+rows_archived_or_removed_from_official_namespace: 0
+official_backup_dir: 
+official_forward_start_after_repair: blocked_no_official_rows
+production_changed: False
+optimizer_changed: False
+ranking_changed: False
+real_orders: False
+outputs: market_data_path_audit.csv, market_data_path_audit_report.txt, market_data_source_dependency.csv, official_market_data_integrity.csv, official_market_data_governance.csv, official_paper_date_repair_audit.csv

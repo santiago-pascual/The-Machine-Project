@@ -1,0 +1,37 @@
+===== PHASE 110 EXECUTION TERMINAL REPORT =====
+Final status: execution_terminal_pass
+Scope: Official Forward Paper only. Dashboard/read-only diagnostics. No broker/order functionality.
+Latest official rebalance: 2026-07-10 00:00:00
+Latest signal date: 2026-07-13 00:00:00
+Economic application date: 2026-07-14 00:00:00
+Turnover: 0.4350408594155715
+Official costed order count: 3
+Estimated execution cost latest scheduled rebalance: 186.74356279351593
+Cumulative estimated cost: 186.74356279351593
+Highest-cost ticker: ARM
+Current ADV participation: 4.4544757874727106e-05
+Current capacity status: safe
+Reconciliation status: True
+Render errors: none in compile/build smoke test
+
+Commentary:
+Latest official rebalance date is 2026-07-10 00:00:00. Actions: BUY 0, SELL 0, INCREASE 0, REDUCE 0, HOLD 0. Turnover was 43.50% where available. Cumulative estimated execution cost is $186.74, driven mainly by ARM. Capacity status is safe. Broker/orders remain disabled; all costs are estimates, not live fills.
+
+Integrity checks:
+- official_namespace_only: PASS (uses growth_official_* sources for active execution)
+- broker_orders_disabled: PASS (dashboard read-only; no broker controls)
+- reconciliation_controls: PASS ()
+- cost_rows_present: PASS (3)
+- gross_net_available: PASS (official performance ledger)
+- debug_reconstructed_leakage: PASS (diagnostic data not used in active execution metrics)
+
+Reconciliation controls:
+- weights sum to 1: PASS (1.0)
+- turnover matches absolute weight changes: PASS (actions=0.0, report=0.0)
+- action ledger matches cost ledger: PASS (trades=186.74356279351593, ledger=186.74356279351593)
+- no HOLD cost: PASS (0.0)
+- no duplicated cost rows: PASS (0)
+- cost charged once: PASS (186.74356279351596)
+- signal date vs application date correct: PASS (2026-07-13)
+- no missing SELL: PASS (covered by official action reconciliation)
+- no duplicated BUY: PASS (3)

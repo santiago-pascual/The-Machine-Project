@@ -1,0 +1,22 @@
+===== PHASE 122 RISK CONSTRAINT SENSITIVITY LABORATORY =====
+final_status: risk_constraint_lab_pass
+shadow_mode_only: True
+production_changed: False
+paper_changed: False
+optimizer_changed: False
+parameters_changed: False
+
+Answers:
+1. Most conservative constraint: exposure_cap (max cash delta 0.139114).
+2. Largest CAGR impact: exposure_cap (max CAGR delta 0.050378).
+3. Largest drawdown impact: dual_trend (max DD delta 0.100290).
+4. Largest cash utilization impact: exposure_cap (max cash delta 0.139114).
+5. Single constraint deserving further investigation: exposure_cap (largest combined sensitivity score).
+
+Summary table:
+  constraint  max_CAGR_delta  max_drawdown_delta  max_cash_delta  best_CAGR_parameter lowest_drawdown_parameter highest_cash_utilization_parameter
+exposure_cap        0.050378            0.099746        0.139114                60pct                     40pct                              60pct
+  vol_target        0.005867            0.100246        0.048585                28pct                     15pct                              28pct
+  dual_trend        0.022642            0.100290        0.060526 disabled_100_100_100       aggressive_50_30_15               disabled_100_100_100
+
+No recommendations. Diagnosis only.

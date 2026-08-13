@@ -1,0 +1,6 @@
+source,source_rows,debug_archived_rows_before_start,official_rows_from_start,official_start_date,separation_rule
+state,65,15,50,2026-06-25,debug before start; official exact forward from start only
+trades,14,2,12,2026-06-25,debug before start; official exact forward from start only
+actions,68,15,53,2026-06-25,debug before start; official exact forward from start only
+performance,15,5,10,2026-06-25,debug before start; official exact forward from start only
+monitor,15,5,10,2026-06-25,debug before start; official exact forward from start only

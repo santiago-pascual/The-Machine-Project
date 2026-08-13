@@ -1,0 +1,8 @@
+check,status,detail
+research_files_load_safely,PASS,
+conflicting_evidence_visible,PASS,DSR/PBO/OOS/alpha warnings displayed separately
+no_model_changes,PASS,dashboard diagnostics only
+no_automatic_promotion,PASS,real capital remains blocked
+parameter_surface_available,PASS,900
+missing_features_explicit,PASS,feature evidence table includes missing-data reason
+lifecycle_frozen_status,PASS,operational_paper_production_real_capital_blocked

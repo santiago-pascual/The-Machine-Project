@@ -1,0 +1,9 @@
+check,status,detail
+official_namespace_current_risk,PASS,current holdings/performance from growth_official_*
+weights_sum_to_one,PASS,1.0
+risk_contribution_sum,PASS,1.0
+no_debug_leakage_current,PASS,debug/reconstructed only allowed in separated comparison panels
+missing_data_safe,PASS,warmup and insufficient data states are explicit
+three_d_inputs,PASS,"corr_shape=(3, 3), cov_shape=(3, 3)"
+risk_limits_configured,PASS,uses frozen known config values only
+read_only,PASS,no broker/order controls

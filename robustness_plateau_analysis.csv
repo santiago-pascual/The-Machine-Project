@@ -1,0 +1,2 @@
+total_configs,plateau_configs,plateau_pct,local_configs,local_sharpe_std,local_cagr_std,current_sharpe,current_CAGR,current_max_drawdown,current_rank_by_sharpe,current_rank_by_CAGR,interpretation
+900,689,0.7655555555555555,324,0.015860132077261772,0.008252960109035489,1.05386312171753,0.16291367525418243,-0.22013284609878292,492,288,broad plateau

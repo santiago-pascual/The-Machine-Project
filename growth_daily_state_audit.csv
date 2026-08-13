@@ -1,0 +1,2 @@
+date,same_day_overwrite_supported,append_only_default,prior_holdings_available_for_soft_exit,state_rows_latest,trade_rows_latest,performance_rows_latest,turnover_from_trades,turnover_in_performance,turnover_match,paper_value_available,cash_row_present
+2026-07-13,True,True,True,4,5,1,0.21752042970778573,0.0,False,True,True

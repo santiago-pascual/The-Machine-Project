@@ -1,0 +1,11 @@
+check,status,detail
+orange_to_black_gradient,PASS,subtle orange glow fading into black
+green_branding_removed,PASS,old green/teal identity removed from core CSS/components
+typography_system,PASS,Inter / IBM Plex Sans / system-ui stack
+metric_cards_custom_html,PASS,custom HTML/CSS metric cards
+status_badges,PASS,semantic badge classes present
+shared_plotly_template,PASS,growth_terminal_dark
+streamlit_chrome_hidden,PASS,default Streamlit chrome hidden/restyled
+sidebar_navigation,PASS,institutional sidebar in dashboard_layout.py
+read_only,PASS,no broker/order controls added
+data_sources_load,PASS,53 sources audited

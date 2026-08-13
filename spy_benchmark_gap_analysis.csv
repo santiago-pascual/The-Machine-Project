@@ -1,0 +1,2 @@
+comparison,return_gap,CAGR_gap,Sharpe_gap,max_drawdown_gap,volatility_gap,cash_drag_proxy,missed_upside_proxy,downside_avoidance_benefit
+raw_target_research_vs_SPY,0.057234236367974756,0.008754718944913087,-0.027102150739962805,0.09832176862981168,0.02369843618765291,0.09818181818181845,0.016242367345240538,0.024960822501921786

@@ -1,0 +1,52 @@
+===== CURRENT CHAMPION MODEL =====
+                    module category Sharpe impact return impact risk impact evidence strength  sample size         final decision                                                                       reason
+baseline + old regime gate   active      champion      champion  acceptable          moderate        847.0 current champion model best validated production candidate; Sharpe baseline=1.6393, old_gate=1.6449
+
+===== ACTIVE COMPONENTS =====
+- baseline expected return pipeline
+- old regime gate / regime_gated_full_quant remains champion
+- shrinkage covariance risk estimation
+- EMA timing remains production timing
+
+===== SHADOW COMPONENTS =====
+                   module                                      final decision                                                                   reason
+         raw_target_alpha                                       research only                        higher_return_but_sharpe_or_drawdown_not_superior
+raw_target_risk_budgeting                           candidate for shadow mode                          higher_return_but_sharpe_or_drawdown_not_enough
+         regime_engine_v2 candidate for regime research, not gate replacement better regime balance, but regime_gate_v2 backtest did not beat old gate
+
+===== DIAGNOSTIC COMPONENTS =====
+                            module      final decision                                                                                        reason
+                factor_alpha_model useful for research expected_daily_return is main alpha; signal/volatility combinations did not improve portfolio
+                   kalman_features     diagnostic only                              keep as feature diagnostics until stronger walk-forward evidence
+alpha_factor:expected_daily_return  supporting feature                                                         avg_abs_ic=0.0311; incremental=0.0290
+alpha_factor:expected_total_return  supporting feature                                                         avg_abs_ic=0.0311; incremental=0.0290
+
+===== REJECTED COMPONENTS =====
+                        module   final decision                                            reason
+                regime_gate_v2         rejected         does_not_beat_baseline_or_old_gate_sharpe
+forecast_calibration_portfolio           reject                           does_not_improve_sharpe
+                   meta_filter    research only reduced return and Sharpe in final candidate test
+  alpha_factor:signal_strength remove candidate                avg_abs_ic=0.0117; incremental=nan
+
+===== REMAINING RESEARCH ROADMAP =====
+1. Test raw target alpha with stricter drawdown-aware allocation before paper.
+2. Keep regime_engine_v2 diagnostic; do not replace old gate yet.
+3. Audit signal_strength adjustment for possible removal only after true walk-forward shadow validation.
+4. Do not promote meta-filter or calibrated forecast portfolio.
+5. Run anti-overfitting/governance before any paper activation.
+
+===== PROMOTION RULES =====
+- Must beat current champion.
+- Must have sufficient sample size.
+- Must be walk-forward validated.
+- Must improve Sharpe or improve return without unacceptable drawdown.
+- Must pass overfitting checks.
+- No promotion from single metric improvement.
+===== GROWTH PAPER CANDIDATE =====
+growth_champion_final: growth_v1_exposure_cap_60_dual_trend_filter
+Model version: growth_champion_final_v1_0_frozen
+Status: default growth paper model, paper only, no production promotion.
+Definition: raw_target_return_exact + soft_exit_rule + volatility_target_22pct + exposure_cap_60 + dual_trend_filter, no leverage.
+Evidence: governed operational paper pipeline; real capital blocked.
+Legacy: growth_v1_uncapped remains research-only.
+

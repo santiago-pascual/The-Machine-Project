@@ -1,0 +1,88 @@
+{
+  "allowed_research_directions": [
+    "increase walk-forward sample size",
+    "paper-trading forecast calibration",
+    "out-of-sample validation of existing signals",
+    "regime diagnostics without new parameters",
+    "small constrained TP/SL validation inside stable region"
+  ],
+  "blocked_research_directions": [
+    "large threshold grid search",
+    "large TP/SL grid search",
+    "promoting full_quant_research",
+    "promoting regime_gated_full_quant",
+    "optimizing on one small sample",
+    "adding new alpha layers before validation sample grows"
+  ],
+  "minimum_evidence_rules": {
+    "maximum_PBO_allowed": 0.3,
+    "minimum_deflated_sharpe_required": 0.5,
+    "minimum_independent_walk_forward_windows": 4,
+    "minimum_live_paper_trading_days_before_promotion": 60,
+    "minimum_robustness_score": 60.0,
+    "minimum_selected_only_sample_size": 150
+  },
+  "parameter_constraints": {
+    "allow_TP_below_SL_exception_only_if": {
+      "average_return_positive": true,
+      "drawdown_controlled": true,
+      "robust_across_windows": true
+    },
+    "cash_bounds": [
+      0.1,
+      0.8
+    ],
+    "max_turnover_proxy": 1.0,
+    "reject_if_TP_rate_below_SL_rate": true,
+    "selected_asset_bounds": [
+      2,
+      6
+    ],
+    "threshold_grid": {
+      "expected_return_threshold": [
+        0.0
+      ],
+      "max_selected_assets": [
+        3,
+        4
+      ],
+      "min_selected_assets": [
+        1
+      ],
+      "quality_score_threshold": [
+        0.4,
+        0.5
+      ],
+      "signal_strength_threshold": [
+        0.2,
+        0.3
+      ],
+      "target_confidence_threshold": [
+        0.4,
+        0.5
+      ]
+    },
+    "tp_sl_grid": {
+      "horizons": [
+        5,
+        10,
+        20
+      ],
+      "sl_multiples": [
+        0.75,
+        1.0
+      ],
+      "tp_multiples": [
+        0.75,
+        1.0,
+        1.25
+      ]
+    }
+  },
+  "trial_budget": {
+    "max_new_strategy_variants_per_cycle": 5,
+    "max_threshold_configs_per_cycle": 24,
+    "max_total_independent_trials_before_review": 1000,
+    "max_tp_sl_configs_per_cycle": 12
+  }
+}

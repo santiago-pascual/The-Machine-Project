@@ -1,0 +1,9 @@
+surface,source_file,scope,status,details
+Correlation Surface,yahoo_ohlcv_price_cache,official diagnostic,available,"tickers=3, return_columns=3"
+Covariance Surface,yahoo_ohlcv_price_cache,official diagnostic,available,"tickers=3, return_columns=3"
+Black-Litterman Surface,not_found,research diagnostic,skipped_insufficient_data,Black-Litterman surface data not found; diagnostic only
+Efficient Frontier 3D,yahoo_ohlcv_price_cache,diagnostic proxy,available,"random portfolio proxy, not official allocation"
+Volatility Target Surface,growth_volatility_targeting_fresh.csv,official diagnostic,available,uses target vol/min exposure/exposure cap/dual trend cap
+Parameter Stability Surface,parameter_stability_map.csv,research diagnostic,available,active 22%/60% highlighted
+HMM Regime 3D,hmm_out_of_sample_results.csv,research diagnostic,available,"diagnostic only, not used by official allocation"
+Feature Relationship 3D,current_growth_features.csv,official diagnostic,available,raw target vs realized vol vs weight/rank

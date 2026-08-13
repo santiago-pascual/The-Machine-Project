@@ -1,0 +1,18 @@
+dashboard_tab,metric_or_chart,source_file,namespace,latest_date,row_count,mixed_with_another_namespace
+Overview,Official signal date,growth_official_paper_performance.csv,official_forward,2026-07-13,2,False
+Overview,Economic application date,growth_official_paper_performance.csv,official_forward,2026-07-13,2,False
+Overview,Gross portfolio value,growth_official_paper_performance.csv,official_forward,2026-07-13,2,False
+Overview,Estimated net portfolio value,growth_official_paper_performance.csv,official_forward,2026-07-13,2,False
+Overview,Gross daily/cumulative return,growth_official_paper_performance.csv,official_forward,2026-07-13,2,False
+Overview,Estimated net daily/cumulative return,growth_official_paper_performance.csv,official_forward,2026-07-13,2,False
+Overview,Exposure/cash/current holdings,growth_official_paper_state.csv,official_forward,2026-07-13,8,False
+Current Portfolio,Holdings/prices/position values,growth_official_paper_state.csv,official_forward,2026-07-13,8,False
+Current Portfolio,Position-level PnL,growth_official_position_pnl.csv,official_forward,2026-07-13,6,False
+Rebalance Ledger,Official actions,growth_official_paper_actions.csv,official_forward,2026-07-13,8,False
+Rebalance Ledger,Official rebalance report,growth_official_paper_rebalance_report.csv,official_forward,2026-07-13,2,False
+Costs & Slippage,Official cost ledger,growth_official_estimated_cost_ledger.csv,official_forward,2026-07-10,3,False
+Costs & Slippage,Gross vs estimated net official equity,growth_official_paper_performance.csv,official_forward,2026-07-13,2,False
+Live Validation,Official live tracking,growth_official_live_tracking.csv,official_forward,2026-07-13,3,False
+Risk,Official drawdown/exposure/cash,growth_official_paper_performance.csv,official_forward,2026-07-13,2,False
+Historical Debug Replay,Debug paper files,growth_candidate_paper_performance.csv,historical_debug,2026-07-13,16,False
+Reconstructed Stress,Long horizon stress,reconstructed_growth_long_horizon_daily_returns.csv,reconstructed_stress,2026-06-10,2627,False

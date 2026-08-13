@@ -1,0 +1,5 @@
+audit_item,value,point_in_time_confirmed,survivorship_bias_risk,reason
+universe_method,local_point_in_time_candidate_file_detected,False,medium,"A point-in-time-like file name exists, but this audit did not validate constituent dates."
+current_list_bias,True,False,high,Current ticker list usage creates future-survivor risk for historical dates.
+delisted_failed_tickers,not_available,False,high,No delisting database or failed-name universe file is present.
+ticker_changes_mergers_SPACs,not_handled_point_in_time,False,high,"No corporate action mapping file was found for ticker changes, mergers, SPAC conversions, or delistings."

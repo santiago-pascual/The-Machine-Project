@@ -1,0 +1,3 @@
+trial_group,total_trials,best_sharpe,expected_max_sharpe,deflated_sharpe,PBO_proxy,overfitting_warning,robustness_score,sample_size,promotion_classification,number_of_test_dates,governed_has_lower_overfitting_risk,registry_rows
+exploratory_trials,14649,3.264990930973603,2.18999170691692,1.074999224056683,1.0,high,,4,still blocked,,False,1
+governed_trials,2,1.747677652164038,0.11774100225154746,1.6299366499124905,0.1846573590279973,low,100.0,1170,eligible for paper trading only,100.0,True,1

@@ -1,0 +1,9 @@
+variant,classification,reason,Sharpe,baseline_Sharpe,max_drawdown,baseline_max_drawdown,average_exposure,production_change
+raw_target_cash_floor_40pct,candidate for shadow mode,higher_return_but_sharpe_or_drawdown_not_enough,1.2631097113794962,1.6393324086995777,-0.08446778428173984,-0.05496821296940235,0.567272727272727,none
+raw_target_equal_risk_contribution,candidate for shadow mode,higher_return_but_sharpe_or_drawdown_not_enough,1.2220066810499022,1.6393324086995777,-0.09969170598795707,-0.05496821296940235,0.567272727272727,none
+raw_target_cash_floor_50pct,candidate for shadow mode,higher_return_but_sharpe_or_drawdown_not_enough,1.1280750779125097,1.6393324086995777,-0.08118752207537216,-0.05496821296940235,0.48363636363636353,none
+raw_target_vol_target_15pct,candidate for shadow mode,higher_return_but_sharpe_or_drawdown_not_enough,1.106618387716793,1.6393324086995777,-0.08726403369136748,-0.05496821296940235,0.5779691676010758,none
+raw_target_dynamic_cash_by_volatility,candidate for shadow mode,higher_return_but_sharpe_or_drawdown_not_enough,1.0996858012022028,1.6393324086995777,-0.08132608934279884,-0.05496821296940235,0.509090909090909,none
+raw_target_vol_target_12pct,reject,does_not_improve_baseline,0.982803285340501,1.6393324086995777,-0.09050540074112867,-0.05496821296940235,0.5216830325153167,none
+raw_target_max_position_10pct,reject,does_not_improve_baseline,0.9324909871639054,1.6393324086995777,-0.0821503502928973,-0.05496821296940235,0.3999999999999999,none
+raw_target_drawdown_guard,reject,does_not_improve_baseline,0.6528236120981505,1.6393324086995777,-0.1124179553032324,-0.05496821296940235,0.7254545454545454,none

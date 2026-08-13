@@ -1,0 +1,2 @@
+timestamp,status,active_alerts,blocker_alerts,critical_alerts,warning_alerts,duplicate_alert_ids,sources_checked,missing_sources,runtime_ms
+2026-08-13 15:50:40,alert_engine_warning,5,1,0,3,0,142,0,64.16

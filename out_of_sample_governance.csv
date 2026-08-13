@@ -1,0 +1,2 @@
+classification,mean_test_sharpe,positive_test_fold_rate,locked_holdout_sharpe,locked_holdout_CAGR,locked_holdout_max_drawdown,mean_rank_IC_20d,embargo_days,purge_days,production_changed,paper_changed,parameters_tuned,governance_note
+strong_oos_candidate,1.2381750078230702,0.7857142857142857,2.666101717003784,0.7618661899581078,-0.07651757334661125,0.03280625440297675,30,30,False,False,False,No tuning after locked holdout. Model frozen; folds evaluate temporal stability only.

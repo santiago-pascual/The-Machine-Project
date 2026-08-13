@@ -1,0 +1,10 @@
+trial_category,number_of_trials,source_file,count_mode,cumulative_total_trials,file_found
+walk_forward_runs,1,walk_forward_summary.csv,rows,1,True
+larger_walk_forward_runs,2,larger_walk_forward_summary.csv,rows,3,True
+model_modes_tested,3,model_mode_comparison.csv,mode_columns,6,True
+model_modes_tested,6,regime_gated_full_quant_comparison.csv,mode_columns,12,True
+threshold_configurations,14400,threshold_optimization.csv,rows,14412,True
+tp_sl_barrier_configurations,200,barrier_parameter_optimization.csv,unique_barrier_configs,14612,True
+robustness_validation_configs,30,robustness_validation.csv,rows,14642,True
+trend_persistence_variants,1,trend_vs_ema_backtest.csv,mode_columns,14643,True
+full_quant_variants,6,full_quant_robustness_walk_forward.csv,mode_columns,14649,True

@@ -1,0 +1,8 @@
+ticker,cache_path,expected_date,latest_before,latest_after,refresh_attempted,refresh_success,download_status,rows_before,rows_after
+OKLO,C:\Users\Alejandra\Desktop\Quant\04_The Machine Project\yahoo_ohlcv_price_cache\OKLO.csv,2026-08-13,2026-08-13,2026-08-13,True,True,yfinance_live,1281,1281
+TWLO,C:\Users\Alejandra\Desktop\Quant\04_The Machine Project\yahoo_ohlcv_price_cache\TWLO.csv,2026-08-13,2026-08-13,2026-08-13,True,True,yfinance_live,2549,2549
+TEAM,C:\Users\Alejandra\Desktop\Quant\04_The Machine Project\yahoo_ohlcv_price_cache\TEAM.csv,2026-08-13,2026-08-13,2026-08-13,True,True,yfinance_live,2684,2684
+VIST,C:\Users\Alejandra\Desktop\Quant\04_The Machine Project\yahoo_ohlcv_price_cache\VIST.csv,2026-08-13,2026-08-13,2026-08-13,True,True,yfinance_live,1772,1772
+ARM,C:\Users\Alejandra\Desktop\Quant\04_The Machine Project\yahoo_ohlcv_price_cache\ARM.csv,2026-08-13,2026-08-13,2026-08-13,True,True,yfinance_live,731,731
+SPY,C:\Users\Alejandra\Desktop\Quant\04_The Machine Project\yahoo_ohlcv_price_cache\SPY.csv,2026-08-13,2026-08-13,2026-08-13,True,True,yfinance_live,6441,6441
+QQQ,C:\Users\Alejandra\Desktop\Quant\04_The Machine Project\yahoo_ohlcv_price_cache\QQQ.csv,2026-08-13,2026-08-13,2026-08-13,True,True,yfinance_live,6441,6441

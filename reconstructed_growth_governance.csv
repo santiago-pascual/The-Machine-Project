@@ -1,0 +1,2 @@
+classification,universe,production_changed,parameter_tuning,ce_dear_filtering,exact_production_parity,assumption,reason
+passed_long_horizon_stress,normal,False,False,False,False,raw target reconstructed by rerunning current advanced target logic on OHLCV truncated at each decision date,Reconstructed OHLCV stress test; not exact production parity.

@@ -1,0 +1,3 @@
+check,status,growth_gross_last_chart_pct,growth_net_last_chart_pct,official_performance_last_gross_pct,official_performance_last_net_pct,old_incorrect_growth_pct
+card_value_equals_last_chart_point,PASS,7.90867598780185,7.379505900319416,7.90867598780185,7.379505900319416,-0.0737178587924214
+benchmark_dates_match_official_dates,PASS,7.90867598780185,7.379505900319416,7.90867598780185,7.379505900319416,-0.0737178587924214

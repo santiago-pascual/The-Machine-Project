@@ -1,0 +1,2 @@
+candidate,classification,reason,sample_size,selection_overlap_avg,fallback_count,average_calibration_adjustment,warning
+calibrated_forecast_research,reject,does_not_improve_sharpe,755.0,0.9212878787878788,0,0.000850993206419764,none

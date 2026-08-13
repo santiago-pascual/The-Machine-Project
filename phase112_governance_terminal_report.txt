@@ -1,0 +1,52 @@
+===== PHASE 112 GOVERNANCE TERMINAL REPORT =====
+Final status: governance_terminal_warning
+Active model: growth_champion_final_v1_0_frozen
+Lifecycle: operational_paper_production_real_capital_blocked
+Technical integrity: PASS
+Market data: SINGLE_SOURCE_FRESH
+Accounting: official_accounting_warning
+Real capital: real_capital_blocked
+
+Operational blockers:
+- no redundancy: real capital blocker
+- secondary source availability: not configured/confirmed
+- broker connection absent: real orders disabled
+
+Real-capital blockers:
+- Official forward history minimum: paper_days=16 (growth_paper_governance_history.csv)
+- CSCV PBO threshold: PBO=0.694 (anti_overfitting_governance.csv)
+- Multi-source market data: single_source_warning (market_data_governance.csv)
+- Real broker fills: absent (execution reports)
+- Execution slippage validation: estimated only (phase110_execution_terminal_report.txt)
+- Operational redundancy: single local machine (governance terminal)
+- Governance approval: not granted (governance terminal)
+
+Incidents recorded: 5
+- 2026-06-29 Freshness: stale forecast_history prevented latest growth paper date -> closed
+- 2026-07-06 Volatility: stale volatility source pinned exposure to minimum floor -> closed
+- 2026-07-10 Official: debug/reconstructed history separated from official paper namespace -> closed
+- 2026-07-13 Accounting: official t+1 accounting and initial cost validation -> monitored
+- 2026-07-13 Dashboard: dashboard source namespace and benchmark chart mismatch repairs -> closed
+
+Integrity checks:
+- lifecycle_matches_frozen_registry: PASS (growth_champion_final_v1_0_frozen)
+- real_capital_blocked: PASS (real_capital_blocked)
+- technical_pass_does_not_hide_warnings: PASS (persistent warnings panel always visible)
+- pipeline_dates_reconcile: WARNING (see freshness table)
+- incident_log_loads: PASS (5)
+- backup_replay_loads: PASS (8)
+- no_mutation_controls: PASS (dashboard read-only)
+
+Persistent warnings:
+- HIGH: Official forward history short
+- HIGH: CSCV PBO elevated
+- HIGH: Secondary provider absent
+- MEDIUM: Real fills absent
+- MEDIUM: Single local machine
+- MEDIUM: Reconstructed history not exact
+- MEDIUM: Alpha-decay monitor incomplete/warning
+- HIGH: Real capital blocked
+
+Commentary:
+System integrity and official accounting pass. The model is frozen and operating in official paper production. Real capital remains blocked due to elevated CSCV PBO, short forward history, absence of secondary market data confirmation, and lack of real execution evidence.
+Render errors: none in compile/build smoke test

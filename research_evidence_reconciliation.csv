@@ -1,0 +1,7 @@
+evidence,value,interpretation,conflict
+Deflated Sharpe,2.044517205085236,strong if DSR p-value is low,does not eliminate CSCV PBO warning
+CSCV PBO,0.6940115440115441,elevated overfitting probability if above 0.5,coexists with strong OOS performance
+Purged OOS,1.2381750078230702,temporal OOS strength,official forward history still short
+Locked Holdout,2.666101717003784,strong holdout result,later development may reduce permanently untouched status
+Parameter Stability,stable_plateau,broad plateau if stable_plateau/broad plateau,no new optimum selected
+Alpha Decay,CSCV PBO elevated; Official forward history short; Second market-data provider absent or not fully confirmed; Reconstructed history is not production parity; Real fills unavailable; Alpha decay monitor warning; HMM not incrementally useful; High historical trial count,warnings remain visible,does not change frozen model automatically

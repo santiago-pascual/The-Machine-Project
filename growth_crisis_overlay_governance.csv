@@ -1,0 +1,6 @@
+overlay,classification,production_changed,paper_changed,parameter_tuning,hindsight,reason
+drawdown_aware_trend_filter,candidate_for_growth_v3,False,False,False,False,Drawdown improved across long windows while preserving enough return and risk-adjusted quality.
+dual_trend_filter,candidate_for_growth_v3,False,False,False,False,Drawdown improved across long windows while preserving enough return and risk-adjusted quality.
+qqq_trend_filter,candidate_for_growth_v3,False,False,False,False,Drawdown improved across long windows while preserving enough return and risk-adjusted quality.
+realized_volatility_filter,reject,False,False,False,False,Overlay does not materially improve drawdown across key long windows.
+spy_trend_filter,candidate_for_growth_v3,False,False,False,False,Drawdown improved across long windows while preserving enough return and risk-adjusted quality.

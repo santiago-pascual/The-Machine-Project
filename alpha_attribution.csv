@@ -1,0 +1,12 @@
+component,alpha_contribution,method,confidence,absolute_contribution,share_of_total_abs
+Benchmark Drift,2.4131207072334524,SPY adjusted-close log return aligned to strategy observation dates,medium,2.4131207072334524,0.3984608925284511
+Forecast Alpha,0.0,Forecast IC/decile measured separately; exact marginal PnL not stored,diagnostic_only,0.0,0.0
+Ranking Alpha,0.0,Rank buckets measured separately; exact counterfactual universe return not stored,diagnostic_only,0.0,0.0
+Position Sizing Alpha,-0.028195238716823133,sum of current weighted selected daily return minus equal-weight selected daily return,medium,0.028195238716823133,0.0046556726111882845
+Cash Allocation Alpha,-1.6351214562759733,actual gross compounded return minus fully-invested selected equivalent,medium,1.6351214562759733,0.26999559239085924
+Risk Overlay Alpha,0.51181192499293,growth_champion_v3 minus v2 from final selection comparison,medium,0.51181192499293,0.08451174275206207
+Volatility Targeting Alpha,0.0,not separately identifiable from risk/cash overlay in stored history,unavailable,0.0,0.0
+Turnover Impact,0.0,turnover measured separately; exact delay counterfactual not stored,diagnostic_only,0.0,0.0
+Cost Impact,-0.0048156913757275415,official forward estimated costs divided by initial capital; historical cost fields are zero,medium_forward_only,0.0048156913757275415,0.0007951797346738877
+Soft Exit Impact,0.0,soft-exit return groups measured in holding-period table; exact no-soft-exit counterfactual not stored,diagnostic_only,0.0,0.0
+Residual,1.4630392377623205,Total return minus measured/stored-attributable components,reconciliation,1.4630392377623205,0.24158091998276546

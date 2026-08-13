@@ -1,0 +1,13 @@
+===== PHASE 120 ALPHA ATTRIBUTION & PERFORMANCE DECOMPOSITION =====
+final_status: alpha_attribution_pass
+total_log_return: 2.7198394836
+component_sum: 2.7198394836
+reconciliation_difference: 0.000000000000
+
+Largest lost alpha sources:
+1. Cash Allocation Alpha: lost_alpha=1.6351214563; method=actual gross compounded return minus fully-invested selected equivalent; confidence=medium
+2. Position Sizing Alpha: lost_alpha=0.0281952387; method=sum of current weighted selected daily return minus equal-weight selected daily return; confidence=medium
+3. Cost Impact: lost_alpha=0.0048156914; method=official forward estimated costs divided by initial capital; historical cost fields are zero; confidence=medium_forward_only
+
+Important caveat: attribution is additive in log-return space. Exact marginal contribution for Forecast Alpha, Ranking Alpha, Soft Exit and Volatility Targeting is not fully stored historically. These are measured through IC/bucket/diagnostic tables and unobservable marginal effects remain in Residual.
+No model, forecast, ranking, optimizer, allocation, scheduler, paper, execution, accounting, governance, parameter, or order logic was modified.

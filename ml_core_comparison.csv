@@ -1,0 +1,4 @@
+item,model,roc_auc,f1,accuracy,threshold,Sharpe,average_realized_return,sample_reduction
+ml_core_best_model,logistic_regression,0.553584844030704,0.6216216216216216,0.5599214145383105,,,,
+previous_meta_best_model,logistic_regression,0.5590723501551527,0.5200764818355641,0.5068762278978389,,,,
+ml_core_best_threshold,logistic_regression,,,,0.5,1.2913501319442664,0.05185071674873716,0.4538310412573674

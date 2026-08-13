@@ -1,0 +1,2 @@
+date,model,growth_model_version,data_mode,days_tracked,portfolio_value,cumulative_return,current_drawdown,exposure,cash,governance_status,promotion_status,reason,archive_reason
+2026-07-10,growth_champion_final,growth_champion_final_v1_0_frozen,historical_debug_reconstruction,10,98337.03166457298,-0.0166296833542702,-0.0510904521567182,0.4,0.6,official_forward_warmup,real_capital_blocked,official forward exact history only; no reconstruction/backfill,official row invalidated by Phase100 stale market data audit

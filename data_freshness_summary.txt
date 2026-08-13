@@ -1,0 +1,21 @@
+===== DATA FRESHNESS AUDIT =====
+audit_run_date: 2026-06-29
+expected_latest_market_date: 2026-06-29
+
+Stage freshness:
+- financial_data_system_market_download/cache: actual=2026-06-29 expected=2026-06-29 stale=False status=ok
+- yahoo_cache_SPY: actual=2026-06-29 expected=2026-06-29 stale=False status=ok
+- yahoo_cache_QQQ: actual=2026-06-29 expected=2026-06-29 stale=False status=ok
+- forecast_history: actual=2026-06-29 expected=2026-06-29 stale=False status=ok
+- current_raw_target_features: actual=2026-06-29 expected=2026-06-29 stale=False status=ok
+- current_growth_features: actual=2026-06-29 expected=2026-06-29 stale=False status=ok
+- current_growth_candidate_allocation: actual=2026-06-29 expected=2026-06-29 stale=False status=ok
+- growth_candidate_paper_state: actual=2026-06-29 expected=2026-06-29 stale=False status=ok
+- growth_candidate_paper_performance: actual=2026-06-29 expected=2026-06-29 stale=False status=ok
+- benchmark_daily_returns: actual=2026-06-29 expected=2026-06-29 stale=False status=ok
+- growth_live_tracking: actual=2026-06-29 expected=2026-06-29 stale=False status=ok
+
+Blocking stage: none
+Explanation: all audited stages are fresh
+
+Important note: if the audit is run before Yahoo has published today's close, the expected latest market date may be same-day while Yahoo/cache legitimately remains on the prior completed close.

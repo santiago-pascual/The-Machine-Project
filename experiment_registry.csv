@@ -1,0 +1,2 @@
+timestamp,experiment_id,experiment_name,model_mode,parameter_set_hash,data_start,data_end,universe_size,number_of_test_dates,objective_metric,result_metric,created_by,notes,duplicate_existing,counted_as_new_independent_trial
+2026-06-16T18:10:38+00:00,20260616181038_a9dc5beed0c43b66,research_governance_audit,research_only,a9dc5beed0c43b66,2022-06-15,2025-08-04,23,20,overfitting_risk,,codex,governance audit run,False,True

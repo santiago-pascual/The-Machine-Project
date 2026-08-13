@@ -1,0 +1,6 @@
+check,status,detail
+read_only,PASS,dashboard monitoring only
+no_model_changes,PASS,no strategy modules edited by Mission Control
+no_namespace_mixing,PASS,official widgets use official namespace files
+module_status_available,PASS,15
+alerts_available,PASS,9

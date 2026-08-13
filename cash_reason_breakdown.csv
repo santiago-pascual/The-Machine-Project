@@ -1,0 +1,10 @@
+reason,unused_capital_amount,percent_of_unused_capital,rebalance_days_with_reason
+volatility targeting,224.74567010183716,0.5553971753571277,878
+exposure caps,126.77005657041403,0.3132773650641099,867
+dual trend,53.14184105362466,0.13132545957876196,175
+optimizer,0.0,0.0,0
+insufficient candidates,0.0,0.0,0
+concentration controls,0.0,0.0,0
+HHI,0.0,0.0,0
+governance,0.0,0.0,0
+residual/unexplained,0.0,0.0,0

@@ -1,0 +1,41 @@
+{
+  "CORE": [
+    "signal_strength",
+    "expected_daily_return",
+    "expected_total_return"
+  ],
+  "SUPPORTING": [
+    "daily_volatility"
+  ],
+  "DIAGNOSTIC_ONLY": [
+    "kalman_signal_to_noise",
+    "kalman_trend",
+    "kalman_price",
+    "kalman_momentum",
+    "kalman_noise_state",
+    "kalman_volatility_state",
+    "kalman_trend_slope",
+    "kalman_residual",
+    "kalman_trend_score"
+  ],
+  "REMOVE_FROM_ML": [
+    "correlation_diversification_score",
+    "target_confidence",
+    "ema_timing_score",
+    "downside_risk",
+    "cycle_stability_score",
+    "hurst_persistence_score",
+    "regime_confidence",
+    "quality_score",
+    "trend_persistence_score",
+    "entropy_cleanliness_score",
+    "momentum_score",
+    "volatility_stability_score"
+  ],
+  "NEEDS_MORE_DATA": [],
+  "metadata": {
+    "production_behavior_changed": false,
+    "research_only": true,
+    "score_column": "feature_selection_score"
+  }
+}

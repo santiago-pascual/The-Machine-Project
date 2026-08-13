@@ -1,0 +1,2 @@
+expected_signal_date,canonical_market_date,classification,paper_may_run,block_new_rebalance,do_not_advance_official_paper,real_capital_blocked,reason,canonical_cache_dir,production_changed,paper_logic_changed
+2026-08-13,2026-08-13,SINGLE_SOURCE_FRESH,True,False,False,True,canonical Yahoo cache fresh; no secondary confirmation required for paper,C:\Users\Alejandra\Desktop\Quant\04_The Machine Project\yahoo_ohlcv_price_cache,False,False

@@ -1,0 +1,24 @@
+source_file,data_key,loaded,row_count,date_range,checksum,namespace
+current_raw_target_features.csv,current_raw_target_features,True,266,2026-07-13 to 2026-07-13,e8b3240dd39f6386,official_current_decision
+current_growth_features.csv,current_growth_features,False,0,,c7297ecd76d9ad0d,official_current_decision
+current_growth_candidate_allocation.csv,current_allocation,True,4,2026-07-13 to 2026-07-13,7fe5db09d479eff0,official_current_decision
+growth_universe_quality_report.csv,universe_quality_report,True,266,2026-07-13 to 2026-07-13,434c83a90b81dbcb,official_current_decision
+growth_universe_exclusions.csv,universe_exclusions,True,213,2026-07-13 to 2026-07-13,c1d0c30137cb5f43,official_current_decision
+growth_tradability_filter_report.csv,tradability_report,True,266,2026-07-13 to 2026-07-13,434c83a90b81dbcb,official_current_decision
+growth_tradability_exclusions.csv,tradability_exclusions,True,56,2026-07-13 to 2026-07-13,31f070a1b579c45a,official_current_decision
+final_selected_holdings_audit.csv,holdings_sanity,True,4,2026-07-13 to 2026-07-13,43d9c0ae93c2cc9b,official_current_decision
+final_selected_holdings_replacements.csv,holdings_replacements,False,0,,071f8ff47398fcf3,official_current_decision
+growth_portfolio_explainability.csv,portfolio_explainability,True,3,2026-07-13 to 2026-07-13,0187627016d0f754,official_current_decision
+growth_top20_candidates.csv,top20_candidates,True,40,2026-07-13 to 2026-07-13,563d61ee63004a90,official_current_decision
+growth_candidate_rejection_report.csv,rejection_report,True,80,2026-07-13 to 2026-07-13,d3889504943134aa,official_current_decision
+growth_pending_decision_signals.csv,pending_signals,True,4,2026-07-13 to 2026-07-13,d1e44625fb706c2b,official_current_decision
+growth_official_paper_state.csv,official_state,True,8,2026-07-10 to 2026-07-13,08b971953ddffc28,official_current_decision
+growth_official_paper_actions.csv,official_actions,True,8,2026-07-10 to 2026-07-13,d5efbde3f59dd440,official_current_decision
+growth_official_paper_rebalance_report.csv,official_rebalance_report,True,2,2026-07-10 to 2026-07-13,2c559e1f1ef3ab6c,official_current_decision
+growth_rebalance_schedule.csv,rebalance_schedule,True,882,2023-01-04 to 2026-07-13,0cefa12b165be368,official_current_decision
+growth_official_position_pnl.csv,official_position_pnl,True,6,2026-07-10 to 2026-07-13,cbd47c16861e4234,official_current_decision
+growth_volatility_pipeline_audit.csv,vol_pipeline_audit,True,16,2026-06-17 to 2026-07-13,e6b5895cbf54f2ce,official_current_decision
+official_market_data_integrity.csv,official_market_data_integrity,True,5,,5bf9615c8272856e,official_current_decision
+risk_contribution_reconciliation.csv,risk_contribution,True,3,,0cde88fb385e26c2,official_current_decision
+execution_cost_reconciliation.csv,execution_cost_reconciliation,True,11,,84c8830b796e8481,official_current_decision
+growth_decision_funnel.csv,decision_funnel,True,10,,8144f89cc5825ebc,official_current_decision

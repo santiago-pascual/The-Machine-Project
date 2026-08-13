@@ -1,0 +1,50 @@
+===== PHASE 114 QUANT LAB REPORT =====
+
+Final status: quant_lab_warning
+
+Modules created:
+- dashboard_quant_lab.py
+- dashboard_quant_surfaces.py
+- dashboard_quant_embeddings.py
+- dashboard_quant_monte_carlo.py
+- dashboard_quant_equations.py
+
+Surfaces available:
+efficient_frontier, correlation_surface, covariance_surface, volatility_target_surface, parameter_stability_surface, hmm_regime_space, feature_space_3d, pca_3d, stress_cube, monte_carlo, equation_explorer
+
+Skipped / warning surfaces:
+            surface required_input                          detail_planned detail_render
+black_litterman_lab       BL grids input missing or diagnostic unavailable           NaN
+
+Data scopes used:
+Official/current sources for holdings, current features, volatility targeting and market data. Research diagnostic sources for parameter stability, HMM and optional Black-Litterman.
+
+Current portfolio point:
+ARM, BABA, SE
+
+Cache/performance results:
+               item status                                                                                detail
+     lazy_rendering   PASS                                                        section selected before render
+       cache_policy   PASS st.cache_data wrappers for price matrices and Monte Carlo when Streamlit is available
+simulation_controls   PASS                                           simulation count/horizon controlled by user
+   namespace_mixing   PASS                                  official/current and diagnostic sources are labelled
+     model_mutation   PASS                                                       read-only dashboard diagnostics
+
+Render tests:
+                 section    status                                                                                  detail  render_seconds
+      Portfolio Geometry available                                                                          453 portfolios           2.038
+Correlation & Covariance available                                                                     available/available           0.281
+    Volatility Targeting available                                                        cap/dual-trend/continuous region           0.040
+     Parameter Stability available                                                                                  Sharpe           0.043
+         Black-Litterman   warning                                                             missing BL diagnostic grids           0.001
+            Regime Space available             axes=test_risk_off_rate,future_volatility_corr_proxy,test_state_switch_rate           0.047
+           Feature Space available axes=raw_target_return_exact,realized_vol_60d,raw_target_rank; samples=266, features=40           0.202
+         Stress Surfaces available                                                             exposure=0.4350408594155715           0.101
+             Monte Carlo available                                                   horizon=60, sims=1000, model=Gaussian           0.150
+         Model Equations available                                                                         Expected return           0.000
+
+Render errors:
+none
+
+Rules:
+Dashboard and diagnostic calculations only. No model logic, paper trading, ranking, parameters, optimizer, calculations or real orders changed.

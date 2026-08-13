@@ -1,0 +1,31 @@
+===== SAFE OPERATIONAL INTEGRATION REPORT =====
+active_model_version: growth_champion_final_v1_0_frozen
+classification: operational_paper_production
+real_capital_status: real_capital_blocked
+broker_connection_enabled: False
+real_orders_enabled: False
+
+Components promoted:
+- Exact 5-session rebalance scheduler
+- Frozen robust parameter configuration as growth_champion_final_v1_0_frozen
+- Validation gates into operational reporting
+- Advanced execution cost estimates into reporting/ledger
+
+Components retained as diagnostic:
+- GARCH/EGARCH MLE
+- HMM 4-state regime model
+- signal_strength
+- advanced execution costs for net estimates only
+
+Components rejected/blocked:
+- HMM-driven allocation
+- MLE GARCH replacement
+- real broker/orders
+- signal_strength as active alpha/sizing input
+
+signal_strength_active_in_growth_allocation: False
+estimated_cost_ledger_rows: 14
+validation_gate_rows: 8
+production_changed: False
+optimizer_changed: False
+real_trading_enabled: False

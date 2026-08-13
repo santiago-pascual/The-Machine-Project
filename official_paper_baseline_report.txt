@@ -1,0 +1,14 @@
+===== OFFICIAL FORWARD PAPER BASELINE RESET =====
+exact_live_start_date: 2026-06-25
+start rule: first exact rebalance date after raw_target_return_exact availability; no carry-forward from proxy/debug holdings
+official_status: official_forward_warmup
+real_capital_status: real_capital_blocked
+official_rows: 10
+debug_rows_archived: 42
+official_portfolio_value: 98337.03166457298
+official_cumulative_return: -0.016629683354270286
+namespaces_created: growth_official_paper_state/trades/actions/performance/monitor/live_tracking
+debug_history_preserved: yes
+production_changed: False
+model_logic_changed: False
+optimizer_changed: False

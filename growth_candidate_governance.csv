@@ -1,0 +1,2 @@
+candidate,classification,reason,production_change,uses_hindsight
+soft_exit_rule_vol_target_22pct,eligible for paper trading,beats SPY and has favorable QQQ risk-adjusted comparison,none,False

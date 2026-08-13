@@ -1,0 +1,4 @@
+from_stage,to_stage,rank_ic_20d_before,rank_ic_20d_after,rank_ic_delta,hit_rate_delta,monotonicity_delta,std_delta,improved_ic,compressed_signal,added_noise_flag,governance_classification,reason
+constant_penalty_proxy,signal_strength_adjusted_proxy,0.06624548949719505,0.029141955673681007,-0.03710353382351404,-0.023913043478260954,-0.8848484848484848,-0.0002524190263057588,False,True,True,remove candidate,"reduces_IC, reduces_hit_rate, reduces_monotonicity, adds_noise"
+signal_strength_adjusted_proxy,regime_adjusted_proxy,0.029141955673681007,0.026942768334928344,-0.002199187338752663,0.0,0.12121212121212122,-0.00018112198117661317,False,True,False,review,reduces_IC
+timing_adjusted_proxy,scaling_final_proxy,0.026942768334928344,0.04497696135680983,0.018034193021881483,-0.05177865612648219,0.2666666666666666,0.0006879958969636187,True,False,False,review,reduces_hit_rate

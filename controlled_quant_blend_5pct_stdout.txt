@@ -1,0 +1,650 @@
+Rows before cleaning: 252
+Rows after cleaning: 252
+Removed invalid tickers: ['AACI', 'AACO', 'ACAA', 'ACCL', 'ACGC', 'ADAC', 'ADAMH', 'ADAMO', 'AEAQ', 'AGCC', 'AGMB', 'AGNCZ', 'AHMA', 'AIAI', 'AIBZ', 'AIDX', 'AKTS', 'ALOV', 'AMAN', 'AMPGZ', 'AMSS', 'ANPA', 'APAC', 'APC', 'APXT', 'ARCI', 'ARCL', 'ARTC', 'ARXS', 'ASPSZ', 'ATCX']
+[INFO] Live price mode enabled for 266 tickers. Missing live prices will use last historical close.
+Gen 0: Best 0.042385 | Mean 0.029924
+Gen 25: Best 0.044171 | Mean 0.041141
+Gen 50: Best 0.044173 | Mean 0.041294
+Gen 75: Best 0.044173 | Mean 0.041614
+Gen 100: Best 0.044173 | Mean 0.032609
+Gen 125: Best 0.044173 | Mean 0.040606
+Gen 150: Best 0.044173 | Mean 0.034285
+Gen 175: Best 0.044173 | Mean 0.040273
+Gen 200: Best 0.044173 | Mean 0.030973
+Gen 225: Best 0.044173 | Mean 0.042189
+Gen 250: Best 0.044173 | Mean 0.031396
+Gen 275: Best 0.044173 | Mean 0.040286
+Gen 300: Best 0.044173 | Mean 0.041705
+Gen 325: Best 0.044173 | Mean 0.041136
+Gen 350: Best 0.044173 | Mean 0.042391
+Gen 375: Best 0.044173 | Mean 0.041012
+Gen 400: Best 0.044173 | Mean 0.040371
+Gen 425: Best 0.044173 | Mean 0.040441
+Gen 450: Best 0.044173 | Mean 0.042126
+Gen 475: Best 0.044173 | Mean 0.041579
+Gen 499: Best 0.044173 | Mean 0.040897
+Sharpe improvement vs equal weight: 9.18%
+Final Portfolio:
+Return: 0.005151
+Volatility: 0.025003
+Sharpe: 0.200231
+Contribution Ranking:
+ARCB    0.001481
+ALAB    0.001376
+AMPG    0.001288
+AMRX    0.001006
+dtype: float64
+
+Lookback Days Used: 252
+Target Generation Method Used: basic (volatility_adjusted)
+
+Prices DataFrame:
+                  AAPL        NVDA        MSTR  ...       ATAT  ATEC       ATEX
+Date                                            ...                            
+2026-06-08  301.540009  208.639999  127.199997  ...  33.119999  7.91  66.239998
+2026-06-09  290.549988  208.190002  117.019997  ...  33.270000  8.26  64.550003
+2026-06-10  291.579987  200.419998  115.349998  ...  33.509998  8.13  64.779999
+2026-06-11  295.630005  204.869995  120.150002  ...  33.369999  8.13  81.440002
+2026-06-12  291.130005  205.190002  123.970001  ...  33.830002  8.28  82.500000
+
+[5 rows x 266 columns]
+
+Generated Target Prices:
+AAPL    304.359732
+NVDA    214.490274
+MSTR    131.411744
+SNAP      5.516701
+OKLO     62.712983
+           ...    
+ASYS     29.435794
+ATAI      4.183984
+ATAT     35.336478
+ATEC      9.131582
+ATEX    102.086667
+Length: 266, dtype: float64
+
+Returns DataFrame:
+                AAPL      NVDA      MSTR  ...      ATAT      ATEC      ATEX
+Date                                      ...                              
+2026-06-08 -0.018872  0.017260  0.056127  ... -0.008977 -0.011250 -0.006002
+2026-06-09 -0.036446 -0.002157 -0.080031  ...  0.004529  0.044248 -0.025513
+2026-06-10  0.003545 -0.037322 -0.014271  ...  0.007214 -0.015739  0.003563
+2026-06-11  0.013890  0.022203  0.041613  ... -0.004178  0.000000  0.257178
+2026-06-12 -0.015222  0.001562  0.031794  ...  0.013785  0.018450  0.013016
+
+[5 rows x 266 columns]
+
+Covariance Matrix:
+          AAPL      NVDA      MSTR  ...      ATAT      ATEC      ATEX
+AAPL  0.000207  0.000062  0.000116  ...  0.000058  0.000022  0.000093
+NVDA  0.000062  0.000492  0.000365  ...  0.000092 -0.000039  0.000119
+MSTR  0.000116  0.000365  0.002051  ...  0.000135  0.000030  0.000387
+SNAP  0.000041  0.000195  0.000483  ...  0.000039  0.000177  0.000164
+OKLO  0.000145  0.000555  0.001272  ...  0.000219 -0.000143  0.000502
+...        ...       ...       ...  ...       ...       ...       ...
+ASYS  0.000075  0.000195  0.000323  ...  0.000205 -0.000057  0.000234
+ATAI  0.000107  0.000226  0.000406  ...  0.000085  0.000146  0.000206
+ATAT  0.000058  0.000092  0.000135  ...  0.000580  0.000027  0.000061
+ATEC  0.000022 -0.000039  0.000030  ...  0.000027  0.002008 -0.000016
+ATEX  0.000093  0.000119  0.000387  ...  0.000061 -0.000016  0.001256
+
+[266 rows x 266 columns]
+
+Volatility by Asset:
+AAPL    0.014395
+NVDA    0.022174
+MSTR    0.045288
+SNAP    0.034668
+OKLO    0.064855
+          ...   
+ASYS    0.057473
+ATAI    0.048193
+ATAT    0.024090
+ATEC    0.044811
+ATEX    0.035435
+Length: 266, dtype: float64
+
+Sharpe Ratio by Asset:
+AAPL    0.089149
+NVDA    0.054962
+MSTR   -0.089822
+SNAP   -0.056709
+OKLO    0.036830
+          ...   
+ASYS    0.148623
+ATAI    0.051313
+ATAT    0.010291
+ATEC   -0.006344
+ATEX    0.154387
+Length: 266, dtype: float64
+
+Annualized Sharpe Ratio by Asset:
+AAPL    1.415201
+NVDA    0.872502
+MSTR   -1.425877
+SNAP   -0.900235
+OKLO    0.584654
+          ...   
+ASYS    2.359322
+ATAI    0.814569
+ATAT    0.163363
+ATEC   -0.100713
+ATEX    2.450817
+Length: 266, dtype: float64
+
+Portfolio Weights:
+AAPL    0.003759
+NVDA    0.003759
+MSTR    0.003759
+SNAP    0.003759
+OKLO    0.003759
+          ...   
+ASYS    0.003759
+ATAI    0.003759
+ATAT    0.003759
+ATEC    0.003759
+ATEX    0.003759
+Name: weight, Length: 266, dtype: float64
+
+Portfolio Metrics:
+Risk-Free Annual: 0.03638
+Risk-Free Daily: 0.00014436507936507937
+Market Regime: neutral (0.1599)
+Regime Confidence: 0.3000
+No Opportunity Detected: False
+Portfolio Return: 0.0020113199253228684
+Portfolio Volatility: 0.015130083825698979
+Sharpe (Daily): 0.12339355600837455
+Sharpe (Annualized): 1.958811975516474
+
+===== NORMALIZATION CHECK =====
+mean antes: 0.00041706
+std antes: 0.00300077
+mean después: -0.00003523
+std después: 0.00106517
+min/max después: -0.00101029 / 0.00637500
+% positivos vs negativos: 15.79% / 84.21%
+
+===== MARKET REGIME MODEL =====
+VIX actual: 17.6800
+VIX z-score: -0.5225
+SPY momentum (20d, 60d): -0.008581, 0.121434
+realized vol: 0.009536
+vol ratio: 0.053935
+breadth: 0.5263
+HMM high-vol probability: 0.9066
+Hurst exponent: 0.4957
+risk_score: 0.1599
+regime: neutral
+regime_confidence: 0.3000
+
+===== EMA TIMING MODEL =====
+      entry_valid  trend_score  ...  timing_action           timing_reason
+AMPG         True     0.930066  ...           hold  intermediate_structure
+ARCB         True     0.853664  ...           hold  intermediate_structure
+ALAB         True     0.862634  ...           hold  intermediate_structure
+AMRX         True     0.828892  ...           hold  intermediate_structure
+
+[4 rows x 9 columns]
+
+===== EMA CALIBRATION CHECK =====
+      trend_score  structure_score  ...  timing_action           timing_reason
+AMPG     0.930066         0.846964  ...           hold  intermediate_structure
+ARCB     0.853664         0.849034  ...           hold  intermediate_structure
+ALAB     0.862634         0.859672  ...           hold  intermediate_structure
+AMRX     0.828892         0.791070  ...           hold  intermediate_structure
+
+[4 rows x 10 columns]
+ema_timing_score distribution:
+count    4.000000
+mean     0.338591
+std      0.012987
+min      0.321701
+25%      0.333809
+50%      0.339785
+75%      0.344567
+max      0.353095
+Name: ema_timing_score, dtype: float64
+correlation(score, timing_adjusted_return): 0.877336
+
+===== SPY EMA REGIME =====
+SPY price: 741.7500
+EMA21 / EMA30 / EMA150 / EMA200: 740.4432 / 736.0632 / 695.3951 / 684.1422
+macro_ema_score: 0.5577
+spy_macro_regime: neutral
+
+===== TIMING INTEGRATION CHECK =====
+      adjusted_expected_before_timing  timing_adjusted_after
+ARCB                         0.006530               0.004615
+AMPG                         0.006299               0.004695
+AMRX                         0.004166               0.002699
+ALAB                         0.005531               0.003984
+post_timing_edge_threshold (dynamic): 0.000450
+net_exposure antes SPY timing: 0.4944
+net_exposure después SPY timing: 0.4944
+
+===== POST TIMING FILTER CHECK =====
+post_timing_edge_threshold raw: 0.004300
+post_timing_edge_threshold final: 0.000450
+clamp min/max aplicado: 0.000050 / 0.000450
+cantidad de activos positivos antes del filtro: 4
+cantidad después del filtro: 4
+activos removidos por post-timing: []
+razón por activo:
+Series([], dtype: object)
+
+===== FOURTH ASSET CHECK =====
+4to candidato: AMRX
+expected return: 0.002699
+signal strength: 0.7783
+diversification benefit: 0.8457
+accepted/rejected: yes
+motivo: edge_or_diversification_or_concentration
+
+===== DIVERSIFICATION GUARD =====
+selected_n natural: 4
+selected_n after post-timing: 4
+selected_n final: 4
+diversification floor used: no
+motivo: none
+
+===== FILTERED ASSETS =====
+                            Status                                  Reason
+Ticker                                                                    
+AAPL    bearish_or_low_probability  Negative expected return or weak drift
+NVDA    bearish_or_low_probability  Negative expected return or weak drift
+MSTR    bearish_or_low_probability  Negative expected return or weak drift
+SNAP    bearish_or_low_probability  Negative expected return or weak drift
+OKLO    bearish_or_low_probability  Negative expected return or weak drift
+...                            ...                                     ...
+ASYS                      included       Included in optimization universe
+ATAI    bearish_or_low_probability  Negative expected return or weak drift
+ATAT    bearish_or_low_probability  Negative expected return or weak drift
+ATEC                      included       Included in optimization universe
+ATEX                      included       Included in optimization universe
+
+[266 rows x 2 columns]
+
+===== FINAL SELECTION =====
+         Decision                                           Reason
+Ticker                                                            
+AMPG     selected  Top-ranked by signal strength / expected return
+ARCB     selected  Top-ranked by signal strength / expected return
+ALAB     selected  Top-ranked by signal strength / expected return
+AMRX     selected  Top-ranked by signal strength / expected return
+AAPL    discarded      Outside top-N selection or no positive edge
+...           ...                                              ...
+ASYS    discarded      Outside top-N selection or no positive edge
+ATAI    discarded      Outside top-N selection or no positive edge
+ATAT    discarded      Outside top-N selection or no positive edge
+ATEC    discarded      Outside top-N selection or no positive edge
+ATEX    discarded      Outside top-N selection or no positive edge
+
+[266 rows x 2 columns]
+
+===== EXPECTED RETURNS MODEL =====
+     Current Price  ...                      Status
+AAPL    291.079987  ...  bearish_or_low_probability
+NVDA    205.130005  ...  bearish_or_low_probability
+MSTR    123.959999  ...  bearish_or_low_probability
+SNAP         5.265  ...  bearish_or_low_probability
+OKLO     57.460098  ...  bearish_or_low_probability
+...            ...  ...                         ...
+ASYS     23.969999  ...                   reachable
+ATAI         3.915  ...  bearish_or_low_probability
+ATAT     33.830002  ...  bearish_or_low_probability
+ATEC         8.277  ...                   reachable
+ATEX     82.589996  ...                   reachable
+
+[266 rows x 43 columns]
+
+===== QUANT TARGET DIAGNOSTICS =====
+      old_target_price  ...  blend_enabled
+AAPL        305.686505  ...           True
+NVDA        215.449503  ...           True
+MSTR        132.515543  ...           True
+SNAP          5.538787  ...           True
+OKLO         63.140274  ...           True
+...                ...  ...            ...
+ASYS         29.637977  ...           True
+ATAI          4.207294  ...           True
+ATAT         35.521502  ...           True
+ATEC          9.205274  ...           True
+ATEX        102.559734  ...           True
+
+[266 rows x 14 columns]
+
+===== TARGET COMPARISON REPORT =====
+target_comparison_report.columns: ['old_target_price', 'manual_long_term_target', 'manual_target_gap_pct', 'manual_targets_allowed_for_expected_returns', 'quant_target_price', 'final_blended_target', 'target_blend_weight', 'gbm_median_target', 'gbm_expected_target', 'kalman_target', 'ou_target', 'target_confidence', 'target_method_selected', 'blend_enabled', 'old_vs_quant_diff_pct', 'gbm_expected_vs_median_pct', 'ou_against_trend', 'suspicious_flags']
+missing columns detected: []
+      old_target_price  ...                                   suspicious_flags
+AIXI         13.755000  ...  quant_vs_old_diff_gt_15pct, gbm_expected_much_...
+AIRE          2.882995  ...                         quant_vs_old_diff_gt_15pct
+ARTL          1.734378  ...  quant_vs_old_diff_gt_15pct, ou_pulling_against...
+AEHL          1.330266  ...  quant_vs_old_diff_gt_15pct, ou_pulling_against...
+ABVX        152.083716  ...  quant_vs_old_diff_gt_15pct, gbm_expected_much_...
+...                ...  ...                                                ...
+ALKS         47.100218  ...                      ou_pulling_against_kalman_gbm
+KEEL          6.177958  ...                      ou_pulling_against_kalman_gbm
+ARCB        197.980834  ...                      ou_pulling_against_kalman_gbm
+ALAB        422.254057  ...                      ou_pulling_against_kalman_gbm
+AMCX         10.619335  ...                      ou_pulling_against_kalman_gbm
+
+[266 rows x 12 columns]
+
+===== DIAGNOSTICS CONSISTENCY CHECK =====
+columnas faltantes detectadas: []
+columnas creadas por default: []
+columnas ausentes del model_columns final: []
+NaN por columna crítica:
+quality_score                0
+downside_ratio               0
+recent_drawdown              0
+return_skew                  0
+downside_volatility          0
+downside_multiplier          0
+garch_volatility             0
+egarch_volatility            0
+kalman_residual_vol          0
+savgol_slope                 0
+fft_low_freq_energy          0
+haar_wavelet_energy          0
+hurst_exponent               0
+ou_half_life                 0
+hawkes_downside_intensity    0
+entropy                      0
+fractal_dimension            0
+lyapunov_proxy               0
+hill_tail_index              0
+quant_market_quality         0
+quant_multiplier             0
+dtype: int64
+shape final diagnostics_df: (266, 51)
+
+===== DOWNSIDE METRICS =====
+      downside_volatility  downside_ratio  ...  consistency  stability_raw
+AMPG             0.040464        0.582261  ...     0.516807       0.017226
+ARCB             0.020053        0.649031  ...     0.525210       0.005384
+ALAB             0.038536        0.632354  ...     0.554622       0.012230
+AMRX             0.012226        0.591126  ...     0.529412       0.004250
+
+[4 rows x 6 columns]
+
+===== QUALITY SCORE =====
+      quality_score  signal_strength  expected_daily_return
+AMRX       0.680913         0.778303               0.003320
+ALAB       0.635157         0.684587               0.005701
+ARCB       0.630233         1.000000               0.006113
+AMPG       0.592983         0.916039               0.007008
+
+===== UNIVERSE EXPECTED RETURN DISTRIBUTION =====
+count total assets: 266
+count positive raw expected returns: 124
+count negative raw expected returns: 140
+count near-zero expected returns: 2
+mean: 0.00041706
+std: 0.00300077
+min: -0.00120757
+max: 0.03636644
+25/50/75 percentiles:
+0.25   -0.000358
+0.50   -0.000050
+0.75    0.000319
+dtype: float64
+
+===== FILTER ATTRITION REPORT =====
+total universe assets: 266
+assets positive before timing: 42
+assets positive after timing: 4
+assets above edge threshold: 18
+final selected assets: 4
+final optimized assets: 4
+
+===== FINAL SELECTED RETURN DISTRIBUTION =====
+std(final_selected_expected_returns): 0.00157442
+% selected assets with return > 0: 100.00%
+% selected assets with return < 0: 0.00%
+% selected assets neutral: 0.00%
+% universe unreachable: 6.02%
+
+===== FINAL SELECTED SIGNAL DIAGNOSTIC =====
+% negativos: 0.00%
+% positivos: 100.00%
+% cero: 0.00%
+
+===== FINAL SELECTED RETURN PERCENTILES =====
+0.00    0.003320
+0.25    0.005106
+0.50    0.005907
+0.75    0.006337
+1.00    0.007008
+Name: expected, dtype: float64
+Repeated values:
+expected
+0.007008    1
+0.006113    1
+0.005701    1
+0.003320    1
+Name: count, dtype: int64
+
+===== OPPORTUNITY RANKING =====
+      Expected Daily Return  Signal Strength     Status
+ARCB               0.006113         1.000000  reachable
+AMPG               0.007008         0.916039  reachable
+AMRX               0.003320         0.778303  reachable
+ALAB               0.005701         0.684587  reachable
+
+===== ADJUSTED EXPECTED RETURNS =====
+AMPG    0.007008
+ARCB    0.006113
+ALAB    0.005701
+AMRX    0.003320
+Name: expected, dtype: float64
+
+===== THRESHOLD CALIBRATION CHECK =====
+raw threshold: 0.004300
+final threshold: 0.000450
+clamp usado: 0.000050 / 0.000450
+market_mode: neutral
+positivos antes: 4
+positivos después: 4
+
+===== RETURN SCALING CHECK =====
+returns before scaling (top 5):
+AMPG    0.004695
+ARCB    0.004615
+ALAB    0.003984
+AMRX    0.002699
+dtype: float64
+returns after scaling (top 5):
+AMPG    0.007008
+ARCB    0.006113
+ALAB    0.005701
+AMRX    0.003320
+Name: expected, dtype: float64
+scaling method used: convex_power_tanh_plus_volatility
+exponent / parameters usados: exponent=1.25, alpha=0.45, vol_strength=0.15
+volatility adjustment aplicado: si
+max/min antes y después: 0.00469456/0.00269851 -> 0.00700810/0.00332026
+validación interna: ranking_unchanged=True, std_before=0.00092288, std_after=0.00157442, top_assets_boost=True, clip=0.00314591/0.00674916
+
+===== DOWNSIDE IMPACT CHECK =====
+returns std antes downside: 0.00106517
+returns std después downside: 0.00109730
+ranking cambiado: True
+
+===== QUALITY IMPACT CHECK =====
+correlación quality_score vs expected_return: -0.977057
+distribución quality_score:
+count    4.000000
+mean     0.634822
+std      0.036037
+min      0.592983
+25%      0.620920
+50%      0.632695
+75%      0.646596
+max      0.680913
+dtype: float64
+
+===== MULTIPLIER CALIBRATION CHECK =====
+downside_multiplier min/max/mean: 1.0243 / 1.0321 / 1.0295
+quality_multiplier min/max/mean: 1.0067 / 1.0226 / 1.0143
+combined_multiplier min/max/mean: 1.0381 / 1.0554 / 1.0442
+
+===== EDGE PRESERVATION CHECK =====
+ranking base: ['AMPG', 'ARCB', 'ALAB', 'AMRX']
+ranking final: ['AMPG', 'ARCB', 'ALAB', 'AMRX']
+swaps: 0
+ranking_changed: False
+impacto porcentual por activo:
+AMRX    5.541810
+ALAB    4.474902
+AMPG    3.836658
+ARCB    3.808045
+dtype: float64
+dominance_guard_actuó: False
+dominance_guard_assets: []
+
+===== SELECTION FILTER CHECK =====
+activos removidos por filtro relativo: []
+razón:
+Series([], dtype: object)
+
+Optimized Portfolio Weights:
+AMRX    0.157664
+ARCB    0.152315
+ALAB    0.100639
+AMPG    0.083782
+CASH    0.505600
+Name: optimized_weight, dtype: float64
+
+===== FINAL ALLOCATION INCLUDING CASH =====
+      final_weight_decimal  final_weight_percent  allocation_per_1000
+CASH              0.505600             50.560000           505.600000
+AMRX              0.157664             15.766446           157.664456
+ARCB              0.152315             15.231482           152.314823
+ALAB              0.100639             10.063856           100.638557
+AMPG              0.083782              8.378216            83.782164
+Total allocation: 1.000000
+Use final_weight_percent as the real portfolio allocation.
+
+===== CONCENTRATION CHECK =====
+número de activos seleccionados: 4
+peso top1: 0.1577
+peso top2 acumulado: 0.3100
+peso top3 acumulado: 0.4106
+cash: 0.5056
+
+===== SELECTED ASSETS EXPECTED RETURN % =====
+      expected_daily_return  ...           timing_reason
+AMPG               0.007008  ...  intermediate_structure
+ARCB               0.006113  ...  intermediate_structure
+ALAB               0.005701  ...  intermediate_structure
+AMRX               0.003320  ...  intermediate_structure
+
+[4 rows x 9 columns]
+
+===== EXPOSURE CONTROL =====
+net_exposure: 0.4944
+regime_adjustment: 1.0800
+confidence_adjustment: 0.3000
+opportunity_adjustment: 0.5143
+dispersion_adjustment: 0.8200
+cash_weight: 0.5056
+
+===== MARKET MODE =====
+mode: neutral
+opportunity_score: 0.5143
+dispersion_score: 0.4000
+net_exposure: 0.4944
+
+===== EXPOSURE GAP CHECK =====
+raw_net_exposure: 0.5000
+final_net_exposure: 0.4944
+absolute_gap: 0.0056
+relative_gap: 0.0112
+motivo del ajuste: balanced_blend_raw_regime
+
+===== AGGRESSIVENESS CHECK =====
+top 3 expected returns: 0.006530,0.006299,0.006165
+top 3 signal strength: 1.0000,0.9160,0.8524
+dispersion (top N vs total): 0.4000 vs 0.0701
+exposure before/after override: 0.4000 -> 0.5000
+
+===== OPTIMIZER FEASIBILITY =====
+selected_n: 4
+net_exposure: 0.4944
+target_invested_weight: 0.4944
+original max_weight: 0.5000
+adjusted max_weight: 0.5000
+
+===== SELECTION QUALITY =====
+count positivos reales: 31
+count positivos > edge_threshold: 18
+selected assets: ['AMPG', 'ARCB', 'ALAB', 'AMRX']
+discarded for low edge: ['RKLB', 'INTC', 'TWLO', 'SPOT', 'SPCE', 'SNOW', 'TSM', 'LRCX', 'ASTS', 'RGTI', 'KEEL', 'YPF', 'ASML', 'ARM', 'TCEHY', 'RIO', 'BHP', 'MELI', 'EC', 'AMD', 'MU', 'AAL', 'AAOI', 'ABAT', 'ABCL', 'ABEO', 'ABSI', 'ABTS', 'ABVC', 'ACAD', 'ACDC', 'ACHC', 'ACHV', 'ACLS', 'ACNB', 'ADAM', 'ADAMG', 'ADAMI', 'ADAMN', 'ADAMZ', 'ADEA', 'ADIL', 'ADPT', 'ADSE', 'ADTN', 'ADUS', 'AEBI', 'AEHL', 'AEVA', 'AFBI', 'AFCG', 'AFRM', 'AGIO', 'AGYS', 'AIHS', 'AIIO', 'AIMD', 'AIOT', 'AIRG', 'AIRJ', 'AIRO', 'AIRS', 'AIXI', 'AKAM', 'AKTX', 'ALDX', 'ALGM', 'ALGN', 'ALGT', 'ALHC', 'ALKS', 'ALNT', 'ALOT', 'ALOY', 'ALRM', 'ALRS', 'ALTO', 'ALVO', 'AMAL', 'AMAT', 'AMCX', 'AMGN', 'AMPL', 'AMRN', 'AMSF', 'AMST', 'ANDE', 'ANGH', 'ANGI', 'ANGO', 'ANNA', 'ANTX', 'ANY', 'AOSL', 'AOUT', 'APGE', 'API', 'APLD', 'APOG', 'APPF', 'APPN', 'APPS', 'APYX', 'AQB', 'ARBB', 'ARBK', 'ARCC', 'ARGX', 'ARHS', 'ARKO', 'ARQT', 'ARTNA', 'ASPI', 'ASST', 'ASTC', 'ASTH', 'ASTI', 'ASYS', 'ATEC', 'ATEX']
+final active positions: 4
+
+===== SELECTION ENGINE CHECK =====
+selection_score top 10:
+ARCB    0.818911
+AMPG    0.812266
+AMRX    0.807831
+ALAB    0.806629
+ATEX    0.793726
+APPS    0.779097
+EC      0.771040
+YPF     0.767556
+ALNT    0.758355
+ARM     0.753927
+dtype: float64
+candidate count: 37
+selected_n natural: 4
+fallback used: False
+fallback reason: none
+final selected assets: ['AMPG', 'ARCB', 'ALAB', 'AMRX']
+
+===== ANTI-COLLAPSE CHECK =====
+edge_threshold usado: 0.000885
+positivos totales: 31
+activos post filtro: 37
+selected_n final: 4
+fallback activado: False
+dispersion source: selected
+
+===== FINAL CONSISTENCY CHECK =====
+regime: neutral
+market_mode: neutral
+regime_confidence: 0.3000
+selected_n pre-fallback: 4
+selected_n post-fallback: 4
+fallback reason: none
+final selected assets: ['AMPG', 'ARCB', 'ALAB', 'AMRX']
+discarded assets: ['RKLB', 'INTC', 'TWLO', 'SPOT', 'SPCE', 'SNOW', 'TSM', 'LRCX', 'ASTS', 'RGTI', 'KEEL', 'YPF', 'ASML', 'ARM', 'TCEHY', 'RIO', 'BHP', 'MELI', 'EC', 'AMD', 'MU', 'AAL', 'AAOI', 'ABAT', 'ABCL', 'ABEO', 'ABSI', 'ABTS', 'ABVC', 'ACAD', 'ACDC', 'ACHC', 'ACHV', 'ACLS', 'ACNB', 'ADAM', 'ADAMG', 'ADAMI', 'ADAMN', 'ADAMZ', 'ADEA', 'ADIL', 'ADPT', 'ADSE', 'ADTN', 'ADUS', 'AEBI', 'AEHL', 'AEVA', 'AFBI', 'AFCG', 'AFRM', 'AGIO', 'AGYS', 'AIHS', 'AIIO', 'AIMD', 'AIOT', 'AIRG', 'AIRJ', 'AIRO', 'AIRS', 'AIXI', 'AKAM', 'AKTX', 'ALDX', 'ALGM', 'ALGN', 'ALGT', 'ALHC', 'ALKS', 'ALNT', 'ALOT', 'ALOY', 'ALRM', 'ALRS', 'ALTO', 'ALVO', 'AMAL', 'AMAT', 'AMCX', 'AMGN', 'AMPL', 'AMRN', 'AMSF', 'AMST', 'ANDE', 'ANGH', 'ANGI', 'ANGO', 'ANNA', 'ANTX', 'ANY', 'AOSL', 'AOUT', 'APGE', 'API', 'APLD', 'APOG', 'APPF', 'APPN', 'APPS', 'APYX', 'AQB', 'ARBB', 'ARBK', 'ARCC', 'ARGX', 'ARHS', 'ARKO', 'ARQT', 'ARTNA', 'ASPI', 'ASST', 'ASTC', 'ASTH', 'ASTI', 'ASYS', 'ATEC', 'ATEX']
+
+===== FINAL PIPELINE CONSISTENCY =====
+cantidad de candidatos: 37
+cantidad post timing: 4
+cantidad post threshold: 4
+cantidad final seleccionada: 4
+cantidad final optimizada: 4
+no NaN final_expected_returns: True
+no NaN ranking inputs: True
+pipeline consistente: True
+
+===== PORTFOLIO QUALITY CHECK =====
+promedio expected_return: 0.00553551
+dispersión entre activos: 0.00157442
+concentración de edge (top1): 0.3165
+quality promedio: 0.6348
+downside agregado estimado: 0.6159
+portfolio_is_strong: True
+
+Optimized Portfolio Metrics:
+Best Optimized Return: 0.005150737921899694
+Best Optimized Volatility: 0.02500292929547625
+Portfolio Horizon Days: 7.67
+Expected Total Return over Horizon: 0.040175
+Expected Total Volatility over Horizon: 0.069231
+Sharpe (Daily): 0.20023145221789718
+Sharpe (Annualized): 3.1785757633312106

@@ -1,0 +1,5 @@
+candidate,formula,classification,reason,Sharpe,baseline_sharpe,average_abs_rank_ic,TP_minus_SL,production_change
+candidate_A_expected_only,expected_daily_return,useful for research,baseline_alpha_factor,1.2698859902447974,1.2698859902447974,0.031066405791613894,0.10180995475113122,none
+candidate_D_expected_volatility_penalty,expected_daily_return / (1 + volatility_percentile),diagnostic only,signal_quality_without_portfolio_improvement,1.2603320483951557,1.2698859902447974,0.031376252857608346,0.1008968609865471,none
+candidate_B_expected_plus_orthogonal_signal,z(expected_daily_return) + 0.25*z(residual_signal_strength),diagnostic only,signal_quality_without_portfolio_improvement,0.9703227732409034,1.2698859902447974,0.0319582534531606,0.08616780045351471,none
+candidate_C_expected_signal_volatility,z(expected_daily_return) + 0.20*z(signal_strength) - 0.10*z(daily_volatility),reject,weak_ic_or_backtest,0.83273454657438,1.2698859902447974,0.018130359166597717,0.0855855855855856,none

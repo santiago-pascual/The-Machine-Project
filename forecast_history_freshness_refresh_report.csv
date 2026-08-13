@@ -1,0 +1,2 @@
+cache_latest_date,forecast_history_latest_before,forecast_history_latest_after,rows_added,rows_overwritten,rows_with_cache_price_update,status,method,warning
+2026-06-29,2026-06-26,2026-06-29,268,0,89,refreshed,carry_forward_latest_forecast_snapshot,forecast snapshot was carried forward; model calculations were not changed or rerun for this bridge

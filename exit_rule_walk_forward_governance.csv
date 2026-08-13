@@ -1,0 +1,5 @@
+variant,classification,reason,production_change
+raw_target_research,research only,baseline comparator,none
+soft_exit_rule,reject,drawdown increases materially,none
+turnover_penalty_overlay,reject,drawdown increases materially,none
+winner_retention_rule,reject,drawdown increases materially,none

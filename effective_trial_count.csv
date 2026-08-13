@@ -1,0 +1,2 @@
+observed_strategy_count,effective_trials_participation_ratio,effective_trials_entropy_rank,independent_trials_estimate,method
+60,2.868134936844122,3.2900952522088787,3,correlation_eigenvalue_effective_rank

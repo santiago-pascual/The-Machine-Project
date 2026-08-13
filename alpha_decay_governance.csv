@@ -1,0 +1,2 @@
+classification,raw_target_rank_ic_20d,break_warnings,significant_distribution_drifts,sign_flips,production_changed,paper_changed,automatic_retraining,reason
+significant_decay,0.038615769094581955,0,0,1,False,False,False,break_warnings=0; significant_drift=0; sign_flips=1; raw20_ic=0.038615769094581955

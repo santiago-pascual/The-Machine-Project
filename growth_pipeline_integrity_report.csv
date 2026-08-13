@@ -1,0 +1,14 @@
+check,passed,evidence
+baseline_allocation_influences_growth,True,normal growth paper source is current_growth_candidate_allocation; current_forecast_history_proxy requires explicit allow_proxy_fallback and is not active
+baseline_optimizer_influences_growth,True,no optimizer call found in growth paper modules
+baseline_timing_influences_growth,True,no EMA timing call found
+research_diagnostics_influence_growth,True,no diagnostic model dependency found
+raw_target_exact_required,True,growth feature generation and paper trading read raw_target_return_exact
+action_reconciliation_present,True,growth paper calls action reconciliation module
+dual_trend_present,True,dual trend function present
+vol_target_present,True,vol targeting function present
+quality_filter_order,True,See growth_quality_filter_order_audit.csv
+paper_history_validation,True,See growth_paper_history_validation.csv
+volatility_targeting,True,"{""source"": ""fresh_selected_holdings_ohlcv"", ""lookback"": ""fresh selected-holdings OHLCV daily returns, 60 trading days, equal-weight pre-scaling"", ""update_frequency"": ""every current growth feature generation run"", ""formula"": ""raw = target_volatility / estimated_portfolio_vol; clipped to MIN_EXPOSURE=0.40 and MAX_EXPOSURE=1.00; final=min(vol_target, exposure_cap_60, dual_trend_cap)"", ""latest_allocation_date"": ""2026-08-13"", ""volatility_reference_date"": ""2026-08-13"", ""volatility_reference_stale"": false, ""rolling_volatility"": 0.5054468713012599, ""raw_or_uncapped_exposure"": 0.4352584069491135, ""final_exposure"": 0.4352584069491135, ""why_40"": ""final exposure is 40 only when fresh portfolio vol makes target_vol/vol below MIN_EXPOSURE or smoothing keeps it at floor"", ""passed"": true}"
+dashboard_sources,True,"growth_candidate_paper_performance.csv,growth_candidate_paper_state.csv,growth_candidate_action_signals.csv,benchmark_daily_returns.csv"
+repair_executed,True,False

@@ -1,0 +1,2 @@
+classification,portfolio_value_assumption,commission_bps,minimum_fee,best_realistic_net_sharpe_Y1,annual_cost_drag_pct_Y1,production_changed,paper_changed,reason
+robust_medium_capital,100000.0,2.0,0.0,1.499385482228969,0.05583888715988863,False,False,Advanced costs applied to historical action changes with spread/slippage/square-root impact.

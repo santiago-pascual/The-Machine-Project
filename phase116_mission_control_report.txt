@@ -1,0 +1,59 @@
+===== PHASE 116 MISSION CONTROL REPORT =====
+
+Final status: mission_control_pass
+Overall system status: GREEN
+Overall health: 88.33%
+
+Pipeline status:
+      step  status latest_date                             source_file
+     Yahoo    PASS  2026-07-13      official_market_data_integrity.csv
+  Forecast    PASS  2026-07-13         current_raw_target_features.csv
+  Features    PASS  2026-07-13             current_growth_features.csv
+   Ranking    PASS  2026-07-13             growth_top20_candidates.csv
+Allocation    PASS  2026-07-13 current_growth_candidate_allocation.csv
+ Scheduler WARNING  2026-07-13     official_paper_daily_run_status.csv
+     Paper WARNING  2026-07-13   growth_official_paper_performance.csv
+Accounting WARNING  2026-07-13   official_forward_accounting_audit.csv
+ Dashboard WARNING                       decision_engine_integrity.csv
+
+Accounting status: WARNING
+Governance status: official_forward_warmup
+Research status: PASS
+
+Current alerts:
+severity  blocking                                                   alert      first_detected           current_state                           source_file
+ warning     False                              Market Data status WARNING 2026-07-13 17:50:53                 WARNING    official_market_data_integrity.csv
+ warning     False                                Scheduler status WARNING 2026-07-13 17:50:53                 WARNING   official_paper_daily_run_status.csv
+ warning     False                            Paper Trading status WARNING 2026-07-13 18:22:41                 WARNING growth_official_paper_performance.csv
+ warning     False                               Accounting status WARNING 2026-07-13 09:01:28                 WARNING official_forward_accounting_audit.csv
+ warning     False                               Governance status WARNING 2026-07-13 17:50:53                 WARNING     growth_official_paper_monitor.csv
+ warning     False                     risk_flags: official_forward_warmup          2026-07-13 official_forward_warmup     growth_official_paper_monitor.csv
+ warning      True                  promotion_status: real_capital_blocked          2026-07-13    real_capital_blocked     growth_official_paper_monitor.csv
+ warning     False              governance_status: official_forward_warmup          2026-07-13 official_forward_warmup     growth_official_paper_monitor.csv
+ warning     False Secondary provider absent; real capital remains blocked                       single_source_warning   official_market_data_governance.csv
+
+Pipeline runtime:
+                 metric     value
+total_pipeline_duration       n/a
+         slowest_module  Forecast
+         fastest_module Dashboard
+    csv_files_generated       542
+         rows_processed      1855
+               holdings         3
+                 trades         8
+
+Render performance: lazy-loaded Streamlit tables/charts; no pipeline execution.
+
+Validation results:
+                  check status                                        detail
+              read_only   PASS                     dashboard monitoring only
+       no_model_changes   PASS no strategy modules edited by Mission Control
+    no_namespace_mixing   PASS official widgets use official namespace files
+module_status_available   PASS                                            15
+       alerts_available   PASS                                             9
+
+Rules: Read-only dashboard monitoring only. No model, optimizer, ranking, paper, scheduler, accounting, governance logic, parameters or orders changed.
+
+Render smoke-test: PASS
+Compilation: PASS
+Mission Control is now first navigation item/home screen.

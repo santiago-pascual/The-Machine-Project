@@ -1,0 +1,62 @@
+===== RESEARCH DASHBOARD =====
+
+Loaded sources: walk_forward_summary, larger_walk_forward_summary, full_quant_robustness, regime_gated_comparison, strategy_trial_log, experiment_registry, robustness_validation, barrier_optimization, threshold_optimization, triple_barrier_labels, triple_barrier_feature_validation, regime_performance, ic_history, clean_research_evaluation
+Missing sources: none
+
+--- System Status ---
+current_production_mode: baseline
+research_modes_available: full_quant_research, regime_gated_full_quant
+promotion_status: blocked
+overfitting_warning_level: high
+total_strategy_trials: 14649.000000
+governance_status: trial_budget_warning
+
+--- Performance Summary ---
+baseline_sharpe: 1.736255
+full_quant_sharpe: 0.047661
+regime_gated_sharpe: 1.747678
+best_window: larger_walk_forward_2022_to_latest
+worst_window: 2023-01-01_to_2023-12-31
+average_cash: 0.536000
+max_drawdown: -0.042282
+
+--- Risk Summary ---
+VaR_95: missing
+CVaR_95: missing
+Sortino: 0.532086
+Calmar: 2.120732
+max_drawdown: -0.032479
+
+--- Signal Quality ---
+triple_barrier_TP_rate: 0.192754
+triple_barrier_SL_rate: 0.241304
+triple_barrier_timeout_rate: 0.565942
+selected_only_TP_rate: 0.261261
+selected_only_SL_rate: 0.202703
+best_predictive_feature: signal_strength
+worst_predictive_feature: target_price
+
+--- Regime Summary ---
+regimes_where_model_works: risk_off
+regimes_where_model_fails: neutral
+regime_gated_verdict: weak / diagnostic only
+
+--- Anti-Overfitting Summary ---
+observed_best_sharpe: 3.264991
+expected_max_sharpe: 2.189992
+deflated_sharpe: 1.074999
+PBO_proxy: 1.000000
+promotion_blocked_reasons: deflated_sharpe_warning, pbo_too_high, robustness_score_low
+
+--- Next Action Recommendation ---
+recommendation: reduce overfitting
+
+--- Clean Research Evaluation ---
+all_time_total_trials: 14649.000000
+all_time_PBO_proxy: 1.000000
+all_time_deflated_sharpe: 1.074999
+all_time_promotion_classification: still blocked
+governed_total_trials: 2.000000
+governed_PBO_proxy: 0.184657
+governed_deflated_sharpe: 1.629937
+governed_promotion_classification: eligible for paper trading only

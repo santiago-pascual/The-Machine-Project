@@ -1,0 +1,36 @@
+===== GROWTH SYSTEM INTEGRITY REPORT =====
+Pipeline integrity: PASS
+Historical replay: PASS
+Daily paper: PASS
+Dashboard: PASS
+Trade reconciliation: PASS
+Volatility targeting: PASS
+Overall system status: PASS
+
+===== VOLATILITY TARGETING =====
+source: fresh_selected_holdings_ohlcv
+lookback: fresh selected-holdings OHLCV daily returns, 60 trading days, equal-weight pre-scaling
+update_frequency: every current growth feature generation run
+formula: raw = target_volatility / estimated_portfolio_vol; clipped to MIN_EXPOSURE=0.40 and MAX_EXPOSURE=1.00; final=min(vol_target, exposure_cap_60, dual_trend_cap)
+latest_allocation_date: 2026-08-13
+volatility_reference_date: 2026-08-13
+volatility_reference_stale: False
+why_uncapped_exposure_40: final exposure is 40 only when fresh portfolio vol makes target_vol/vol below MIN_EXPOSURE or smoothing keeps it at floor
+
+===== CONTAMINATION CHECK =====
+baseline allocation: not used in normal growth paper path
+baseline optimizer: not used
+baseline final expected returns: not used for allocation; raw_target_return_exact is used
+baseline timing: not used
+research diagnostic models: not used
+
+===== REPAIR =====
+repair_executed: False
+No production files, optimizer, model parameters, or real trading were modified.
+
+===== OUTPUTS =====
+growth_pipeline_dependency_graph.csv
+growth_pipeline_integrity_report.csv
+growth_pipeline_stage_validation.csv
+growth_quality_filter_order_audit.csv
+growth_paper_history_validation.csv

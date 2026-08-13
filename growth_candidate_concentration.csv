@@ -1,0 +1,6 @@
+metric,value,share_of_trade_contribution,ticker
+top_5_trades_contribution,0.3539204587378104,0.25658527107121654,
+top_10_trades_contribution,0.6146754692713525,0.4456274510557642,
+top_ticker_contribution,0.23511200240087676,0.17045151072438028,NVDA
+worst_ticker_drag,-0.0932297673351494,-0.06758972117324553,AVGO
+candidate_total_return,2.4332539991003417,,

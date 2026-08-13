@@ -1,0 +1,2 @@
+date,model_version,raw_target_exact,fresh_canonical_ohlcv,exact_five_session_scheduler,rebalance_due,next_rebalance,proxy_used,stale_override_used,integrity_status,data_status
+2026-08-13,growth_champion_final_v1_0_frozen,True,True,True,False,,False,False,PASS,SINGLE_SOURCE_FRESH

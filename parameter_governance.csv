@@ -1,0 +1,2 @@
+classification,active_parameters_changed,production_changed,paper_changed,new_best_selected,reason
+stable_plateau,False,False,False,False,broad plateau; plateau_pct=76.56%; local_sharpe_std=0.016

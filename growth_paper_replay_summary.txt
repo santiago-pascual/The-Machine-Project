@@ -1,0 +1,17 @@
+===== GROWTH PAPER HISTORY REPLAY AND REPAIR =====
+backup_folder: paper_history_backup_20260706_215620
+replay_dates: 2026-06-18, 2026-06-22, 2026-06-23, 2026-06-24, 2026-06-25, 2026-06-26, 2026-06-29, 2026-06-30, 2026-07-01, 2026-07-02, 2026-07-06
+number_of_replay_dates: 11
+rows_backed_up: 228
+rows_regenerated_state: 55
+rows_regenerated_performance: 11
+dates_changed: 1
+biggest_daily_return_change: 0.010133387006537875
+biggest_portfolio_value_change: 1.4551915228366852e-11
+final_corrected_holdings: INTC,KEEL,ARM,MU
+final_corrected_cumulative_return: -0.065028912584875
+final_corrected_exposure: 0.4
+final_corrected_cash: 0.6
+dashboard_files_updated: yes
+production_change: none
+real_trading: disabled

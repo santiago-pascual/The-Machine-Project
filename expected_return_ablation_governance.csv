@@ -1,0 +1,7 @@
+variant,classification,reason,Sharpe,baseline_Sharpe,IC_20D,baseline_IC_20D,max_drawdown,production_change
+no_signal_strength_adjustment,candidate for shadow mode,improves_sharpe_and_preserves_ic,1.5355134902058687,1.2698859902447974,0.06624548949719505,0.04497696135680983,-0.1357226341143647,none
+no_signal_strength_and_no_regime_adjustment,candidate for shadow mode,improves_sharpe_and_preserves_ic,1.5355134902058687,1.2698859902447974,0.06624548949719505,0.04497696135680983,-0.1357226341143647,none
+raw_target_return_only,candidate for shadow mode,improves_sharpe_and_preserves_ic,1.5355134902058687,1.2698859902447974,0.06624548949719505,0.04497696135680983,-0.1357226341143647,none
+baseline_current,research only,current_reference,1.2698859902447974,1.2698859902447974,0.04497696135680983,0.04497696135680983,-0.16893369184678086,none
+raw_target_return_with_final_scaling,reject,does_not_improve_current_pipeline,1.2698859902447974,1.2698859902447974,0.04497696135680983,0.04497696135680983,-0.16893369184678086,none
+no_regime_adjustment,reject,does_not_improve_current_pipeline,0.7479377267198111,1.2698859902447974,0.029141955673681007,0.04497696135680983,-0.17218819669242857,none

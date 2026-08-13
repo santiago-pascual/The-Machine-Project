@@ -1,0 +1,11 @@
+stage,latest_date,matches_latest_market_date,freshness_status
+latest_market_date,2026-08-13,True,FRESH
+forecast_history,2026-08-13,True,FRESH
+current_growth_features,2026-08-13,True,FRESH
+current_growth_allocation,2026-08-13,True,FRESH
+official_state,2026-08-13,True,FRESH
+official_performance,2026-08-13,True,FRESH
+official_monitor,2026-08-13,True,FRESH
+official_tracking,2026-08-13,True,FRESH
+official_benchmark_daily,2026-08-13,True,FRESH
+dashboard_official_date,2026-08-13,True,FRESH

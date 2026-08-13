@@ -1,0 +1,29 @@
+===== PHASE 109 RISK TERMINAL REPORT =====
+Risk terminal status: risk_terminal_pass
+Scope: Official Forward Paper only for current risk. Diagnostic/reconstructed files are separated comparison panels.
+Latest source date: 2026-07-13
+Final exposure: 0.4350408594155715
+Realized portfolio volatility: 0.1992819132262619
+Uncapped vol target exposure: None
+Dual trend cap: 0.6
+Beta vs SPY: 0.9130505473389303
+Tracking error vs SPY: 0.15252521259711913
+Current drawdown: -0.0115418642847409
+VaR 95: -0.016744069565387574
+CVaR 95: -0.02243374824863345
+
+Top risk contributors:
+- ARM: weight=0.1450136198051905, risk_contribution=0.5480853710641508, beta_vs_spy=3.6270030444070867
+- SE: weight=0.1450136198051905, risk_contribution=0.2478414710353052, beta_vs_spy=1.3051822340337433
+- BABA: weight=0.1450136198051905, risk_contribution=0.204073157900544, beta_vs_spy=1.3641236376838155
+
+Risk limit breaches: none
+Risk limit warnings: turnover_threshold, liquidity_adv_threshold
+
+Narrative:
+Portfolio risk is concentrated in ARM and SE. Realized volatility is 19.93% where available, so the minimum exposure floor is not binding. Average absolute holding correlation is 0.28. No configured risk limit is breached. Official history has enough observations for portfolio-history diagnostics. Diagnostic HMM/regime data is not used in official allocation.
+
+Generated files:
+- risk_terminal_source_audit.csv
+- risk_terminal_integrity.csv
+- risk_contribution_reconciliation.csv

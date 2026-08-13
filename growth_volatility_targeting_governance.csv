@@ -1,0 +1,17 @@
+variant,classification,reason,production_change
+soft_exit_rule_vol_target_22pct,candidate for shadow mode,beats SPY return/Sharpe/DD without excessive defensiveness,none
+soft_exit_rule_vol_target_20pct,research only,needs more validation,none
+soft_exit_rule_vol_target_18pct,research only,needs more validation,none
+turnover_penalty_overlay_vol_target_22pct,candidate for shadow mode,beats SPY return/Sharpe/DD without excessive defensiveness,none
+turnover_penalty_overlay_vol_target_20pct,research only,needs more validation,none
+winner_retention_rule_vol_target_22pct,candidate for shadow mode,beats SPY return/Sharpe/DD without excessive defensiveness,none
+soft_exit_rule_vol_target_15pct,research only,needs more validation,none
+turnover_penalty_overlay_vol_target_18pct,research only,needs more validation,none
+winner_retention_rule_vol_target_20pct,research only,needs more validation,none
+turnover_penalty_overlay_vol_target_15pct,research only,needs more validation,none
+winner_retention_rule_vol_target_18pct,research only,needs more validation,none
+winner_retention_rule_vol_target_15pct,research only,needs more validation,none
+raw_target_research_vol_target_22pct,research only,needs more validation,none
+raw_target_research_vol_target_18pct,reject,Sharpe below raw target; return collapses below SPY,none
+raw_target_research_vol_target_20pct,reject,Sharpe below raw target,none
+raw_target_research_vol_target_15pct,reject,Sharpe below raw target; return collapses below SPY,none

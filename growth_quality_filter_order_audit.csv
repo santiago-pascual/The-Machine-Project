@@ -1,0 +1,7 @@
+stage,marker,line,order_passed,rejected_ticker_entered_ranking,rejected_ticker_entered_allocation,filter_integrity_passed
+blacklist_tradability_quality,"df, quality_report, quality_exclusions = apply_growth_universe_quality_filter",324,True,False,False,True
+ranking,"df.loc[eligible, ""raw_target_rank""]",328,True,False,False,True
+soft_exit,"df[""soft_exit_status""] =",367,True,False,False,True
+exposure,"exposure, raw_exposure, rolling_vol, vol_meta = _vol_target_exposure",376,True,False,False,True
+allocation,"df[""final_growth_weight""] =",418,True,False,False,True
+trades,reconcile_growth_actions,533,True,False,False,True

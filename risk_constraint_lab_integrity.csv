@@ -1,0 +1,6 @@
+check,status,detail
+shadow_mode_only,PASS,outputs only; active config unchanged
+production_modified,PASS,False
+paper_modified,PASS,False
+optimizer_modified,PASS,False
+parameters_modified,PASS,False

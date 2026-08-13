@@ -1,0 +1,20 @@
+===== GROWTH CANONICAL HISTORY REPORT =====
+governance: canonical_history_ready
+first exact current-model input date: 2026-06-18
+canonical exact rows: 14
+reconstructed stress rows: 878
+
+Exact history uses only current paper/forecast rows with raw_target_return_exact and current scheduler fields.
+Reconstructed stress history is separate and labelled reconstructed; it is not production parity.
+No single final performance number should be quoted across modes; use growth_canonical_results.csv by data_mode.
+
+Mismatch explanations are saved in growth_source_series_audit.csv.
+Prior reported metrics are saved in growth_metric_reconciliation.csv.
+
+Canonical/reconstructed metric summary:
+                            series  observations start_date   end_date  total_return      CAGR  volatility    Sharpe    Sortino    Calmar  max_drawdown  mean_return  average_turnover  cost_drag  mean_excess_return  annualized_alpha  information_ratio
+     canonical_exact_history_gross            14 2026-06-18 2026-07-10     -0.087179 -0.907425    0.355922 -6.486559 -12.629809 -8.204647     -0.110599    -0.006321               NaN        NaN                 NaN               NaN                NaN
+       canonical_exact_history_net            14 2026-06-18 2026-07-10     -0.087179 -0.907425    0.355922 -6.486559 -12.629809 -8.204647     -0.110599    -0.006321          0.089286        0.0                 NaN               NaN                NaN
+      canonical_exact_alpha_vs_SPY            14        NaN        NaN           NaN       NaN         NaN       NaN        NaN       NaN           NaN          NaN               NaN        NaN           -0.007874         -2.876154         -11.348277
+      canonical_exact_alpha_vs_QQQ            14        NaN        NaN           NaN       NaN         NaN       NaN        NaN       NaN           NaN          NaN               NaN        NaN           -0.006845         -2.499973         -10.498487
+reconstructed_stress_history_gross           878 2008-12-31 2026-06-09     14.177886  0.175434    0.173857  1.017242   1.620088  0.711534     -0.246557     0.003389               NaN        NaN                 NaN               NaN                NaN

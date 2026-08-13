@@ -1,0 +1,2 @@
+date,status,old_portfolio_value,new_portfolio_value,old_daily_return,new_daily_return,old_holdings,new_holdings,old_exposure,new_exposure,action_reconciliation_passed,reason_for_differences
+2026-07-06,replayed,93497.10874151246,93497.10874151246,0.0,0.010133387006537875,"RBLX,INTC,KEEL,AMBA","INTC,KEEL,ARM,MU",0.4173044241358429,0.4,True,"holdings_changed,daily_return_changed,exposure_changed"

@@ -1,0 +1,6 @@
+check,value,flag
+depends_on_one_year,0.6011176506131242,False
+depends_on_one_ticker,0.3007261091981741,False
+depends_on_one_regime,1.0766928896764496,True
+returns_concentrated_in_few_trades,0.6084713988640185,True
+drawdown_acceptable,-0.05496821296940235,True

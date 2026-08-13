@@ -1,0 +1,4 @@
+horizon,confidence_bucket,sample_size,avg_confidence,avg_abs_error,success_rate,confidence_vs_accuracy_spearman,confidence_vs_success_spearman
+5D,nan,10120,0.5,0.043795371413430165,0.542094861660079,,
+10D,nan,10120,0.5,0.06136818111157251,0.5529644268774704,,
+20D,nan,10120,0.5,0.08662081229669431,0.5673913043478261,,

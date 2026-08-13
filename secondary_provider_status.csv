@@ -1,0 +1,6 @@
+ticker,provider,provider_configured,provider_reason,fetch_attempted,fetch_success,fetch_error
+OKLO,none,False,no_secondary_provider_credentials,False,False,no_secondary_provider_credentials
+TWLO,none,False,no_secondary_provider_credentials,False,False,no_secondary_provider_credentials
+TEAM,none,False,no_secondary_provider_credentials,False,False,no_secondary_provider_credentials
+VIST,none,False,no_secondary_provider_credentials,False,False,no_secondary_provider_credentials
+ARM,none,False,no_secondary_provider_credentials,False,False,no_secondary_provider_credentials

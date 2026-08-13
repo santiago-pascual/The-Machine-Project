@@ -1,0 +1,4 @@
+scenario,observations,total_return,CAGR,volatility,Sharpe,max_drawdown,capital,liquidity_filter_available,skipped_trades,capped_trades,return_drag,reason
+liquidity_adjusted_10000,220,3.4651966718738256,0.40928325027004453,0.30266060037187004,1.327123316943002,-0.24225547769721656,10000,False,,,,Volume unavailable; liquidity-adjusted backtest cannot be computed reliably.
+liquidity_adjusted_100000,220,3.4651966718738256,0.40928325027004453,0.30266060037187004,1.327123316943002,-0.24225547769721656,100000,False,,,,Volume unavailable; liquidity-adjusted backtest cannot be computed reliably.
+liquidity_adjusted_1000000,220,3.4651966718738256,0.40928325027004453,0.30266060037187004,1.327123316943002,-0.24225547769721656,1000000,False,,,,Volume unavailable; liquidity-adjusted backtest cannot be computed reliably.

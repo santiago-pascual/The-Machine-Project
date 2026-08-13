@@ -1,0 +1,2 @@
+drawdown_start,drawdown_trough,drawdown_recovery,duration_periods,portfolio_return_during_drawdown,SPY_return_same_period,QQQ_return_same_period,avg_exposure_during_drawdown,avg_cash_during_drawdown,avg_turnover_during_drawdown,avg_rolling_vol_during_drawdown,avg_concentration_hhi_during_drawdown
+2022-03-23,2022-07-05,2023-01-09,15,-0.24225547769721656,-0.13934204154764163,-0.18437881247471,0.7455869356016133,0.2544130643983867,0.18823376024922414,0.3008553113399027,0.14130055629447488

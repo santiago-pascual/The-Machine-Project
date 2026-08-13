@@ -1,0 +1,216 @@
+date,ticker,exclusion_reason
+2026-08-13,SNAP,price below $5; current price below $5
+2026-08-13,JMIA,"median 20D dollar volume below $20,000,000; median 60D dollar volume below $50,000,000"
+2026-08-13,SPCE,"price below $5; 20D realized volatility above 150% annualized; median 60D dollar volume below $50,000,000; current price below $5; 60D annualized volatility above 120%"
+2026-08-13,ASTS,60D annualized volatility above 120%
+2026-08-13,RGTI,20D realized volatility above 150% annualized
+2026-08-13,KEEL,price below $5; current price below $5
+2026-08-13,EC,"median 60D dollar volume below $50,000,000"
+2026-08-13,SMCI,60D annualized volatility above 120%
+2026-08-13,AACG,"price below $5; median 20D dollar volume below $20,000,000; median 60D dollar volume below $50,000,000; current price below $5"
+2026-08-13,AAL,missing OHLCV data
+2026-08-13,AAOI,20D realized volatility above 150% annualized; less than 2 years of trading history; 60D annualized volatility above 120%
+2026-08-13,AAON,missing OHLCV data
+2026-08-13,AAPG,missing OHLCV data
+2026-08-13,AARD,"median 20D dollar volume below $20,000,000; 20D realized volatility above 150% annualized; suspicious spike/gap behavior; missing OHLCV data above 5%; median 60D dollar volume below $50,000,000; 20D average volume below 500,000 shares; 60D annualized volatility above 120%"
+2026-08-13,ABAT,missing OHLCV data
+2026-08-13,ABCL,"median 60D dollar volume below $50,000,000"
+2026-08-13,ABEO,"median 20D dollar volume below $20,000,000; median 60D dollar volume below $50,000,000"
+2026-08-13,ABLV,missing OHLCV data
+2026-08-13,ABOS,missing OHLCV data
+2026-08-13,ABSI,"median 60D dollar volume below $50,000,000"
+2026-08-13,ABTC,"median 20D dollar volume below $20,000,000; 1D absolute move above 80% in last 60D; suspicious spike/gap behavior; median 60D dollar volume below $50,000,000; 60D annualized volatility above 120%; reverse split/extreme discontinuity suspected"
+2026-08-13,ABTS,"price below $5; median 20D dollar volume below $20,000,000; 1D absolute move above 80% in last 60D; suspicious spike/gap behavior; median 60D dollar volume below $50,000,000; 20D average volume below 500,000 shares; current price below $5; 60D annualized volatility above 120%; reverse split/extreme discontinuity suspected"
+2026-08-13,ABUS,missing OHLCV data
+2026-08-13,ABVC,"price below $5; median 20D dollar volume below $20,000,000; median 60D dollar volume below $50,000,000; 20D average volume below 500,000 shares; current price below $5"
+2026-08-13,ABVX,missing OHLCV data above 5%; 60D annualized volatility above 120%; reverse split/extreme discontinuity suspected
+2026-08-13,ACAD,missing OHLCV data
+2026-08-13,ACB,"price below $5; median 20D dollar volume below $20,000,000; median 60D dollar volume below $50,000,000; current price below $5"
+2026-08-13,ACDC,"price below $5; median 20D dollar volume below $20,000,000; median 60D dollar volume below $50,000,000; current price below $5; less than 2 years of trading history"
+2026-08-13,ACET,missing OHLCV data
+2026-08-13,ACFN,"median 20D dollar volume below $20,000,000; median 60D dollar volume below $50,000,000; 20D average volume below 500,000 shares; less than 2 years of trading history"
+2026-08-13,ACGL,missing OHLCV data
+2026-08-13,ACGLN,missing OHLCV data
+2026-08-13,ACGLO,missing OHLCV data
+2026-08-13,ACHC,missing OHLCV data
+2026-08-13,ACHV,missing OHLCV data
+2026-08-13,ACIC,missing OHLCV data
+2026-08-13,ACLS,missing OHLCV data
+2026-08-13,ACNB,missing OHLCV data
+2026-08-13,ACNT,missing OHLCV data
+2026-08-13,ACOG,"median 20D dollar volume below $20,000,000; missing OHLCV data above 5%; median 60D dollar volume below $50,000,000; 20D average volume below 500,000 shares"
+2026-08-13,ACON,missing OHLCV data
+2026-08-13,ACRS,missing OHLCV data
+2026-08-13,ACRV,"price below $5; median 20D dollar volume below $20,000,000; median 60D dollar volume below $50,000,000; current price below $5"
+2026-08-13,ACT,missing OHLCV data
+2026-08-13,ACTG,missing OHLCV data
+2026-08-13,ADAG,missing OHLCV data
+2026-08-13,ADAM,missing OHLCV data
+2026-08-13,ADAMG,missing OHLCV data
+2026-08-13,ADAMH,missing OHLCV data
+2026-08-13,ADAMI,missing OHLCV data
+2026-08-13,ADAML,missing OHLCV data
+2026-08-13,ADAMM,missing OHLCV data
+2026-08-13,ADAMN,missing OHLCV data
+2026-08-13,ADAMZ,missing OHLCV data
+2026-08-13,ADEA,missing OHLCV data
+2026-08-13,ADIL,"price below $5; median 20D dollar volume below $20,000,000; median 60D dollar volume below $50,000,000; 20D average volume below 500,000 shares; current price below $5; less than 2 years of trading history; 60D annualized volatility above 120%"
+2026-08-13,ADMA,missing OHLCV data
+2026-08-13,ADPT,missing OHLCV data
+2026-08-13,ADSE,missing OHLCV data
+2026-08-13,ADTN,missing OHLCV data
+2026-08-13,ADUS,missing OHLCV data
+2026-08-13,ADV,missing OHLCV data
+2026-08-13,ADVB,"median 20D dollar volume below $20,000,000; 20D realized volatility above 150% annualized; suspicious spike/gap behavior; missing OHLCV data above 5%; median 60D dollar volume below $50,000,000; 60D annualized volatility above 120%"
+2026-08-13,ADXN,missing OHLCV data
+2026-08-13,AEBI,missing OHLCV data
+2026-08-13,AEC,missing OHLCV data
+2026-08-13,AEHL,"price below $5; median 20D dollar volume below $20,000,000; 20D realized volatility above 150% annualized; suspicious spike/gap behavior; median 60D dollar volume below $50,000,000; current price below $5; 60D annualized volatility above 120%; reverse split/extreme discontinuity suspected"
+2026-08-13,AEI,missing OHLCV data
+2026-08-13,AEIS,missing OHLCV data
+2026-08-13,AEMD,"price below $5; median 20D dollar volume below $20,000,000; 1D absolute move above 80% in last 60D; 20D realized volatility above 150% annualized; suspicious spike/gap behavior; median 60D dollar volume below $50,000,000; 20D average volume below 500,000 shares; current price below $5; less than 2 years of trading history; 60D annualized volatility above 120%; reverse split/extreme discontinuity suspected"
+2026-08-13,AENT,missing OHLCV data
+2026-08-13,AEVA,"20D realized volatility above 150% annualized; median 60D dollar volume below $50,000,000; 60D annualized volatility above 120%"
+2026-08-13,AEYE,"median 20D dollar volume below $20,000,000; median 60D dollar volume below $50,000,000; 20D average volume below 500,000 shares"
+2026-08-13,AFCG,missing OHLCV data
+2026-08-13,AFJK,"manual blacklist: unstable/low-quality growth paper ticker; median 20D dollar volume below $20,000,000; suspicious spike/gap behavior; median 60D dollar volume below $50,000,000; 20D average volume below 500,000 shares; 60D annualized volatility above 120%; reverse split/extreme discontinuity suspected"
+2026-08-13,AFRI,missing OHLCV data
+2026-08-13,AFRM,missing OHLCV data
+2026-08-13,AFYA,missing OHLCV data
+2026-08-13,AGEN,"median 20D dollar volume below $20,000,000; 1D absolute move above 80% in last 60D; 20D realized volatility above 150% annualized; suspicious spike/gap behavior; median 60D dollar volume below $50,000,000; 60D annualized volatility above 120%"
+2026-08-13,AGIO,missing OHLCV data
+2026-08-13,AGMH,"price below $5; median 20D dollar volume below $20,000,000; median 60D dollar volume below $50,000,000; 20D average volume below 500,000 shares; current price below $5; 60D annualized volatility above 120%; reverse split/extreme discontinuity suspected"
+2026-08-13,AGNC,missing OHLCV data
+2026-08-13,AGNCL,missing OHLCV data
+2026-08-13,AGNCM,missing OHLCV data
+2026-08-13,AGNCN,missing OHLCV data
+2026-08-13,AGNCO,missing OHLCV data
+2026-08-13,AGNT,missing OHLCV data
+2026-08-13,AGYS,missing OHLCV data
+2026-08-13,AHCO,missing OHLCV data
+2026-08-13,AHG,"price below $5; median 20D dollar volume below $20,000,000; median 60D dollar volume below $50,000,000; 20D average volume below 500,000 shares; current price below $5"
+2026-08-13,AIFA,"price below $5; median 20D dollar volume below $20,000,000; 20D realized volatility above 150% annualized; suspicious spike/gap behavior; median 60D dollar volume below $50,000,000; 20D average volume below 500,000 shares; current price below $5; 60D annualized volatility above 120%"
+2026-08-13,AIFF,"price below $5; median 20D dollar volume below $20,000,000; median 60D dollar volume below $50,000,000; 20D average volume below 500,000 shares; current price below $5; reverse split/extreme discontinuity suspected"
+2026-08-13,AIHS,"price below $5; median 20D dollar volume below $20,000,000; median 60D dollar volume below $50,000,000; 20D average volume below 500,000 shares; current price below $5"
+2026-08-13,AIIO,"price below $5; median 20D dollar volume below $20,000,000; 1D absolute move above 80% in last 60D; suspicious spike/gap behavior; median 60D dollar volume below $50,000,000; current price below $5; 60D annualized volatility above 120%; reverse split/extreme discontinuity suspected"
+2026-08-13,AIMD,missing OHLCV data
+2026-08-13,AIOS,"median 20D dollar volume below $20,000,000; 1D absolute move above 80% in last 60D; suspicious spike/gap behavior; median 60D dollar volume below $50,000,000; 20D average volume below 500,000 shares; 60D annualized volatility above 120%; reverse split/extreme discontinuity suspected"
+2026-08-13,AIOT,missing OHLCV data
+2026-08-13,AIRE,"price below $5; median 20D dollar volume below $20,000,000; missing OHLCV data above 5%; median 60D dollar volume below $50,000,000; 20D average volume below 500,000 shares; current price below $5; 60D annualized volatility above 120%; reverse split/extreme discontinuity suspected"
+2026-08-13,AIRG,missing OHLCV data
+2026-08-13,AIRJ,"median 20D dollar volume below $20,000,000; median 60D dollar volume below $50,000,000; 60D annualized volatility above 120%"
+2026-08-13,AIRO,"median 20D dollar volume below $20,000,000; median 60D dollar volume below $50,000,000; 20D average volume below 500,000 shares; less than 2 years of trading history"
+2026-08-13,AIRS,"price below $5; median 20D dollar volume below $20,000,000; median 60D dollar volume below $50,000,000; 20D average volume below 500,000 shares; current price below $5; less than 2 years of trading history"
+2026-08-13,AIXC,"price below $5; median 20D dollar volume below $20,000,000; median 60D dollar volume below $50,000,000; 20D average volume below 500,000 shares; current price below $5; less than 2 years of trading history; reverse split/extreme discontinuity suspected"
+2026-08-13,AIXI,"manual blacklist: unstable/low-quality growth paper ticker; price below $5; median 20D dollar volume below $20,000,000; suspicious spike/gap behavior; median 60D dollar volume below $50,000,000; current price below $5; 60D annualized volatility above 120%; reverse split/extreme discontinuity suspected"
+2026-08-13,AKAM,missing OHLCV data
+2026-08-13,AKBA,"price below $5; median 20D dollar volume below $20,000,000; median 60D dollar volume below $50,000,000; current price below $5"
+2026-08-13,AKTX,"median 20D dollar volume below $20,000,000; 1D absolute move above 80% in last 60D; suspicious spike/gap behavior; median 60D dollar volume below $50,000,000; 20D average volume below 500,000 shares; 60D annualized volatility above 120%; reverse split/extreme discontinuity suspected"
+2026-08-13,ALAB,missing OHLCV data above 5%
+2026-08-13,ALCO,missing OHLCV data
+2026-08-13,ALDF,missing OHLCV data
+2026-08-13,ALDX,"price below $5; median 20D dollar volume below $20,000,000; median 60D dollar volume below $50,000,000; current price below $5"
+2026-08-13,ALEC,"price below $5; median 20D dollar volume below $20,000,000; median 60D dollar volume below $50,000,000; current price below $5"
+2026-08-13,ALF,missing OHLCV data
+2026-08-13,ALGM,missing OHLCV data
+2026-08-13,ALGN,missing OHLCV data
+2026-08-13,ALGS,"median 20D dollar volume below $20,000,000; median 60D dollar volume below $50,000,000; 20D average volume below 500,000 shares"
+2026-08-13,ALGT,missing OHLCV data
+2026-08-13,ALHC,missing OHLCV data
+2026-08-13,ALKS,missing OHLCV data
+2026-08-13,ALKT,missing OHLCV data
+2026-08-13,ALLO,missing OHLCV data
+2026-08-13,ALLT,missing OHLCV data
+2026-08-13,ALM,missing OHLCV data
+2026-08-13,ALMS,"missing OHLCV data above 5%; median 60D dollar volume below $50,000,000; reverse split/extreme discontinuity suspected"
+2026-08-13,ALNT,"median 20D dollar volume below $20,000,000; median 60D dollar volume below $50,000,000; 20D average volume below 500,000 shares; less than 2 years of trading history"
+2026-08-13,ALNY,missing OHLCV data
+2026-08-13,ALOT,"median 20D dollar volume below $20,000,000; 20D realized volatility above 150% annualized; suspicious spike/gap behavior; median 60D dollar volume below $50,000,000; 20D average volume below 500,000 shares; 60D annualized volatility above 120%"
+2026-08-13,ALOY,"median 60D dollar volume below $50,000,000; 60D annualized volatility above 120%"
+2026-08-13,ALRM,missing OHLCV data
+2026-08-13,ALRS,missing OHLCV data
+2026-08-13,ALT,missing OHLCV data
+2026-08-13,ALTI,"price below $5; median 20D dollar volume below $20,000,000; median 60D dollar volume below $50,000,000; 20D average volume below 500,000 shares; current price below $5; less than 2 years of trading history"
+2026-08-13,ALTO,"price below $5; median 20D dollar volume below $20,000,000; median 60D dollar volume below $50,000,000; current price below $5; less than 2 years of trading history"
+2026-08-13,ALVO,missing OHLCV data
+2026-08-13,ALXO,"price below $5; median 20D dollar volume below $20,000,000; median 60D dollar volume below $50,000,000; current price below $5"
+2026-08-13,AMAL,missing OHLCV data
+2026-08-13,AMCI,"price below $5; median 20D dollar volume below $20,000,000; median 60D dollar volume below $50,000,000; 20D average volume below 500,000 shares; current price below $5; reverse split/extreme discontinuity suspected"
+2026-08-13,AMCX,missing OHLCV data
+2026-08-13,AMIX,"median 20D dollar volume below $20,000,000; 1D absolute move above 80% in last 60D; 20D realized volatility above 150% annualized; suspicious spike/gap behavior; median 60D dollar volume below $50,000,000; less than 2 years of trading history; 60D annualized volatility above 120%; reverse split/extreme discontinuity suspected"
+2026-08-13,AMLX,missing OHLCV data
+2026-08-13,AMPG,"median 60D dollar volume below $50,000,000; less than 2 years of trading history; 60D annualized volatility above 120%"
+2026-08-13,AMPH,missing OHLCV data
+2026-08-13,AMPL,"median 20D dollar volume below $20,000,000; median 60D dollar volume below $50,000,000"
+2026-08-13,AMRN,missing OHLCV data
+2026-08-13,AMRX,missing OHLCV data
+2026-08-13,AMSC,"median 60D dollar volume below $50,000,000; less than 2 years of trading history"
+2026-08-13,AMSF,missing OHLCV data
+2026-08-13,AMST,"price below $5; median 20D dollar volume below $20,000,000; 1D absolute move above 80% in last 60D; suspicious spike/gap behavior; median 60D dollar volume below $50,000,000; 20D average volume below 500,000 shares; current price below $5; 60D annualized volatility above 120%; reverse split/extreme discontinuity suspected"
+2026-08-13,AMTX,"price below $5; median 20D dollar volume below $20,000,000; median 60D dollar volume below $50,000,000; current price below $5; less than 2 years of trading history"
+2026-08-13,ANAB,missing OHLCV data
+2026-08-13,ANDE,missing OHLCV data
+2026-08-13,ANGH,"price below $5; median 20D dollar volume below $20,000,000; median 60D dollar volume below $50,000,000; 20D average volume below 500,000 shares; current price below $5; less than 2 years of trading history"
+2026-08-13,ANGI,missing OHLCV data
+2026-08-13,ANGO,missing OHLCV data
+2026-08-13,ANIK,missing OHLCV data
+2026-08-13,ANIX,missing OHLCV data
+2026-08-13,ANL,"median 20D dollar volume below $20,000,000; median 60D dollar volume below $50,000,000; 20D average volume below 500,000 shares"
+2026-08-13,ANNA,"price below $5; median 20D dollar volume below $20,000,000; median 60D dollar volume below $50,000,000; 20D average volume below 500,000 shares; current price below $5"
+2026-08-13,ANNX,missing OHLCV data
+2026-08-13,ANPA,"price below $5; median 20D dollar volume below $20,000,000; missing OHLCV data above 5%; median 60D dollar volume below $50,000,000; 20D average volume below 500,000 shares; current price below $5; reverse split/extreme discontinuity suspected"
+2026-08-13,ANTA,missing OHLCV data
+2026-08-13,ANTX,"median 20D dollar volume below $20,000,000; median 60D dollar volume below $50,000,000; 20D average volume below 500,000 shares"
+2026-08-13,ANY,"price below $5; median 20D dollar volume below $20,000,000; 1D absolute move above 80% in last 60D; suspicious spike/gap behavior; median 60D dollar volume below $50,000,000; current price below $5; less than 2 years of trading history; 60D annualized volatility above 120%; reverse split/extreme discontinuity suspected"
+2026-08-13,AOSL,missing OHLCV data
+2026-08-13,AOUT,"median 20D dollar volume below $20,000,000; median 60D dollar volume below $50,000,000; 20D average volume below 500,000 shares"
+2026-08-13,APA,missing OHLCV data
+2026-08-13,APEI,missing OHLCV data
+2026-08-13,APGE,20D realized volatility above 150% annualized
+2026-08-13,API,missing OHLCV data
+2026-08-13,APLD,missing OHLCV data
+2026-08-13,APLM,"median 20D dollar volume below $20,000,000; 20D realized volatility above 150% annualized; median 60D dollar volume below $50,000,000; 20D average volume below 500,000 shares; 60D annualized volatility above 120%"
+2026-08-13,APOG,missing OHLCV data
+2026-08-13,APPF,missing OHLCV data
+2026-08-13,APPN,missing OHLCV data
+2026-08-13,APPS,"20D realized volatility above 150% annualized; median 60D dollar volume below $50,000,000; 60D annualized volatility above 120%"
+2026-08-13,APVO,"price below $5; median 20D dollar volume below $20,000,000; median 60D dollar volume below $50,000,000; 20D average volume below 500,000 shares; current price below $5; less than 2 years of trading history"
+2026-08-13,APWC,"price below $5; median 20D dollar volume below $20,000,000; 20D realized volatility above 150% annualized; median 60D dollar volume below $50,000,000; current price below $5"
+2026-08-13,APYX,missing OHLCV data
+2026-08-13,AQB,"price below $5; median 20D dollar volume below $20,000,000; median 60D dollar volume below $50,000,000; 20D average volume below 500,000 shares; current price below $5"
+2026-08-13,AQMS,"price below $5; median 20D dollar volume below $20,000,000; median 60D dollar volume below $50,000,000; 20D average volume below 500,000 shares; current price below $5; reverse split/extreme discontinuity suspected"
+2026-08-13,AQST,missing OHLCV data
+2026-08-13,ARBB,missing OHLCV data
+2026-08-13,ARBK,"price below $5; median 20D dollar volume below $20,000,000; median 60D dollar volume below $50,000,000; 20D average volume below 500,000 shares; current price below $5; reverse split/extreme discontinuity suspected"
+2026-08-13,ARCB,missing OHLCV data
+2026-08-13,ARCC,missing OHLCV data
+2026-08-13,ARCT,missing OHLCV data
+2026-08-13,ARDX,missing OHLCV data
+2026-08-13,ARGX,missing OHLCV data
+2026-08-13,ARHS,missing OHLCV data
+2026-08-13,ARKO,missing OHLCV data
+2026-08-13,ARQ,missing OHLCV data
+2026-08-13,ARQQ,"median 20D dollar volume below $20,000,000; median 60D dollar volume below $50,000,000; 20D average volume below 500,000 shares; 60D annualized volatility above 120%"
+2026-08-13,ARQT,missing OHLCV data
+2026-08-13,ARRY,missing OHLCV data
+2026-08-13,ARTL,"price below $5; median 20D dollar volume below $20,000,000; median 60D dollar volume below $50,000,000; 20D average volume below 500,000 shares; current price below $5; 60D annualized volatility above 120%; reverse split/extreme discontinuity suspected"
+2026-08-13,ARTNA,missing OHLCV data
+2026-08-13,ARTV,"median 20D dollar volume below $20,000,000; missing OHLCV data above 5%; median 60D dollar volume below $50,000,000; 20D average volume below 500,000 shares; reverse split/extreme discontinuity suspected"
+2026-08-13,ARVN,missing OHLCV data
+2026-08-13,ASLE,missing OHLCV data
+2026-08-13,ASMB,missing OHLCV data
+2026-08-13,ASND,missing OHLCV data
+2026-08-13,ASO,missing OHLCV data
+2026-08-13,ASPI,missing OHLCV data
+2026-08-13,ASPS,missing OHLCV data
+2026-08-13,ASRV,missing OHLCV data
+2026-08-13,ASST,missing OHLCV data
+2026-08-13,ASTC,"median 20D dollar volume below $20,000,000; 1D absolute move above 80% in last 60D; suspicious spike/gap behavior; median 60D dollar volume below $50,000,000; 20D average volume below 500,000 shares; 60D annualized volatility above 120%; reverse split/extreme discontinuity suspected"
+2026-08-13,ASTE,missing OHLCV data
+2026-08-13,ASTH,missing OHLCV data
+2026-08-13,ASTI,missing OHLCV data
+2026-08-13,ASTL,"price below $5; median 20D dollar volume below $20,000,000; median 60D dollar volume below $50,000,000; current price below $5; less than 2 years of trading history"
+2026-08-13,ASYS,missing OHLCV data
+2026-08-13,ATAI,"median 60D dollar volume below $50,000,000"
+2026-08-13,ATAT,missing OHLCV data
+2026-08-13,ATEC,missing OHLCV data

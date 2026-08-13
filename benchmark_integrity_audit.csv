@@ -1,0 +1,12 @@
+check,status,detail
+same_initial_capital,PASS,"Growth, SPY and QQQ normalized to 100,000 in audit recomputation."
+SPY_adjusted_close_used,PASS,Adj Close
+QQQ_adjusted_close_used,PASS,Adj Close
+growth_same_daily_frequency_as_benchmark,WARNING,"Strategy observations=878, median_gap_days=7.0, max_gap_days=11.0; not true daily if gaps > 1."
+weekends_holidays_aligned,PASS,weekend_strategy_dates=0; benchmarks merge_asof to prior trading close.
+volatility_targeting_exposure_bounds,PASS,"min_exposure=0.25, max_exposure=0.6, expected cap <=0.60"
+cash_included_correctly,PASS,max_abs(exposure+cash-1)=0.0
+curves_normalized_identically,PASS,All audited series start from same initial capital.
+growth_cumulative_return_calculation,PASS,max_reported_vs_recomputed_equity_diff=2.3283064365386963e-10
+no_duplicated_compounding,PASS,See benchmark_compounding_check.csv
+no_scaling_mismatch,PASS,Equity values are dollar-normalized; chart values can be displayed as cumulative percent.

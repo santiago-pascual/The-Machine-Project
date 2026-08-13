@@ -1,0 +1,6 @@
+date,ticker,yahoo_adj_close,yahoo_close,yahoo_volume,classification,canonical_close,canonical_source
+2026-08-13,OKLO,46.81499862670898,46.81499862670898,5280145,single_source_warning,46.81499862670898,yahoo_adj_close_single_source_warning
+2026-08-13,TWLO,250.58999633789065,250.58999633789065,956970,single_source_warning,250.58999633789065,yahoo_adj_close_single_source_warning
+2026-08-13,TEAM,157.36000061035156,157.36000061035156,2027790,single_source_warning,157.36000061035156,yahoo_adj_close_single_source_warning
+2026-08-13,VIST,66.45999908447266,66.45999908447266,251717,single_source_warning,66.45999908447266,yahoo_adj_close_single_source_warning
+2026-08-13,ARM,283.5199890136719,283.5199890136719,3470383,single_source_warning,283.5199890136719,yahoo_adj_close_single_source_warning

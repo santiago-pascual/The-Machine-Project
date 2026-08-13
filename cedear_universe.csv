@@ -1,0 +1,406 @@
+company_name,byma_ticker,underlying_ticker,exchange,ratio,is_us_listed,is_nasdaq,is_nyse,is_etf,tradable_from_argentina,source_file,parse_status
+Altaba Inc.,AABA,AABA,NASDAQ,3:1,True,True,False,False,True,cedears_byma_list.txt,parsed
+American Airlines Group Inc,AAL,AAL,NASDAQ,2:1,True,True,False,False,True,cedears_byma_list.txt,parsed
+Advanced Auto Parts Inc,AAP,AAP,NYSE,14:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Apple Inc.,AAPL,AAPL,NASDAQ,20:1,True,True,False,False,True,cedears_byma_list.txt,parsed
+AbbVie Inc.,ABBV,ABBV,NYSE,10:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Ambev S.A.,ABEV,ABEV,NASDAQ,1:3,True,True,False,False,True,cedears_byma_list.txt,parsed
+Ambev S.A.,ABEV3,ABEV3,B3,1:1,True,False,False,False,True,cedears_byma_list.txt,parsed
+Airbnb Inc,ABNB,ABNB,NASDAQ GS,15:1,True,True,False,False,True,cedears_byma_list.txt,parsed
+Abbott Labs,ABT,ABT,NYSE,4:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Accenture,ACN,ACN,NYSE,75:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+iShares MSCI ACWI ETF,ACWI,ACWI,NASDAQ,26:1,True,True,False,True,True,cedears_byma_list.txt,parsed
+Adobe Systems Incorporated,ADBE,ADBE,NASDAQ,44:1,True,True,False,False,True,cedears_byma_list.txt,parsed
+Adecoagro S.A.,ADGO,ADGO,NYSE,1:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Analog Devices,ADI,ADI,NASDAQ,15:1,True,True,False,False,True,cedears_byma_list.txt,parsed
+Automatic Data Processing Inc.,ADP,ADP,NASDAQ,6:1,True,True,False,False,True,cedears_byma_list.txt,parsed
+Adidas AG,ADS,ADS,XETRA,22:1,True,False,False,False,True,cedears_byma_list.txt,parsed
+Aegon N.V.,AEG,AEG,NYSE,1:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Agnico Eagle Mines Limited,AEM,AEM,NYSE,6:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+C3.AI INC,AI,AI,NYSE,5:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+American International Group (AIG),AIG,AIG,NYSE,5:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Embotelladora Andina S.A.,AKO-B,AKO-B,NYSE,1:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Astera Labs Inc,ALAB,ALAB,NASDAQ,44:1,True,True,False,False,True,cedears_byma_list.txt,parsed
+Applied Materials Inc.,AMAT,AMAT,NASDAQ,5:1,True,True,False,False,True,cedears_byma_list.txt,parsed
+"Advanced Micro Devices, Inc.",AMD,AMD,NASDAQ,10:1,True,True,False,False,True,cedears_byma_list.txt,parsed
+Amgen Inc.,AMGN,AMGN,NASDAQ,30:1,True,True,False,False,True,cedears_byma_list.txt,parsed
+America Movil,AMX,AMX,NYSE,1:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+"Amazon.Com, Inc.",AMZN,AMZN,NYSE,144:1,True,True,True,False,True,cedears_byma_list.txt,parsed
+Arista Networks Inc.,ANET,ANET,NYSE,29:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Abercrombie & Fitch Co,ANF,ANF,NYSE,1:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Aluminum Corp Of China,AOCA,AOCA,NYSE,1:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Arcos Dorados Holdings Inc.,ARCO,ARCO,NYSE,1:2,True,False,True,False,True,cedears_byma_list.txt,parsed
+ARK INNOVATION,ARKK,ARKK,NYSE ARCA,10:1,True,False,False,True,True,cedears_byma_list.txt,parsed
+ARM Holdings Plc,ARM,ARM,NASDAQ,27:1,True,True,False,False,True,cedears_byma_list.txt,parsed
+ASML HOLDING NV,ASML,ASML,NASDAQ GS,146:1,True,True,False,False,True,cedears_byma_list.txt,parsed
+"Grupo Aeroportuario Del Sureste , S.A.B. de C.V.",ASR,ASR,NYSE,20:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+AST SpaceMobile Inc,ASTS,ASTS,NASDAQ,15:1,True,True,False,False,True,cedears_byma_list.txt,parsed
+Yamana Gold Inc.,AUY,AUY,NYSE,1:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Broadcom Inc.,AVGO,AVGO,NASDAQ,39:1,True,True,False,False,True,cedears_byma_list.txt,parsed
+Avery Dennison Corp.,AVY,AVY,NYSE,18:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+American Express Co,AXP,AXP,NYSE,15:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Astrazeneca Plc,AZN,AZN,NYSE,4:1,True,True,True,False,True,cedears_byma_list.txt,parsed
+Barrick Gold Corp,B,B,NYSE,2:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+The Boeing Company,BA,BA,NYSE,24:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Bank Of America Corporation,BA-C,BA-C,NYSE,4:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Alibaba Group Holding Limited,BABA,BABA,NYSE,9:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Braskem SA,BAK,BAK,NYSE,2:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Blackberry Limited,BB,BB,NASDAQ,3:1,True,True,False,False,True,cedears_byma_list.txt,parsed
+Banco do Brasil S.A.,BBAS3,BBAS3,B3,2:1,True,False,False,False,True,cedears_byma_list.txt,parsed
+Banco Bradesco S.A.,BBD,BBD,NYSE,1:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Banco Bradesco S.A.,BBDC3,BBDC3,B3,1:1,True,False,False,False,True,cedears_byma_list.txt,parsed
+Bilbao Vizcaya Argentaria S.A.,BBV,BBV,NYSE,1:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Barclays Bank Plc,BCS,BCS,NYSE,1:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Bhp Group Ltd,BHP,BHP,NYSE,2:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+"Baidu, Inc.",BIDU,BIDU,NASDAQ,11:1,True,True,False,False,True,cedears_byma_list.txt,parsed
+Biogen Inc.,BIIB,BIIB,NASDAQ,13:1,True,True,False,False,True,cedears_byma_list.txt,parsed
+The Bank Of New York Mellon Corp.,BK,BK,NYSE,2:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Booking,BKNG,BKNG,NASDAQ,700:1,True,True,False,False,True,cedears_byma_list.txt,parsed
+Baker Hughes Co,BKR,BKR,NASDAQ,7:1,True,True,False,False,True,cedears_byma_list.txt,parsed
+"Bitmine Inmersion Technologies, Inc.",BMNR,BMNR,NYSE,8:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Bristol-Myers Squibb Company,BMY,BMY,NYSE,3:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Bunge Limited,BNG,BNG,NYSE,5:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+BP PCL,BP,BP,NYSE,5:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Banco BTG Pactual S.A.,BPA11,BPA11,B3,1:1,True,False,False,False,True,cedears_byma_list.txt,parsed
+BRF S.A.,BRFS,BRFS,NYSE,1:3,True,False,True,False,True,cedears_byma_list.txt,parsed
+Berkshire Hathaway Inc.,BRKB,BRKB,NYSE,22:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Banco Santander (Brasil) S.A.,BSBR,BSBR,NYSE,1:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Blackstone Inc.,BX,BX,NYSE,30:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Citigroup Inc,C,C,NYSE,3:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Corporación America Airports S.A.,CAAP,CAAP,NYSE,1:4,True,False,True,False,True,cedears_byma_list.txt,parsed
+Cardinal Health Inc,CAH,CAH,NYSE,3:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Canon Inc,CAJ,CAJ,NYSE,2:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Avis Budget Group Inc.,CAR,CAR,NASDAQ,26:1,True,True,False,False,True,cedears_byma_list.txt,parsed
+Caterpillar Inc,CAT,CAT,NYSE,20:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Companhia Brasileira De Dis NPV ADR,CBRD,CBRD,NYSE,1:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Cameco Corporation,CCJ,CCJ,NYSE,23:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Carnival,CCL,CCL,NYSE,3:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Coeur Mining Inc.,CDE,CDE,NYSE,1:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+CONSTELLATION ENERGY CORPORATION,CEG,CEG,NASDAQ GS,45:1,True,True,False,False,True,cedears_byma_list.txt,parsed
+First Trust NASDAQ Cybersecurity,CIBR,CIBR,NASDAQ GM,10:01,True,False,False,False,True,cedears_byma_list.txt,parsed
+Colgate Palmolive Co,CL,CL,NYSE,3:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+CELESTICA INC,CLS,CLS,NYSE,20:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Coinbase Global Inc,COIN,COIN,NASDAQ,27:1,True,True,True,False,True,cedears_byma_list.txt,parsed
+ConocoPhillips,COP,COP,NYSE,25:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Global X Copper Miners ETF,COPX,COPX,NYSE,14:1,True,False,True,True,True,cedears_byma_list.txt,parsed
+Costco Wholesale Corp,COST,COST,NASDAQ,48:1,True,True,False,False,True,cedears_byma_list.txt,parsed
+Salesforce Inc.,CRM,CRM,NYSE,18:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+"CrowdStrike Holdings, Inc.",CRWD,CRWD,NASDAQ GS,79:1,True,True,False,False,True,cedears_byma_list.txt,parsed
+CoreWeave Inc,CRWV,CRWV,NASDAQ,27:1,True,True,False,False,True,cedears_byma_list.txt,parsed
+Credit Suisse Group,CS,CS,NYSE,1:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Cisco Systems Inc,CSCO,CSCO,NASDAQ,5:1,True,True,False,False,True,cedears_byma_list.txt,parsed
+Companhia Siderúrgica Nacional S.A.,CSNA3,CSNA3,B3,1:1,True,False,False,False,True,cedears_byma_list.txt,parsed
+CVS Health,CVS,CVS,NYSE,15:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Chevron Corp.,CVX,CVX,NYSE,16:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Cemex S.A.B. de CV,CX,CX,NYSE,1:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Delta Air Lines,DAL,DAL,NYSE,8:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Dupont de Nemours Inc.,DD,DD,NYSE,5:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Deere & Co.,DE,DE,NYSE,40:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+DECKERS OUTDOOR CORPORATION,DECK,DECK,NYSE,25:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Diageo PLC,DEO,DEO,NYSE,6:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Danaher Corp,DHR,DHR,NYSE,54:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+SPDR DOW JONES INDUSTRIAL,DIA,DIA,NYSE ARCA,20:1,True,False,False,True,True,cedears_byma_list.txt,parsed
+The Walt Disney Co.,DISN,DISN,NYSE,12:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+DocuSign Inc.,DOCU,DOCU,NASDAQ,22:1,True,True,False,False,True,cedears_byma_list.txt,parsed
+DOW Inc,DOW,DOW,NYSE,6:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Eni Spa,E,E,NYSE,4:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Electronic Arts Inc,EA,EA,NASDAQ,14:1,True,True,False,False,True,cedears_byma_list.txt,parsed
+Ebay Inc.,EBAY,EBAY,NASDAQ,2:1,True,True,False,False,True,cedears_byma_list.txt,parsed
+Centrais Eléctricas Brasileiras S.A. - Eletrobras,EBR,EBR,NYSE,1:4,True,False,True,False,True,cedears_byma_list.txt,parsed
+Ecolab Inc,ECL,ECL,NYSE,56:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+ISHARES MSCI EMERGING MARKET,EEM,EEM,NYSE ARCA,5:01,True,False,False,True,True,cedears_byma_list.txt,parsed
+iShares MSCI EAFE ETF,EFA,EFA,NYSE,18:1,True,False,True,True,True,cedears_byma_list.txt,parsed
+Equifax Inc.,EFX,EFX,NYSE,16:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Companhia Paranaense de Energía - COPEL,ELP,ELP,NYSE,1:3,True,False,True,False,True,cedears_byma_list.txt,parsed
+Equinor Asa,EQNR,EQNR,NYSE,6:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Lm Ericsson Telephone Co.,ERIC,ERIC,NASDAQ,2:1,True,True,False,False,True,cedears_byma_list.txt,parsed
+Embraer-Empresa Brasileira de Aeronáutica S.A.,ERJ,ERJ,NYSE,1:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+IShares ESG Aware MSCI USA ETF,ESGU,ESGU,NASDAQ,30:1,True,True,False,True,True,cedears_byma_list.txt,parsed
+ISHARES ETHEREUM TR ETF,ETHA,ETHA,NASDAQ,5:1,True,True,False,True,True,cedears_byma_list.txt,parsed
+Etsy Inc.,ETSY,ETSY,NASDAQ,16:1,True,True,False,False,True,cedears_byma_list.txt,parsed
+iShares MSCI JAPAN ETF,EWJ,EWJ,NYSE ARCA,14:1,True,False,False,True,True,cedears_byma_list.txt,parsed
+iShares MSCI South Korea ETF,EWY,EWY,NYSE ARCA,50:1,True,False,False,True,True,cedears_byma_list.txt,parsed
+ISHARES MSCI BRAZIL CAP,EWZ,EWZ,NYSE ARCA,2:1,True,False,False,True,True,cedears_byma_list.txt,parsed
+Ford Motor Company,F,F,NYSE,1:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Freeport Mcmoran Copper & Gold Inc.,FCX,FCX,NYSE,3:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Fedex Corp,FDX,FDX,NYSE,10:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+"Fiserv, Inc.",FISV,FISV,NASDAQ GS,11:1,True,False,False,False,True,cedears_byma_list.txt,parsed
+Freddie Mac (Federal Home Loan),FMCC,FMCC,OTC,1:1,True,False,False,False,True,cedears_byma_list.txt,parsed
+Fomento Economico Mexicano - Femsa,FMX,FMX,NYSE,6:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+"Fed. Natl, Mortgage - Fannie Mae",FNMA,FNMA,OTC,1:1,True,False,False,False,True,cedears_byma_list.txt,parsed
+First Solar Inc.,FSLR,FSLR,NASDAQ,18:1,True,True,False,False,True,cedears_byma_list.txt,parsed
+ISHARES CHINA LARGE-CAP ETF,FXI,FXI,NYSE,5:1,True,False,True,True,True,cedears_byma_list.txt,parsed
+Van Eck Gold Miners ETF/USA,GDX,GDX,NYSE,10:1,True,False,True,True,True,cedears_byma_list.txt,parsed
+General Electric Co.,GE,GE,NYSE,8:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Gold Fields Ltd.,GFI,GFI,NYSE,1:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Gerdau S.A.,GGB,GGB,NYSE,1:4,True,False,True,False,True,cedears_byma_list.txt,parsed
+"Gilead Sciences, Inc.",GILD,GILD,NASDAQ,4:1,True,True,False,False,True,cedears_byma_list.txt,parsed
+ETF SPDR GOLD TRUST,GLD,GLD,NYSE,50:1,True,False,True,True,True,cedears_byma_list.txt,parsed
+Golar LNG Ltd.,GLNG,GLNG,NASDAQ GS,10:1,True,False,False,False,True,cedears_byma_list.txt,parsed
+Globant S.A.,GLOB,GLOB,NYSE,18:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Corning Inc.,GLW,GLW,NYSE,4:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+General Motors Co,GM,GM,NYSE,6:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Alphabet Inc.,GOOGL,GOOGL,NASDAQ,58:1,True,True,False,False,True,cedears_byma_list.txt,parsed
+Geopark Ltd.,GPRK,GPRK,NYSE,1:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Garmin Ltd.,GRMN,GRMN,NASDAQ,3:1,True,True,False,False,True,cedears_byma_list.txt,parsed
+"The Goldman Sachs Group, Inc",GS,GS,NYSE,13:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+GSK Plc.,GSK,GSK,NYSE,4:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Goodyear Tire & Rubber co./the,GT,GT,NASDAQ,2:1,True,True,False,False,True,cedears_byma_list.txt,parsed
+Halliburton Co.,HAL,HAL,NYSE,2:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Hapvida Participacoes E Investimentos S.A.,HAPV3,HAPV3,B3,1:1,True,False,False,False,True,cedears_byma_list.txt,parsed
+The Home Depot Inc.,HD,HD,NYSE,32:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Hdfc Bank Limited.,HDB,HDB,NYSE,2:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+"Hims & Hers Health, Inc.",HIMS,HIMS,NYSE,4:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Hecla Mining Co .,HL,HL,NYSE,1:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Honda Motor Co. Ltd,HMC,HMC,NYSE,1:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Harmony Gold Mining Company Ltd.,HMY,HMY,NYSE,1:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Huaneng Power Intl,HNPIY,HNPIY,NYSE,1:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Harley-Davidson Inc.,HOG,HOG,NYSE,3:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Honeywell International Inc.,HON,HON,NYSE,8:1,True,True,True,False,True,cedears_byma_list.txt,parsed
+Robinhood Markets Inc,HOOD,HOOD,NASDAQ,29:1,True,True,False,False,True,cedears_byma_list.txt,parsed
+Hp Inc,HPQ,HPQ,NYSE,1:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Hsbc Holdings Plc,HSBC,HSBC,NYSE,2:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+The Hershey Company,HSY,HSY,NYSE,21:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Hut 8 Mining Corp.,HUT,HUT,NASDAQ GS,5:1,True,False,False,False,True,cedears_byma_list.txt,parsed
+Howmet Aerospace Inc.,HWM,HWM,NYSE,1:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+iShares Nasdaq Biotechnology ETF,IBB,IBB,NASDAQ,27:1,True,True,False,True,True,cedears_byma_list.txt,parsed
+ISHARES BITCOIN TRUST,IBIT,IBIT,NASDAQ,10:1,True,True,False,False,True,cedears_byma_list.txt,parsed
+International Business Machines,IBM,IBM,NYSE,15:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Icici Bank Ltd.,IBN,IBN,NYSE,1:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+iShares Global Clean Energy ETF,ICLN,ICLN,NASDAQ GM,5:1,True,False,False,True,True,cedears_byma_list.txt,parsed
+iShares Core MSCI Emerging Markets ETF,IEMG,IEMG,NYSE,12:1,True,False,True,True,True,cedears_byma_list.txt,parsed
+iShares Core MSCI Europe ETF,IEUR,IEUR,NYSE ARCA,11:1,True,False,False,True,True,cedears_byma_list.txt,parsed
+International Flavors & Fragrances Inc.,IFF,IFF,NYSE,12:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+iShares CORE S&P MID-CAP ETF,IJH,IJH,NYSE ARCA,12:1,True,False,False,True,True,cedears_byma_list.txt,parsed
+IShares Latin America 40 ETF,ILF,ILF,NYSE,6:1,True,False,True,True,True,cedears_byma_list.txt,parsed
+Infosys Limited,INFY,INFY,NASDAQ,1:1,True,True,False,False,True,cedears_byma_list.txt,parsed
+Ing Groep Nv,ING,ING,NYSE,3:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Intel Corporation,INTC,INTC,NASDAQ,5:1,True,True,False,False,True,cedears_byma_list.txt,parsed
+International Paper Co.,IP,IP,NYSE,4:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Iren Ltd,IREN,IREN,NASDAQ,12:1,True,True,False,False,True,cedears_byma_list.txt,parsed
+Intuitive Surgical inc,ISRG,ISRG,NASDAQ,90:1,True,True,False,False,True,cedears_byma_list.txt,parsed
+Itaú Unibanco Holding S.A.,ITUB,ITUB,NYSE,1:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Banco Itaú Unibanco S.A,ITUB3,ITUB3,B3,1:1,True,False,False,False,True,cedears_byma_list.txt,parsed
+iShares S&P 500 Value ETF,IVE,IVE,NYSE ARCA,40:1,True,False,False,True,True,cedears_byma_list.txt,parsed
+IShares Core S&P 500 ETF,IVV,IVV,NYSE,692:1,True,False,True,True,True,cedears_byma_list.txt,parsed
+iShares S&P 500 Growth ETF,IVW,IVW,NYSE ARCA,20:1,True,False,False,True,True,cedears_byma_list.txt,parsed
+ISHARES TRUST RUSSELL 2000,IWM,IWM,NYSE ARCA,10:1,True,False,False,True,True,cedears_byma_list.txt,parsed
+Johnson Controls International,JCI,JCI,NYSE,2:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+"Jd.Com, Inc.",JD,JD,NASDAQ,4:1,True,True,False,False,True,cedears_byma_list.txt,parsed
+Adr Jumia Technologies Ag,JMIA,JMIA,NYSE,1:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Johnson & Johnson,JNJ,JNJ,NYSE,15:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+JOYY Inc.,JOYY,JOYY,NASDAQ,5:1,True,True,False,False,True,cedears_byma_list.txt,parsed
+J.P. Morgan & Chase Co.,JPM,JPM,NYSE,15:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Kb Financial Group Inc.,KB,KB,NYSE,2:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Bitfarms Ltd.,KEEL,KEEL,NASDAQ GM,1:5,True,False,False,False,True,cedears_byma_list.txt,parsed
+Korea Electric Power Corp.,KEP,KEP,NYSE,1:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Kinross Gold Corp,KGC,KGC,NYSE,1:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Kimberly-Clark Corp.,KMB,KMB,NYSE,6:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+The Coca Cola Company,KO,KO,NYSE,5:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+"Coca-Cola Femsa, S.A.B. De C.V.",KOFM,KOFM,NYSE,2:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Lithium Americas Corp,LAC,LAC,NYSE,1:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Lithium Americas (Argentina) Corp,LAR,LAR,NYSE,1:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+China Life Insurance,LFC,LFC,NYSE,2:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Eli Lilly and Company,LLY,LLY,NYSE,56:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Lockheed Martin Corporation,LMT,LMT,NYSE,20:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Brasilagro - Co Brasileira de Propriedades Agrícolas,LND,LND,NYSE,1:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Lam Research Corp,LRCX,LRCX,NASDAQ,56:1,True,True,False,False,True,cedears_byma_list.txt,parsed
+Lojas Renner S.A.,LREN3,LREN3,B3,1:1,True,False,False,False,True,cedears_byma_list.txt,parsed
+Las Vegas Sands Corp,LVS,LVS,NYSE,2:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Lloyds Banking Group Plc,LYG,LYG,NYSE,2:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Mastercard Inc.,MA,MA,NYSE,33:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Mobile Telesystems,MBT,MBT,NYSE,2:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Mcdonald'S Corp.,MCD,MCD,NYSE,24:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Mondelez,MDLZ,MDLZ,NASDAQ,15:1,True,True,False,False,True,cedears_byma_list.txt,parsed
+Medtronic Public Limited Company,MDT,MDT,NYSE,4:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Mercadolibre Inc.,MELI,MELI,NASDAQ,120:1,True,True,False,False,True,cedears_byma_list.txt,parsed
+Meta Platforms Inc,META,META,NASDAQ,24:1,True,True,False,False,True,cedears_byma_list.txt,parsed
+Mizuho Financial Group,MFG,MFG,NYSE,1:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Magazine Luiza S.A.,MGLU3,MGLU3,B3,1:1,True,False,False,False,True,cedears_byma_list.txt,parsed
+Marsh & Mclennan Companies Inc.,MMC,MMC,NYSE,16:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+3M Company,MMM,MMM,NYSE,10:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Altria Group Inc.,MO,MO,NYSE,4:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+The Mosaic Co,MOS,MOS,NYSE,5:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+MP Materials Corp.,MP,MP,NYSE,10:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Merck & Co. Inc.,MRK,MRK,NYSE,5:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Moderna Inc,MRNA,MRNA,NASDAQ,19:1,True,True,False,False,True,cedears_byma_list.txt,parsed
+Marvell Technology Inc,MRVL,MRVL,NASDAQ,14:1,True,True,False,False,True,cedears_byma_list.txt,parsed
+Microsoft Corp.,MSFT,MSFT,NASDAQ,30:1,True,True,False,False,True,cedears_byma_list.txt,parsed
+"Motorola Solutions, Inc.",MSI,MSI,NYSE,20:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Microstrategy Inc Cl A New,MSTR,MSTR,NASDAQ GS,20:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Micron Technology Inc,MU,MU,NASDAQ GS,5:1,True,True,False,False,True,cedears_byma_list.txt,parsed
+Mitsubishi Ufj Financial Group,MUFG,MUFG,NYSE,1:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+McEwen Mining Inc,MUX,MUX,NYSE,2:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+NATURA COSMETICOS SA,NATU3,NATU3,B3,1:1,True,False,False,False,True,cedears_byma_list.txt,parsed
+Nebius Group N.V.,NBIS,NBIS,NASDAQ GS,27:1,True,False,False,False,True,cedears_byma_list.txt,parsed
+"NextEra Energy, Inc.",NEE,NEE,NYSE,19:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Newmont Corporation,NEM,NEM,NYSE,3:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+"Netflix, Inc.",NFLX,NFLX,NASDAQ,48:1,True,True,False,True,True,cedears_byma_list.txt,parsed
+Novagold Resources INC.,NG,NG,NYSE,1:4,True,False,True,False,True,cedears_byma_list.txt,parsed
+National Grid Plc,NGG,NGG,NYSE,2:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+NIO Inc.,NIO,NIO,NYSE,4:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Nike Inc.,NKE,NKE,NYSE,12:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+"Nomura Holdings, Inc",NMR,NMR,NYSE,1:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Nokia Corporation,NOKA,NOKA,NYSE,1:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+SERVICENOW INC,NOW,NOW,NYSE,172:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+"Netease, Inc",NTES,NTES,NASDAQ,14:1,True,True,False,False,True,cedears_byma_list.txt,parsed
+Nucor Corp,NUE,NUE,NYSE,16:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Nvidia Corporation,NVDA,NVDA,NASDAQ,24:1,True,True,False,False,True,cedears_byma_list.txt,parsed
+NOVO NORDISK A/S,NVO,NVO,NYSE,7:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Novartis Ag,NVS,NVS,NYSE,4:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Nexgen Energy LTD,NXE,NXE,NYSE,01:01,True,False,True,False,True,cedears_byma_list.txt,parsed
+Realty Income Corp.,O,O,NYSE,13:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Oklo Inc,OKLO,OKLO,NYSE,28:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Ondas Holdings Inc.,ONDS,ONDS,NASDAQ CM,2:1,True,False,False,False,True,cedears_byma_list.txt,parsed
+Orange S.A.,ORAN,ORAN,NYSE,1:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Oracle Corporation,ORCL,ORCL,NYSE,3:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+O'reilly Automotive Inc,ORLY,ORLY,NASDAQ,222:1,True,True,False,False,True,cedears_byma_list.txt,parsed
+Occidental Petroleum Corp.,OXY,OXY,NYSE,5:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Pan American Silver Corp.,PAAS,PAAS,NASDAQ,3:1,True,True,False,False,True,cedears_byma_list.txt,parsed
+"Grupo Aeroportuario del Pacifico, S.A.B. de C.V.",PAC,PAC,NYSE,16:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Pagseguro Digital Ltd,PAGS,PAGS,NYSE,3:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Palo Alto Networks Inc,PANW,PANW,NASDAQ GS,50:1,True,True,False,False,True,cedears_byma_list.txt,parsed
+UIPATH INC,PATH,PATH,NYSE,2:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Pitney Bowes Inc,PBI,PBI,NYSE,1:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Petrobras (ADR),PBR,PBR,NYSE,1:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Paccar Inc.,PCAR,PCAR,NASDAQ,3:1,True,True,False,False,True,cedears_byma_list.txt,parsed
+PDD HOLDINGS INC,PDD,PDD,NASDAQ GS,25:1,True,True,False,False,True,cedears_byma_list.txt,parsed
+Pepsico Inc,PEP,PEP,NASDAQ,18:1,True,True,False,False,True,cedears_byma_list.txt,parsed
+Petrobras - Petróleo Brasileiro S.A.,PETR3,PETR3,B3,1:1,True,False,False,False,True,cedears_byma_list.txt,parsed
+Pfizer Inc.,PFE,PFE,NYSE,4:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Procter & Gamble,PG,PG,NYSE,15:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Koninklijke Philips N.V.,PHG,PHG,NYSE,5:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Pinterest,PINS,PINS,NYSE,7:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Posco Holdings Inc.,PKS,PKS,NYSE,3:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Palantir Technologies Inc,PLTR,PLTR,NYSE,3:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Philip Morris International,PM,PM,NYSE,18:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Petro Rio S.A.,PRIO3,PRIO3,B3,2:1,True,False,False,False,True,cedears_byma_list.txt,parsed
+Pearson Plc,PSO,PSO,NYSE,1:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+PROSHARES SHORT QQQ,PSQ,PSQ,NYSE ARCA,8:1,True,False,False,False,True,cedears_byma_list.txt,parsed
+Phillips 66,PSX,PSX,NYSE,6:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Petrochina Co Ltd,PTR,PTR,NYSE,4:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+"Paypal Holdings, Inc.",PYPL,PYPL,NASDAQ,8:1,True,True,False,False,True,cedears_byma_list.txt,parsed
+Qualcomm Inc.,QCOM,QCOM,NASDAQ,11:1,True,True,False,False,True,cedears_byma_list.txt,parsed
+INVESCO QQQ TRUST,QQQ,QQQ,NASDAQ,20:1,True,True,False,True,True,cedears_byma_list.txt,parsed
+Ferrari,RACE,RACE,NYSE,83:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Roblox Corp.,RBLX,RBLX,NYSE,2:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Localiza Rent A Car S.A.,RENT3,RENT3,B3,2:1,True,False,False,False,True,cedears_byma_list.txt,parsed
+RIGETTI COMPUTING INC,RGTI,RGTI,NASDAQ CM,2:1,True,False,False,False,True,cedears_byma_list.txt,parsed
+Rio Tinto Plc,RIO,RIO,NYSE,8:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Riot Platforms,RIOT,RIOT,NASDAQ,3:1,True,True,False,False,True,cedears_byma_list.txt,parsed
+Rocket Lab Corp,RKLB,RKLB,NASDAQ,12:1,True,True,False,False,True,cedears_byma_list.txt,parsed
+Roku,ROKU,ROKU,NASDAQ,13:1,True,True,False,False,True,cedears_byma_list.txt,parsed
+"Ross Stores, Inc.",ROST,ROST,NASDAQ,4:1,True,True,False,False,True,cedears_byma_list.txt,parsed
+Invesco S&P 500 eql wght ETF,RSP,RSP,NYSE ARCA,30:1,True,False,False,True,True,cedears_byma_list.txt,parsed
+Raytheon Technologies Corp,RTX,RTX,NYSE,5:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Banco Santander S.A,SAN,SAN,NYSE,1:4,True,False,True,False,True,cedears_byma_list.txt,parsed
+Sap Se,SAP,SAP,NYSE,6:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Satellogic Inc.,SATL,SATL,NASDAQ GS,1:1,True,False,False,False,True,cedears_byma_list.txt,parsed
+Cia Saneamento Básico de SP,SBSP3,SBSP3,B3,1:1,True,False,False,False,True,cedears_byma_list.txt,parsed
+Starbucks Corporation,SBUX,SBUX,NASDAQ,12:1,True,True,False,False,True,cedears_byma_list.txt,parsed
+Southern Copper Corp,SCCO,SCCO,NYSE,2:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Charles Schwab,SCHW,SCHW,NYSE,13:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+SunCar Technology Group Inc,SDA,SDA,NASDAQ,2:1,True,True,False,False,True,cedears_byma_list.txt,parsed
+Sea Ltd.,SE,SE,NYSE,32:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+PROSHARES SHORT S&P500,SH,SH,NYSE,8:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Royal Dutch Shell Plc,SHEL,SHEL,NYSE,2:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Shopify Inc.,SHOP,SHOP,NYSE,107:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Shapeways Holdings Inc,SHPW,SHPW,NYSE,1:2,True,False,True,False,True,cedears_byma_list.txt,parsed
+Silvergate Bancorp,SI,SI,NYSE,10:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Companhia Siderúrgica Nacional,SID,SID,NYSE,1:8,True,False,True,False,True,cedears_byma_list.txt,parsed
+Siemens Ag Adr,SIEGY,SIEGY,OTC,3:1,True,False,False,False,True,cedears_byma_list.txt,parsed
+Schlumberger Ltd,SLB,SLB,NYSE,3:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+iShares SILVER TRUST,SLV,SLV,NYSE ARCA,6:1,True,False,False,True,True,cedears_byma_list.txt,parsed
+VAN ECK SEMICONDUCTOR ETF,SMH,SMH,NASDAQ,50:1,True,True,False,True,True,cedears_byma_list.txt,parsed
+Snap-On Inc,SNA,SNA,NYSE,6:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Snap Inc.,SNAP,SNAP,NYSE,1:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Sandisk Corporation,SNDK,SNDK,NASDAQ GS,170:1,True,False,False,False,True,cedears_byma_list.txt,parsed
+Snowflake Inc.,SNOW,SNOW,NYSE,30:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+China Petroleum & Chem,SNP,SNP,NYSE,3:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Sony Group Corporation,SONY,SONY,NYSE,8:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Virgin Galactic,SPCE,SPCE,NYSE,1:2,True,False,True,False,True,cedears_byma_list.txt,parsed
+SPACE EXPLORATION TECHNOLOGIES CORP.,SPCX,SPCX,NASDAQ GS,50:1,True,False,False,False,True,cedears_byma_list.txt,parsed
+S&P Global Inc,SPGI,SPGI,NYSE,45:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Invesco S&P 500 quality ETF,SPHQ,SPHQ,NYSE ARCA,14:1,True,False,False,True,True,cedears_byma_list.txt,parsed
+Spotify Technology S.A.,SPOT,SPOT,NYSE,28:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+DIREXION DAILY S&P 500 BULL 3X,SPXL,SPXL,NYSE ARCA,25:1,True,False,False,False,True,cedears_byma_list.txt,parsed
+SPDR S&P 500,SPY,SPY,NYSE ARCA,60:1,True,False,False,True,True,cedears_byma_list.txt,parsed
+Stellantis,STLA,STLA,NYSE,5:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+StoneCo Ltd,STNE,STNE,NASDAQ,3:1,True,True,False,False,True,cedears_byma_list.txt,parsed
+Suzano Papel E Celulose S.A.,SUZ,SUZ,NYSE,1:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Suzano S.A.,SUZB3,SUZB3,B3,1:1,True,False,False,False,True,cedears_byma_list.txt,parsed
+Skyworks Solutions,SWKS,SWKS,NASDAQ,21:1,True,True,False,False,True,cedears_byma_list.txt,parsed
+Sysco Corp.,SYY,SYY,NYSE,8:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+At &T Inc.,T,T,NYSE,3:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+TRIP.COM Group Ltd.,TCOM,TCOM,NASDAQ,2:1,True,True,False,False,True,cedears_byma_list.txt,parsed
+ATLASSIAN CORPORATION,TEAM,TEAM,NASDAQ GS,47:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Telefonica S.A.,TEFO,TEFO,NYSE,8:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+TEMPUS AI INC,TEM,TEM,NASDAQ GS,12:1,True,False,False,False,True,cedears_byma_list.txt,parsed
+Tenaris,TEN,TEN,NYSE,1:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Target Corporation,TGT,TGT,NYSE,24:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Telecom Italia S.P.A. Ordinary Shares,TIIAY,TIIAY,NYSE,1:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Tim Participações S.A.,TIMB,TIMB,NYSE,1:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+TIM S.A.,TIMS3,TIMS3,B3,01:01,True,False,False,False,True,cedears_byma_list.txt,parsed
+TJX Companies Inc/The,TJX,TJX,NYSE,22:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Toyota Motor Corporation,TM,TM,NYSE,15:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Thermo Fisher Scientific Inc.,TMO,TMO,NYSE,22:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+T-mobile,TMUS,TMUS,NASDAQ,33:1,True,True,False,False,True,cedears_byma_list.txt,parsed
+ProShares UltraPro QQQ,TQQQ,TQQQ,NASDAQ,25:1,True,True,False,False,True,cedears_byma_list.txt,parsed
+"Tripadvisor, Inc.",TRIP,TRIP,NASDAQ,2:1,True,True,False,False,True,cedears_byma_list.txt,parsed
+The Travelers Cos. Inc.,TRVV,TRVV,NYSE,6:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+"Tesla, Inc.",TSLA,TSLA,NASDAQ,15:1,True,True,False,False,True,cedears_byma_list.txt,parsed
+Taiwan Semiconductor Manufacturing,TSM,TSM,NYSE,9:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+TotalEnergies SE,TTE,TTE,NYSE,3:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Tata Motors Ltd,TTM,TTM,NYSE,1:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Grupo Televisa S.A.,TV,TV,NYSE,3:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Twilio Inc,TWLO,TWLO,NYSE,36:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+"Twitter, Inc.",TWTR,TWTR,NYSE,2:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Texas Instruments Inc,TXN,TXN,NASDAQ,5:1,True,True,False,False,True,cedears_byma_list.txt,parsed
+Ternium S.A.,TXR,TXR,NYSE,4:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+United Airlines Holdings Inc.,UAL,UAL,NASDAQ GS,5:1,True,False,False,False,True,cedears_byma_list.txt,parsed
+Uber Technologies Inc.,UBER,UBER,NYSE,2:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Ultrapar Participações S.A.,UGP,UGP,NYSE,1:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Unilever PLC - Sponsored,UL,UL,NYSE,3:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+NU Holdings Ltd/Cayman Islands,UN,UN,NYSE,2:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+UnitedHealth Group Inc.,UNH,UNH,NYSE,33:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Union Pacific Corp.,UNP,UNP,NYSE,20:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Upstart Hldgs Inc,UPST,UPST,NASDAQ GS,5:1,True,False,False,False,True,cedears_byma_list.txt,parsed
+Global X Uranium ETF,URA,URA,NYSE ARCA,5:1,True,False,False,True,True,cedears_byma_list.txt,parsed
+Urban Outfitters INC.,URBN,URBN,NASDAQ,2:1,True,True,False,False,True,cedears_byma_list.txt,parsed
+U.S. Bancorp,USB,USB,NYSE,5:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+United States Oil Fund,USO,USO,NYSE,15:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Visa Inc,V,V,NYSE,18:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Vale S.A.,VALE,VALE,NYSE,2:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Vale S.A.,VALE3,VALE3,B3,1:1,True,False,False,False,True,cedears_byma_list.txt,parsed
+Vanguard FTSE Developed Markets ETF,VEA,VEA,NYSE ARCA,10:1,True,False,False,True,True,cedears_byma_list.txt,parsed
+VANGUARD DIVIDEND APPRECIATION,VIG,VIG,NYSE ARCA,39:1,True,False,False,False,True,cedears_byma_list.txt,parsed
+Vista Energy S.A.B. de C.V.,VIST,VIST,NYSE,3:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Telefônica Brasil S.A.,VIV,VIV,NYSE,1:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Telefônica Brasil S.A.,VIVT3,VIVT3,B3,1:1,True,False,False,False,True,cedears_byma_list.txt,parsed
+Vodafone Group Plc,VOD,VOD,NASDAQ,1:1,True,True,False,False,True,cedears_byma_list.txt,parsed
+VERTEX PHARMACEUTICALS INC,VRTX,VRTX,NYSE,101:1,True,True,True,False,True,cedears_byma_list.txt,parsed
+VISTRA CORPORATION,VST,VST,NYSE,26:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Verizon Communications Inc.,VZ,VZ,NYSE,4:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Walgreens Boots Alliance Inc.,WBA,WBA,NASDAQ,3:1,True,True,False,False,True,cedears_byma_list.txt,parsed
+Weibo Corporation,WBO,WBO,NASDAQ,6:1,True,True,False,False,True,cedears_byma_list.txt,parsed
+Weg S.A.,WEGE3,WEGE3,B3,1:1,True,False,False,False,True,cedears_byma_list.txt,parsed
+Wells Fargo & Co.,WFC,WFC,NYSE,5:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Walmart Inc.,WMT,WMT,NYSE,18:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+The Materials Select Sector SPDR Fund,XLB,XLB,NYSE ARCA,18:1,True,False,False,False,True,cedears_byma_list.txt,parsed
+The Communication Services Select Sector SPDR Fund,XLC,XLC,NYSE ARCA,19:1,True,False,False,False,True,cedears_byma_list.txt,parsed
+ENERGY SELECT SECTOR SPDR FUND,XLE,XLE,NYSE ARCA,2:1,True,False,False,False,True,cedears_byma_list.txt,parsed
+FINANCIAL SELECT SECTOR SPDR FUND,XLF,XLF,NYSE ARCA,2:1,True,False,False,False,True,cedears_byma_list.txt,parsed
+The Industrial Select Sector SPDR Fund,XLI,XLI,NYSE ARCA,28:1,True,False,False,False,True,cedears_byma_list.txt,parsed
+The Technology Select Sector SPDR Fund,XLK,XLK,NYSE ARCA,46:1,True,False,False,False,True,cedears_byma_list.txt,parsed
+The Consumer Staples Select Sector SPDR Fund,XLP,XLP,NYSE ARCA,16:1,True,False,False,False,True,cedears_byma_list.txt,parsed
+The Real Estate Select Sector SPDR Fund,XLRE,XLRE,NYSE ARCA,9:1,True,False,False,False,True,cedears_byma_list.txt,parsed
+First Trust NASDAQ Cybersecurity,XLU,XLU,NASDAQ,10:1,True,True,False,False,True,cedears_byma_list.txt,parsed
+The Health Care Select Sector SPDR Fund,XLV,XLV,NYSE ARCA,29:1,True,False,False,False,True,cedears_byma_list.txt,parsed
+The Consumer Discretionary Select Sector SPDR Fund,XLY,XLY,NYSE ARCA,43:1,True,False,False,False,True,cedears_byma_list.txt,parsed
+State Street SPDR S&P Metals & Mining ETF,XME,XME,NYSE ARCA,30:1,True,False,False,True,True,cedears_byma_list.txt,parsed
+Exxon Mobil Corporation,XOM,XOM,NYSE,10:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+XP Inc,XP,XP,NASDAQ,04:01,True,True,False,False,True,cedears_byma_list.txt,parsed
+Xerox Holding Corporation,XROX,XROX,NYSE,1:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Square Inc.,XYZ,XYZ,NYSE,20:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Yelp Inc.,YELP,YELP,NYSE,2:1,True,False,True,False,True,cedears_byma_list.txt,parsed
+Zoom Video Communications Inc.,ZM,ZM,NASDAQ,47:1,True,True,False,False,True,cedears_byma_list.txt,parsed

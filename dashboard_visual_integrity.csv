@@ -1,0 +1,11 @@
+page,status,missing_sources,read_only,broker_buttons,namespace_mixing
+Executive Overview,available,,True,False,False
+Portfolio,available,,True,False,False
+Rebalance Ledger,available,,True,False,False
+Performance,available,,True,False,False
+Risk,available,,True,False,False
+Costs & Capacity,available,,True,False,False
+Live Validation,available,,True,False,False
+Market Data,available,,True,False,False
+Quant Lab 3D,available,,True,False,False
+Diagnostics,available,,True,False,False

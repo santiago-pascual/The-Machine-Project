@@ -1,0 +1,18 @@
+ticker,trade_count,volume_available,volume_missing_pct,average_daily_volume,median_daily_volume,average_daily_dollar_volume,median_daily_dollar_volume,minimum_20d_rolling_dollar_volume,liquidity_confidence,liquidity_reason
+AMAT,138,False,1.0,,,,,,low,No local historical volume or dollar-volume columns available in snapshots.
+AMD,201,False,1.0,,,,,,low,No local historical volume or dollar-volume columns available in snapshots.
+AMZN,17,False,1.0,,,,,,low,No local historical volume or dollar-volume columns available in snapshots.
+AVGO,101,False,1.0,,,,,,low,No local historical volume or dollar-volume columns available in snapshots.
+CCJ,53,False,1.0,,,,,,low,No local historical volume or dollar-volume columns available in snapshots.
+COST,1,False,1.0,,,,,,low,No local historical volume or dollar-volume columns available in snapshots.
+GOOGL,3,False,1.0,,,,,,low,No local historical volume or dollar-volume columns available in snapshots.
+INTC,44,False,1.0,,,,,,low,No local historical volume or dollar-volume columns available in snapshots.
+META,31,False,1.0,,,,,,low,No local historical volume or dollar-volume columns available in snapshots.
+MSFT,1,False,1.0,,,,,,low,No local historical volume or dollar-volume columns available in snapshots.
+NFLX,25,False,1.0,,,,,,low,No local historical volume or dollar-volume columns available in snapshots.
+NVDA,54,False,1.0,,,,,,low,No local historical volume or dollar-volume columns available in snapshots.
+QCOM,5,False,1.0,,,,,,low,No local historical volume or dollar-volume columns available in snapshots.
+TSLA,73,False,1.0,,,,,,low,No local historical volume or dollar-volume columns available in snapshots.
+TXN,2,False,1.0,,,,,,low,No local historical volume or dollar-volume columns available in snapshots.
+VIST,70,False,1.0,,,,,,low,No local historical volume or dollar-volume columns available in snapshots.
+YPF,58,False,1.0,,,,,,low,No local historical volume or dollar-volume columns available in snapshots.

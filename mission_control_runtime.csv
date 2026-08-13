@@ -1,0 +1,8 @@
+metric,value
+total_pipeline_duration,n/a
+slowest_module,Forecast
+fastest_module,Dashboard
+csv_files_generated,542
+rows_processed,1855
+holdings,3
+trades,8

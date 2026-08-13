@@ -1,0 +1,2 @@
+classification,point_in_time_confirmed,survivorship_bias_risk,liquidity_confidence,liquidity_adjusted_available,production_changed,paper_trading_changed,reason
+blocked_by_survivorship_bias,False,high,low,False,False,False,Point-in-time universe cannot be confirmed with local data.

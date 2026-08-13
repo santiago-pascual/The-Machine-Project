@@ -1,0 +1,8 @@
+check,status,detail
+lifecycle_matches_frozen_registry,PASS,growth_champion_final_v1_0_frozen
+real_capital_blocked,PASS,real_capital_blocked
+technical_pass_does_not_hide_warnings,PASS,persistent warnings panel always visible
+pipeline_dates_reconcile,WARNING,see freshness table
+incident_log_loads,PASS,5
+backup_replay_loads,PASS,8
+no_mutation_controls,PASS,dashboard read-only

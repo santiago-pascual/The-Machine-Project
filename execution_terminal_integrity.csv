@@ -1,0 +1,7 @@
+check,status,detail
+official_namespace_only,PASS,uses growth_official_* sources for active execution
+broker_orders_disabled,PASS,dashboard read-only; no broker controls
+reconciliation_controls,PASS,
+cost_rows_present,PASS,3
+gross_net_available,PASS,official performance ledger
+debug_reconstructed_leakage,PASS,diagnostic data not used in active execution metrics

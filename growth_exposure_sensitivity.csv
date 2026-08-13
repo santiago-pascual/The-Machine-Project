@@ -1,0 +1,4 @@
+date,selected_tickers,target_volatility,rolling_volatility_used,raw_target_exposure_before_floor,exposure_after_min_40_max_100,exposure_cap_60,dual_trend_cap,diagnostic_final_exposure,diagnostic_cash
+2026-07-02,"RBLX,INTC,SE,AMBA",0.15,0.7909654044171931,0.18964166973968283,0.4,0.6,0.6,0.4,0.6
+2026-07-02,"RBLX,INTC,SE,AMBA",0.22,0.7909654044171931,0.2781411156182015,0.4,0.6,0.6,0.4,0.6
+2026-07-02,"RBLX,INTC,SE,AMBA",0.3,0.7909654044171931,0.37928333947936566,0.4,0.6,0.6,0.4,0.6

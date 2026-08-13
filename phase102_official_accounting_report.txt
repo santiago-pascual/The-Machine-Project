@@ -1,0 +1,16 @@
+===== PHASE 102 OFFICIAL ACCOUNTING AUDIT =====
+governance: official_accounting_pass
+initial_cost_charged_once: True
+first_valid_return_date: 2026-07-13
+gross_value: 98845.81
+estimated_net_value: 98661.23
+cumulative_estimated_costs: 186.74
+no_2026_07_10_return_leakage: True
+weekend_return_created: False
+backup_before_repair: none
+gross_and_estimated_net_ledgers_separate: True
+production_changed: False
+model_parameters_changed: False
+optimizer_changed: False
+real_orders: False
+outputs: official_forward_accounting_audit.csv, official_execution_lag_audit.csv, official_cost_duplication_audit.csv, official_accounting_reconciliation.csv

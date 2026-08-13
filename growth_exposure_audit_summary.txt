@@ -1,0 +1,25 @@
+===== GROWTH EXPOSURE TARGETING AUDIT =====
+current_final_exposure: 0.4
+current_cash: 0.6
+final_exposure_equals_40_exactly: True
+reason_final_exposure: vol_target_output_at_min_exposure_floor_40pct
+estimated_portfolio_volatility_used: 0.7909654044171931
+target_volatility: 0.22
+exposure_cap_60: 0.6
+dual_trend_cap: 0.6
+
+===== FINDINGS =====
+is_40_expected: yes, under current code because MIN_EXPOSURE floors vol-target output at 40%
+is_hardcoded: partially: MIN_EXPOSURE = 0.40 is an explicit floor, not final_exposure hardcoded directly
+caused_by_high_volatility_holdings: likely yes
+caused_by_dual_trend: no, dual trend cap is above final exposure
+caused_by_cap60: no, cap60 is above final exposure
+stale_data: no, current allocation source is current_growth_candidate_allocation
+volatility_reference_stale: True
+bug_assessment: no evidence of cash/rebalance bug; main issue is exposure floor/design choice plus high rolling volatility estimate.
+
+===== OUTPUTS =====
+growth_exposure_targeting_audit.csv
+growth_exposure_code_audit.csv
+growth_exposure_vs_backtest.csv
+growth_exposure_sensitivity.csv

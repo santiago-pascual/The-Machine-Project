@@ -1,0 +1,4 @@
+,expected_daily_return,expected_total_return,signal_strength
+expected_daily_return,1.0,1.0,0.2825126605720802
+expected_total_return,1.0,1.0,0.2825126605720802
+signal_strength,0.2825126605720802,0.2825126605720802,1.0

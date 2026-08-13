@@ -1,0 +1,17 @@
+===== KEEL ACTION HISTORY AUDIT =====
+dates_audited: 10
+KEEL_sold_dates: none in repaired history
+KEEL_buy_dates: 2026-06-18
+latest_action: HOLD
+latest_in_current_target_holdings: yes
+latest_position_value: 9255.917084236256
+
+===== EXPLANATION =====
+Did KEEL get sold on any date? No SELL action exists for KEEL in the repaired action history.
+Did KEEL later get bought back? No BUY action exists after replay because the corrected replay kept KEEL in the target allocation from the first repaired target date onward.
+Is latest HOLD correct? Yes, in the repaired history KEEL was in previous holdings and remains in current target holdings at the same 10% weight.
+Did replay overwrite the previous SELL because corrected allocation kept KEEL? Yes. The pre-replay SELL was based on the prior current allocation where KEEL was removed. Phase 83 rebuilt history from forecast snapshots and corrected allocation logic; under that replay KEEL remained selected, so the old SELL row was replaced by HOLD/no-trade rows.
+Is dashboard showing latest action or current holding status? The state table shows current holding status/action for the latest date. The action-signal table shows the latest rebalance action. After replay both show KEEL as HOLD because there is no current rebalance trade for KEEL.
+
+previous_sell_was_overwritten_by_replay: yes
+Saved: C:\Users\Alejandra\Desktop\La Maquina Trading System (NO TOCAR)\keel_action_history_audit.csv

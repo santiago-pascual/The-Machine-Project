@@ -1,0 +1,13 @@
+===== DASHBOARD ALERT / REBALANCE REPAIR =====
+next_rebalance_date: 2026-07-17
+alert_status: alert_engine_warning
+health_score: 61.00
+health_label: Governance Blocked
+active_alerts: 5
+
+Active alerts:
+- NOTICE | Risk | Cash above configured maximum | trigger=0.5649591405844284
+- WARNING | Market Data | Missing second provider | trigger=SINGLE_SOURCE_FRESH
+- BLOCKER | Governance | Real capital blocked | trigger=real_capital_blocked
+- NOTICE | Governance | Forward history too short | trigger=official_forward_warmup
+- WARNING | Governance | PBO elevated | trigger=0.6940115440115441

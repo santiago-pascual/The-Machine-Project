@@ -1,0 +1,2 @@
+registry_name,trial_count,source,mix_with_governed,status,notes,experiment_id,hypothesis,pre_registered_metric,start_date,allowed_parameters,pass_fail_rule,parameter_set_hash
+governed_research_registry,1,experiment_registry.csv,True,pre_registered_governed_experiments,Governed trials are counted separately from old unrestricted research.,,,,,,,

@@ -1,0 +1,2 @@
+start_date,end_date,number_of_decision_dates,number_of_tickers,model_modes_processed,total_prediction_rows,total_selected_rows,selected_only_sample_size,sample_gte_150,sample_gte_500,sample_gte_1000,sufficient_for_ic_analysis,sufficient_for_triple_barrier_validation,sufficient_for_regime_attribution,sufficient_for_meta_labeling_prototype,sufficient_for_ml_training,runtime_seconds
+2022-01-01,2026-06-17,220,23,"baseline, regime_gated_full_quant",10120,1694,1694,True,True,True,True,True,True,True,True,1601.63893866539

@@ -1,0 +1,26 @@
+===== PHASE 123 PIPELINE SYNCHRONIZATION REPORT =====
+final_status: phase123_pipeline_sync_pass
+freshness_status: FRESH
+root_cause: official gate previously validated raw forecast top-N pre-filter tickers and benchmark official exporter was not run by daily_research_run.py after official lifecycle.
+repair: daily_research_run.py now validates only official-impact tickers and runs official_benchmark_chart_repair.py after successful official lifecycle.
+production_changed: False
+model_logic_changed: False
+optimizer_changed: False
+parameters_changed: False
+real_orders: False
+
+Stale artifacts:
+- growth_official_paper_trades.csv: 2026-07-24 < 2026-08-13
+- growth_official_trade_lifecycle.csv: 2026-07-13 < 2026-08-13
+- growth_official_position_pnl.csv: 2026-07-13 < 2026-08-13
+- growth_official_estimated_cost_ledger.csv: 2026-07-24 < 2026-08-13
+
+Validation files:
+- phase123_official_freshness_audit.csv
+- phase123_idempotency_audit.csv
+- phase123_reconciliation.csv
+
+Commands to test:
+python daily_research_run.py --growth-paper --overwrite-same-day
+python phase123_pipeline_sync_audit.py
+python -m py_compile daily_research_run.py phase123_pipeline_sync_audit.py official_benchmark_chart_repair.py growth_official_paper_lifecycle.py dashboard_data_layer.py dashboard_app.py

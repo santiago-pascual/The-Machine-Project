@@ -1,0 +1,2 @@
+governance,data_mode,exact_canonical_rows,best_variant,paired_median_sharpe_delta,paired_median_max_dd_delta,paired_median_turnover_increase,improved_folds,comparable_folds,production_changed,paper_changed,automatic_promotion,reason
+redundant_with_dual_trend,reconstructed_stress_for_oos_incremental_test,14,hmm_ranking_adjustment_proxy,-1.1102230246251565e-16,0.0,0.05716108452950575,11,28,False,False,False,best variant hmm_ranking_adjustment_proxy paired median OOS Sharpe delta -0.000 is not meaningful; improved 11/28 folds

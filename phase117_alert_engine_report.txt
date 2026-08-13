@@ -1,0 +1,12 @@
+===== INSTITUTIONAL ALERT & MONITORING ENGINE =====
+timestamp: 2026-08-13 15:50:40
+latest_market_date: 2026-08-13
+health_score: 58.00
+health_label: Governance Blocked
+active_alerts: 5
+resolved_alerts: 5
+critical_or_blocker_alerts: 1
+runtime_ms: 64.16
+final_status: alert_engine_warning
+
+Rules are deterministic and read-only. No model, paper, optimizer, scheduler, accounting or order logic changed.

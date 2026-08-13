@@ -1,0 +1,7 @@
+variant,classification,reason,production_change
+momentum_confirmation_overlay,research only,needs further walk-forward validation,none
+raw_target_current,research only,needs further walk-forward validation,none
+soft_exit_rule,research only,needs further walk-forward validation,none
+top_winner_rescue_overlay,reject,uses benchmark hindsight; diagnostic only,none
+turnover_penalty_overlay,research only,needs further walk-forward validation,none
+winner_retention_rule,research only,needs further walk-forward validation,none

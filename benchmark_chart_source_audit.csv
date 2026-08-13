@@ -1,0 +1,5 @@
+source_file,namespace,exists,start_date,end_date,row_count,latest_cumulative_return,metric
+benchmark_equity_curves.csv,historical_debug_replay,True,2026-06-17,2026-08-13,24,-0.000737178587924214,old_growth_cumulative_pct
+benchmark_daily_returns.csv,historical_debug_replay,True,2026-06-17,2026-08-13,24,,old_debug_daily_returns
+growth_official_benchmark_equity.csv,official_forward_paper,True,2026-07-10,2026-08-13,10,0.0790867598780185,growth_gross_cumulative_pct
+growth_official_benchmark_equity.csv,official_forward_paper,True,2026-07-10,2026-08-13,10,0.07379505900319416,growth_estimated_net_cumulative_pct

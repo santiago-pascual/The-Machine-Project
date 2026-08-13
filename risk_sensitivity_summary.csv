@@ -1,0 +1,4 @@
+constraint,max_CAGR_delta,max_drawdown_delta,max_cash_delta,best_CAGR_parameter,lowest_drawdown_parameter,highest_cash_utilization_parameter
+exposure_cap,0.05037798783149494,0.09974628543440656,0.13911438755594974,60pct,40pct,60pct
+vol_target,0.005867390045352527,0.10024625053571601,0.04858492907275175,28pct,15pct,28pct
+dual_trend,0.02264162632624922,0.10029040440762182,0.060526014867454125,disabled_100_100_100,aggressive_50_30_15,disabled_100_100_100

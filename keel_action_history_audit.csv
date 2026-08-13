@@ -1,0 +1,11 @@
+date,was_keel_in_previous_holdings,was_keel_in_current_target_holdings,action,old_weight,new_weight,weight_change,reason,paper_trade_generated,trade_action,position_value
+2026-06-18,no,yes,BUY,0.0,0.15,0.15,new_growth_selection,yes,BUY,15000.0
+2026-06-22,yes,yes,REDUCE,0.15,0.1124999999999999,-0.0375,target_weight_reduced,yes,REDUCE,11430.07955743081
+2026-06-23,yes,yes,REDUCE,0.1124999999999999,0.1,-0.0124999999999999,target_weight_reduced,yes,REDUCE,9813.075250554277
+2026-06-24,yes,yes,HOLD,0.1,0.1,0.0,still_selected_same_weight,no,,9714.413631993531
+2026-06-25,yes,yes,HOLD,0.1,0.1,0.0,still_selected_same_weight,no,,9780.116544592443
+2026-06-26,yes,yes,HOLD,0.1,0.1,0.0,still_selected_same_weight,no,,9709.291161449924
+2026-06-29,yes,yes,HOLD,0.1,0.1,0.0,still_selected_same_weight,no,,10087.295305218637
+2026-06-30,yes,yes,HOLD,0.1,0.1,0.0,still_selected_same_weight,no,,9864.75429226202
+2026-07-01,yes,yes,HOLD,0.1,0.1,0.0,still_selected_same_weight,no,,9561.94908382806
+2026-07-02,yes,yes,HOLD,0.1,0.1,0.0,still_selected_same_weight,no,,9255.917084236256

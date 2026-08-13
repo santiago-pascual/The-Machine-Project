@@ -1,0 +1,6 @@
+question,answer,evidence,matches_v3_backtest_logic,optimizer_keyword_present
+Is original optimizer used in growth paper?,no,No optimizer call detected in current_growth_feature_generation.py or growth_candidate_paper_trading.py.,True,False
+Is growth paper using optimizer output as input?,no,Allocation comes from current_growth_candidate_allocation.csv final_growth_weight.,True,
+Is growth paper using equal/rank-weight allocation?,yes_equal_weight_after_raw_target_ranking,final_growth_weight is exposure / selected_count; selected tickers come from raw_target_return ranking plus soft_exit prior holdings.,True,
+Is optimizer bypassed after raw target ranking?,yes,current_growth_feature_generation.py sets final_weight = final_exposure / len(selected_tickers).,True,
+Does this match v3 reconstructed backtest logic?,yes,"Daily growth pipeline rank-selects, applies soft_exit, volatility target, exposure cap 60 and explicit dual_trend_filter exposure cap.",True,

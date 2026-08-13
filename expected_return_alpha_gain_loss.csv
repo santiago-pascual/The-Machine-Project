@@ -1,0 +1,12 @@
+from_stage,to_stage,rank_ic_20d_before,rank_ic_20d_after,rank_ic_delta,hit_rate_delta,monotonicity_delta,std_delta,improved_ic,compressed_signal,added_noise_flag
+raw_target_return_proxy,raw_daily_return_proxy,0.06624548949719505,0.06624548949719505,0.0,0.0,0.0,-0.027287928961595685,False,True,False
+raw_daily_return_proxy,before_penalties_proxy,0.06624548949719505,0.06624548949719505,0.0,0.0,0.0,0.0,False,False,False
+before_penalties_proxy,risk_free_adjusted_proxy,0.06624548949719505,0.06624548949719505,0.0,0.000494071146245112,0.0,0.0,False,False,False
+risk_free_adjusted_proxy,constant_penalty_proxy,0.06624548949719505,0.06624548949719505,0.0,0.001383399209486158,0.0,2.168404344971009e-19,False,False,False
+constant_penalty_proxy,signal_strength_adjusted_proxy,0.06624548949719505,0.029141955673681007,-0.03710353382351404,-0.023913043478260954,-0.8848484848484848,-0.0002524190263057588,False,True,True
+signal_strength_adjusted_proxy,regime_adjusted_proxy,0.029141955673681007,0.026942768334928344,-0.002199187338752663,0.0,0.12121212121212122,-0.00018112198117661317,False,True,False
+regime_adjusted_proxy,confidence_adjusted_proxy,0.026942768334928344,0.026942768334928344,0.0,0.0,0.0,-0.00022181615600482148,False,True,False
+confidence_adjusted_proxy,quality_adjusted_proxy,0.026942768334928344,0.026942768334928344,0.0,0.0,0.0,-6.654484680144687e-06,False,True,False
+quality_adjusted_proxy,timing_adjusted_proxy,0.026942768334928344,0.026942768334928344,0.0,0.0,0.0,-0.00014822864625022188,False,True,False
+timing_adjusted_proxy,scaling_final_proxy,0.026942768334928344,0.04497696135680983,0.018034193021881483,-0.05177865612648219,0.2666666666666666,0.0006879958969636187,True,False,False
+scaling_final_proxy,final_expected_daily_return,0.04497696135680983,0.04497696135680983,0.0,0.0,0.0,0.0,False,False,False

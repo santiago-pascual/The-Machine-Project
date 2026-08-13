@@ -1,0 +1,6 @@
+audit_item,status,risk,explanation
+point_in_time_universe,not_confirmed,high,"Historical snapshots appear generated from the available research universe, not a verified point-in-time constituent database."
+delisted_failed_names_absent,likely,high,No delisting/point-in-time membership file is available; failed names may be missing from historical candidate selection.
+current_universe_future_knowledge,possible,high,"If the universe was expanded from current Nasdaq/ticker lists, historical replay can include future survivor knowledge."
+SPAC_dead_ticker_presence,mixed,medium,"SPAC-like suffix tickers detected: 0. Presence helps, but it is not sufficient for point-in-time coverage."
+survivorship_bias_risk,high,high,Treat growth backtest as research-only until tested on a point-in-time survivorship-free universe.

@@ -1,0 +1,14 @@
+===== PHASE 118 INSTITUTIONAL REPORT GENERATOR =====
+timestamp: 2026-08-13 17:44:55
+final_status: report_generator_pass
+read_only: True
+model_changed: False
+optimizer_changed: False
+paper_changed: False
+parameters_changed: False
+orders_sent: False
+
+report_type                status start_date   end_date                       pdf                       html                 markdown warnings  official_sources        generated_at
+      daily report_generator_pass 2026-08-13 2026-08-13   sample_daily_report.pdf   sample_daily_report.html   sample_daily_report.md                         13 2026-08-13 17:44:54
+     weekly report_generator_pass 2026-08-13 2026-08-13  sample_weekly_report.pdf  sample_weekly_report.html  sample_weekly_report.md                         13 2026-08-13 17:44:55
+    monthly report_generator_pass 2026-07-13 2026-08-13 sample_monthly_report.pdf sample_monthly_report.html sample_monthly_report.md                         13 2026-08-13 17:44:55

@@ -1,0 +1,12 @@
+===== PHASE 104 BENCHMARK CHART REPAIR =====
+governance: official_benchmark_chart_pass
+old incorrect source: benchmark_equity_curves.csv (2026-06-17 to 2026-08-13)
+corrected source: growth_official_benchmark_equity.csv (2026-07-10 to 2026-08-13)
+old Growth return: -0.000737
+corrected Growth gross return: 0.079087
+corrected Growth estimated-net return: 0.073795
+SPY return: 0.030081
+QQQ return: 0.010365
+
+Official benchmark chart must use only growth_official_paper_performance.csv plus benchmark prices aligned to official dates.
+Historical debug/reconstructed files remain available for non-official scopes but are not used in Official Forward Paper cards/charts.

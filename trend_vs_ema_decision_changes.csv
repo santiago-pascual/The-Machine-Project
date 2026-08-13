@@ -1,0 +1,21 @@
+date,ema_only,trend_only,overlap,ema_selected_count,trend_selected_count,overlap_count,jaccard_overlap
+2022-06-15,"['AMAT', 'NVDA', 'PEP', 'VIST']","['AMZN', 'CCJ', 'META', 'QCOM']",[],4,4,0,0.0
+2022-06-23,['AAPL'],['META'],"['AMZN', 'CCJ', 'QCOM']",4,4,3,0.6
+2022-06-30,['AAPL'],['META'],"['AMZN', 'CCJ', 'QCOM']",4,4,3,0.6
+2022-07-08,['MSFT'],['TSLA'],"['CCJ', 'GOOGL', 'PEP']",4,4,3,0.6
+2022-07-15,[],[],"['AAPL', 'COST', 'GOOGL', 'QQQ']",4,4,4,1.0
+2022-07-22,[],[],"['MSFT', 'QCOM', 'TSLA', 'TXN']",4,4,4,1.0
+2022-07-29,[],[],"['AAPL', 'AVGO', 'SPY', 'TXN']",4,4,4,1.0
+2022-08-05,[],[],"['AMD', 'NVDA', 'QQQ', 'TXN']",4,4,4,1.0
+2022-08-12,[],[],"['AMD', 'AMZN', 'TXN', 'YPF']",4,4,4,1.0
+2022-08-19,[],[],"['QQQ', 'TSLA', 'VIST', 'YPF']",4,4,4,1.0
+2022-08-26,[],[],"['VIST', 'YPF']",2,2,2,1.0
+2022-09-02,[],[],"['SPY', 'YPF']",2,2,2,1.0
+2022-09-12,[],[],"['AVGO', 'META', 'MSFT', 'YPF']",4,4,4,1.0
+2022-09-19,[],[],"['TSLA', 'TXN', 'VIST', 'YPF']",4,4,4,1.0
+2022-09-26,[],[],"['CCJ', 'YPF']",2,2,2,1.0
+2022-10-03,['GOOGL'],['NVDA'],"['AAPL', 'SPY', 'YPF']",4,4,3,0.6
+2022-10-10,['SPY'],['META'],"['CCJ', 'VIST', 'YPF']",4,4,3,0.6
+2022-10-17,[],[],"['GOOGL', 'TXN', 'VIST', 'YPF']",4,4,4,1.0
+2022-10-24,[],[],"['AMZN', 'PEP', 'QQQ', 'VIST']",4,4,4,1.0
+2022-10-31,[],[],"['ADBE', 'CSCO', 'SPY', 'VIST']",4,4,4,1.0

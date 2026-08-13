@@ -1,0 +1,2 @@
+classification,growth_champion_v2,production_changed,parameter_tuning,reason
+growth_champion_v2,growth_v1_exposure_cap_60,False,False,cap 60 improves risk-adjusted metrics enough to become champion despite lower CAGR.

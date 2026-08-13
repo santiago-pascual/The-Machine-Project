@@ -1,0 +1,49 @@
+section,metric,value
+System Status,current_production_mode,baseline
+System Status,research_modes_available,"full_quant_research, regime_gated_full_quant"
+System Status,promotion_status,blocked
+System Status,overfitting_warning_level,high
+System Status,total_strategy_trials,14649
+System Status,governance_status,trial_budget_warning
+Performance Summary,baseline_sharpe,1.7362553593875405
+Performance Summary,full_quant_sharpe,0.047660895678759085
+Performance Summary,regime_gated_sharpe,1.747677652164038
+Performance Summary,best_window,larger_walk_forward_2022_to_latest
+Performance Summary,worst_window,2023-01-01_to_2023-12-31
+Performance Summary,average_cash,0.5359999999999999
+Performance Summary,max_drawdown,-0.0422817312896928
+Risk Summary,VaR_95,missing
+Risk Summary,CVaR_95,missing
+Risk Summary,Sortino,0.5320858029222996
+Risk Summary,Calmar,2.120732071048876
+Risk Summary,max_drawdown,-0.032479290362176
+Signal Quality,triple_barrier_TP_rate,0.1927536231884058
+Signal Quality,triple_barrier_SL_rate,0.24130434782608695
+Signal Quality,triple_barrier_timeout_rate,0.5659420289855073
+Signal Quality,selected_only_TP_rate,0.26126126126126126
+Signal Quality,selected_only_SL_rate,0.20270270270270271
+Signal Quality,best_predictive_feature,signal_strength
+Signal Quality,worst_predictive_feature,target_price
+Regime Summary,regimes_where_model_works,risk_off
+Regime Summary,regimes_where_model_fails,neutral
+Regime Summary,regime_gated_verdict,weak / diagnostic only
+Anti-Overfitting Summary,observed_best_sharpe,3.264990930973603
+Anti-Overfitting Summary,expected_max_sharpe,2.18999170691692
+Anti-Overfitting Summary,deflated_sharpe,1.074999224056683
+Anti-Overfitting Summary,PBO_proxy,1.0
+Anti-Overfitting Summary,promotion_blocked_reasons,"deflated_sharpe_warning, pbo_too_high, robustness_score_low"
+Next Action Recommendation,recommendation,reduce overfitting
+Clean Research Evaluation,all_time_total_trials,14649
+Clean Research Evaluation,all_time_PBO_proxy,1.0
+Clean Research Evaluation,all_time_deflated_sharpe,1.074999224056683
+Clean Research Evaluation,all_time_promotion_classification,still blocked
+Clean Research Evaluation,governed_total_trials,2
+Clean Research Evaluation,governed_PBO_proxy,0.1846573590279973
+Clean Research Evaluation,governed_deflated_sharpe,1.6299366499124903
+Clean Research Evaluation,governed_promotion_classification,eligible for paper trading only
+Growth Candidate,growth_candidate_status,default growth paper model
+Growth Candidate,growth_candidate_name,growth_champion_final
+Growth Candidate,growth_candidate_variant,growth_v1_exposure_cap_60_dual_trend_filter
+Growth Candidate,growth_candidate_sharpe,1.341078
+Growth Candidate,growth_candidate_max_drawdown,-0.197609
+Growth Candidate,growth_candidate_exposure_cap,0.60

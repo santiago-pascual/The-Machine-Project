@@ -1,0 +1,13 @@
+model,calibration_method,features_used,train_size,calibration_size,test_size,brier_score,roc_auc,calibration_error,expected_calibration_error
+gradient_boosting_small,platt,"signal_strength, expected_daily_return, expected_total_return, daily_volatility",1016,339,339,0.24148243686797324,0.5666234047155527,0.01780604444692202,0.0795807010916952
+logistic_regression,platt,"signal_strength, expected_daily_return, expected_total_return, daily_volatility",1016,339,339,0.2417181106498632,0.5497151921551663,0.018241706740751762,0.0781273620241283
+average_probability_ensemble,platt,"signal_strength, expected_daily_return, expected_total_return, daily_volatility",1016,339,339,0.2463195351988382,0.4295911745619727,0.015654014940019056,0.10701677164467627
+logistic_regression,isotonic,"signal_strength, expected_daily_return, expected_total_return, daily_volatility",1016,339,339,0.2484783900564291,0.5457855649289783,0.03368995680528086,0.05287737767455811
+logistic_regression,raw,"signal_strength, expected_daily_return, expected_total_return, daily_volatility",1016,339,339,0.24979585284019232,0.5497151921551663,0.09131363487696975,0.09357187925767854
+gradient_boosting_small,isotonic,"signal_strength, expected_daily_return, expected_total_return, daily_volatility",1016,339,339,0.25083355496022,0.45850457855649296,0.013248552560167992,0.08423532580215114
+average_probability_ensemble,raw,"signal_strength, expected_daily_return, expected_total_return, daily_volatility",1016,339,339,0.25127530044202234,0.4295911745619727,0.055660801617630096,0.13090320568982383
+gradient_boosting_small,raw,"signal_strength, expected_daily_return, expected_total_return, daily_volatility",1016,339,339,0.25394059201867913,0.4333765952844472,0.015698477956481494,0.11139235302328285
+random_forest_small,platt,"signal_strength, expected_daily_return, expected_total_return, daily_volatility",1016,339,339,0.2544339873157772,0.4367654481217103,0.011010312804078604,0.11752536672350272
+random_forest_small,raw,"signal_strength, expected_daily_return, expected_total_return, daily_volatility",1016,339,339,0.26189859220499195,0.4367654481217103,0.09136724793240181,0.17827426069837676
+average_probability_ensemble,isotonic,"signal_strength, expected_daily_return, expected_total_return, daily_volatility",1016,339,339,0.2656162645041681,0.4488427428077006,0.017772764902233562,0.14497452692160598
+random_forest_small,isotonic,"signal_strength, expected_daily_return, expected_total_return, daily_volatility",1016,339,339,0.28506939243289026,0.44332684404066625,0.0051753064649893155,0.1204537062020243

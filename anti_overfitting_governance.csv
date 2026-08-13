@@ -1,0 +1,2 @@
+all_time_trials,effective_independent_trials,CSCV_PBO,deflated_sharpe,DSR_p_value,SPA_or_reality_check_p_value,growth_champion_final_survives_multiple_testing_correction,classification,production_changed,paper_changed,parameter_tuning,reason
+14649,3,0.6940115440115441,2.044517205085236,0.0013615530804788056,0.0,False,research_only,False,False,False,all_time_trials_high=14649; CSCV_PBO=0.694; DSR_p=0.001; reality_check_p=0.000

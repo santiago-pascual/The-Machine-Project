@@ -1,0 +1,15 @@
+===== PAPER TRADING MONITOR =====
+paper model mode: regime_gated_full_quant
+paper cumulative return: -0.999999
+paper Sharpe: -0.214098
+paper max drawdown: -0.999999
+expected Sharpe: 1.747678
+expected max drawdown: -0.042282
+paper turnover vs expected: -0.350155
+paper cash: 0.465551
+expected cash: 0.536000
+drift flags: drawdown_worse_than_expected, underperforming_expected_return, volatility_higher_than_expected, selected_tickers_diverge_from_model
+governance status: trial_budget_warning
+promotion status: blocked
+current holdings: ADAM, AMGN, ANIK, ASRV, CASH
+Paper trading continues. Production promotion remains blocked.

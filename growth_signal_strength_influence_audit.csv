@@ -1,0 +1,7 @@
+component,signal_strength_influences,status,evidence
+growth_raw_target_ranking,False,removed_from_active_logic,current_growth_feature_generation sorts by raw_target_return only
+growth_soft_exit,False,diagnostic_only,soft_exit retains prior tickers only if raw_target_return > 0
+growth_filters,False,diagnostic_only,"quality/tradability filters use price, volume, history, volatility and blacklist rules"
+growth_position_sizing,False,diagnostic_only,equal weights within final exposure
+expected_returns_model_baseline,True,baseline_not_growth_allocation,baseline expected-return pipeline still has signal adjustment; production defaults unchanged
+dashboard_and_csv_diagnostics,False,retained_for_monitoring,signal_strength_adjustment_value retained only for diagnostics

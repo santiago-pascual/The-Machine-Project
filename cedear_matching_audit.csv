@@ -1,0 +1,140 @@
+model_ticker,match_status,available_as_cedear,byma_ticker,underlying_ticker,exchange,ratio,notes
+AAPL,exact_match,True,AAPL,AAPL,NASDAQ,20:1,matched_by_underlying_or_byma_ticker
+NVDA,exact_match,True,NVDA,NVDA,NASDAQ,24:1,matched_by_underlying_or_byma_ticker
+MSTR,exact_match,True,MSTR,MSTR,NASDAQ GS,20:1,matched_by_underlying_or_byma_ticker
+SNAP,exact_match,True,SNAP,SNAP,NYSE,1:1,matched_by_underlying_or_byma_ticker
+OKLO,exact_match,True,OKLO,OKLO,NYSE,28:1,matched_by_underlying_or_byma_ticker
+JMIA,exact_match,True,JMIA,JMIA,NYSE,1:1,matched_by_underlying_or_byma_ticker
+XYZ,exact_match,True,XYZ,XYZ,NYSE,20:1,matched_by_underlying_or_byma_ticker
+RKLB,exact_match,True,RKLB,RKLB,NASDAQ,12:1,matched_by_underlying_or_byma_ticker
+RBLX,exact_match,True,RBLX,RBLX,NYSE,2:1,matched_by_underlying_or_byma_ticker
+AVGO,exact_match,True,AVGO,AVGO,NASDAQ,39:1,matched_by_underlying_or_byma_ticker
+INTC,exact_match,True,INTC,INTC,NASDAQ,5:1,matched_by_underlying_or_byma_ticker
+TWLO,exact_match,True,TWLO,TWLO,NYSE,36:1,matched_by_underlying_or_byma_ticker
+SPOT,exact_match,True,SPOT,SPOT,NYSE,28:1,matched_by_underlying_or_byma_ticker
+TEAM,exact_match,True,TEAM,TEAM,NASDAQ GS,47:1,matched_by_underlying_or_byma_ticker
+SPCE,exact_match,True,SPCE,SPCE,NYSE,1:2,matched_by_underlying_or_byma_ticker
+SNOW,exact_match,True,SNOW,SNOW,NYSE,30:1,matched_by_underlying_or_byma_ticker
+TSM,exact_match,True,TSM,TSM,NYSE,9:1,matched_by_underlying_or_byma_ticker
+LRCX,exact_match,True,LRCX,LRCX,NASDAQ,56:1,matched_by_underlying_or_byma_ticker
+TSLA,exact_match,True,TSLA,TSLA,NASDAQ,15:1,matched_by_underlying_or_byma_ticker
+ASTS,exact_match,True,ASTS,ASTS,NASDAQ,15:1,matched_by_underlying_or_byma_ticker
+RGTI,exact_match,True,RGTI,RGTI,NASDAQ CM,2:1,matched_by_underlying_or_byma_ticker
+KEEL,exact_match,True,KEEL,KEEL,NASDAQ GM,1:5,matched_by_underlying_or_byma_ticker
+CCJ,exact_match,True,CCJ,CCJ,NYSE,23:1,matched_by_underlying_or_byma_ticker
+YPF,still_missing,False,,,,,questionable_mapping_requires_manual_confirmation:Only allow if YPF is present in the CEDEAR source; current pasted list search did not confirm it.
+VIST,exact_match,True,VIST,VIST,NYSE,3:1,matched_by_underlying_or_byma_ticker
+ASML,exact_match,True,ASML,ASML,NASDAQ GS,146:1,matched_by_underlying_or_byma_ticker
+ARM,exact_match,True,ARM,ARM,NASDAQ,27:1,matched_by_underlying_or_byma_ticker
+BABA,exact_match,True,BABA,BABA,NYSE,9:1,matched_by_underlying_or_byma_ticker
+TCEHY,still_missing,False,,,,,not_found_in_cedear_list
+TM,exact_match,True,TM,TM,NYSE,15:1,matched_by_underlying_or_byma_ticker
+SONY,exact_match,True,SONY,SONY,NYSE,8:1,matched_by_underlying_or_byma_ticker
+NVO,exact_match,True,NVO,NVO,NYSE,7:1,matched_by_underlying_or_byma_ticker
+SAP,exact_match,True,SAP,SAP,NYSE,6:1,matched_by_underlying_or_byma_ticker
+SHEL,exact_match,True,SHEL,SHEL,NYSE,2:1,matched_by_underlying_or_byma_ticker
+BP,exact_match,True,BP,BP,NYSE,5:1,matched_by_underlying_or_byma_ticker
+RIO,exact_match,True,RIO,RIO,NYSE,8:1,matched_by_underlying_or_byma_ticker
+BHP,exact_match,True,BHP,BHP,NYSE,2:1,matched_by_underlying_or_byma_ticker
+VALE,exact_match,True,VALE,VALE,NYSE,2:1,matched_by_underlying_or_byma_ticker
+MELI,exact_match,True,MELI,MELI,NASDAQ,120:1,matched_by_underlying_or_byma_ticker
+SHOP,exact_match,True,SHOP,SHOP,NYSE,107:1,matched_by_underlying_or_byma_ticker
+SE,exact_match,True,SE,SE,NYSE,32:1,matched_by_underlying_or_byma_ticker
+NU,alias_match,True,UN,UN,NYSE,2:1,alias:BYMA CEDEAR code UN maps to NU Holdings Ltd/Cayman Islands.
+PBR,exact_match,True,PBR,PBR,NYSE,1:1,matched_by_underlying_or_byma_ticker
+EC,still_missing,False,,,,,not_found_in_cedear_list
+GLOB,exact_match,True,GLOB,GLOB,NYSE,18:1,matched_by_underlying_or_byma_ticker
+UBER,exact_match,True,UBER,UBER,NYSE,2:1,matched_by_underlying_or_byma_ticker
+COIN,exact_match,True,COIN,COIN,NASDAQ,27:1,matched_by_underlying_or_byma_ticker
+PLTR,exact_match,True,PLTR,PLTR,NYSE,3:1,matched_by_underlying_or_byma_ticker
+AMD,exact_match,True,AMD,AMD,NASDAQ,10:1,matched_by_underlying_or_byma_ticker
+SMCI,still_missing,False,,,,,not_found_in_cedear_list
+MU,exact_match,True,MU,MU,NASDAQ GS,5:1,matched_by_underlying_or_byma_ticker
+NET,still_missing,False,,,,,not_found_in_cedear_list
+MSFT,exact_match,True,MSFT,MSFT,NASDAQ,30:1,matched_by_underlying_or_byma_ticker
+AMZN,exact_match,True,AMZN,AMZN,NYSE,144:1,matched_by_underlying_or_byma_ticker
+META,exact_match,True,META,META,NASDAQ,24:1,matched_by_underlying_or_byma_ticker
+GOOGL,exact_match,True,GOOGL,GOOGL,NASDAQ,58:1,matched_by_underlying_or_byma_ticker
+GOOG,alias_match,True,GOOGL,GOOGL,NASDAQ,58:1,alias:GOOG class C mapped to available GOOGL Alphabet CEDEAR only when GOOG is missing.
+COST,exact_match,True,COST,COST,NASDAQ,48:1,matched_by_underlying_or_byma_ticker
+NFLX,exact_match,True,NFLX,NFLX,NASDAQ,48:1,matched_by_underlying_or_byma_ticker
+TMUS,exact_match,True,TMUS,TMUS,NASDAQ,33:1,matched_by_underlying_or_byma_ticker
+CSCO,exact_match,True,CSCO,CSCO,NASDAQ,5:1,matched_by_underlying_or_byma_ticker
+PEP,exact_match,True,PEP,PEP,NASDAQ,18:1,matched_by_underlying_or_byma_ticker
+AZN,exact_match,True,AZN,AZN,NYSE,4:1,matched_by_underlying_or_byma_ticker
+LIN,still_missing,False,,,,,not_found_in_cedear_list
+INTU,still_missing,False,,,,,not_found_in_cedear_list
+QCOM,exact_match,True,QCOM,QCOM,NASDAQ,11:1,matched_by_underlying_or_byma_ticker
+TXN,exact_match,True,TXN,TXN,NASDAQ,5:1,matched_by_underlying_or_byma_ticker
+AMGN,exact_match,True,AMGN,AMGN,NASDAQ,30:1,matched_by_underlying_or_byma_ticker
+ISRG,exact_match,True,ISRG,ISRG,NASDAQ,90:1,matched_by_underlying_or_byma_ticker
+BKNG,exact_match,True,BKNG,BKNG,NASDAQ,700:1,matched_by_underlying_or_byma_ticker
+AMAT,exact_match,True,AMAT,AMAT,NASDAQ,5:1,matched_by_underlying_or_byma_ticker
+ADBE,exact_match,True,ADBE,ADBE,NASDAQ,44:1,matched_by_underlying_or_byma_ticker
+PDD,exact_match,True,PDD,PDD,NASDAQ GS,25:1,matched_by_underlying_or_byma_ticker
+HON,exact_match,True,HON,HON,NYSE,8:1,matched_by_underlying_or_byma_ticker
+GILD,exact_match,True,GILD,GILD,NASDAQ,4:1,matched_by_underlying_or_byma_ticker
+CMCSA,still_missing,False,,,,,not_found_in_cedear_list
+PANW,exact_match,True,PANW,PANW,NASDAQ GS,50:1,matched_by_underlying_or_byma_ticker
+ADP,exact_match,True,ADP,ADP,NASDAQ,6:1,matched_by_underlying_or_byma_ticker
+VRTX,exact_match,True,VRTX,VRTX,NYSE,101:1,matched_by_underlying_or_byma_ticker
+SBUX,exact_match,True,SBUX,SBUX,NASDAQ,12:1,matched_by_underlying_or_byma_ticker
+ADI,exact_match,True,ADI,ADI,NASDAQ,15:1,matched_by_underlying_or_byma_ticker
+KLAC,still_missing,False,,,,,not_found_in_cedear_list
+CRWD,exact_match,True,CRWD,CRWD,NASDAQ GS,79:1,matched_by_underlying_or_byma_ticker
+MDLZ,exact_match,True,MDLZ,MDLZ,NASDAQ,15:1,matched_by_underlying_or_byma_ticker
+REGN,still_missing,False,,,,,not_found_in_cedear_list
+CEG,exact_match,True,CEG,CEG,NASDAQ GS,45:1,matched_by_underlying_or_byma_ticker
+SNPS,still_missing,False,,,,,not_found_in_cedear_list
+CDNS,still_missing,False,,,,,not_found_in_cedear_list
+MAR,still_missing,False,,,,,not_found_in_cedear_list
+ORLY,exact_match,True,ORLY,ORLY,NASDAQ,222:1,matched_by_underlying_or_byma_ticker
+CTAS,still_missing,False,,,,,not_found_in_cedear_list
+DASH,still_missing,False,,,,,not_found_in_cedear_list
+FTNT,still_missing,False,,,,,not_found_in_cedear_list
+PYPL,exact_match,True,PYPL,PYPL,NASDAQ,8:1,matched_by_underlying_or_byma_ticker
+CSX,still_missing,False,,,,,not_found_in_cedear_list
+ABNB,exact_match,True,ABNB,ABNB,NASDAQ GS,15:1,matched_by_underlying_or_byma_ticker
+ROP,still_missing,False,,,,,not_found_in_cedear_list
+WDAY,still_missing,False,,,,,not_found_in_cedear_list
+MNST,still_missing,False,,,,,not_found_in_cedear_list
+ADSK,still_missing,False,,,,,not_found_in_cedear_list
+AEP,still_missing,False,,,,,not_found_in_cedear_list
+NXPI,still_missing,False,,,,,not_found_in_cedear_list
+PAYX,still_missing,False,,,,,not_found_in_cedear_list
+MRVL,exact_match,True,MRVL,MRVL,NASDAQ,14:1,matched_by_underlying_or_byma_ticker
+CHTR,still_missing,False,,,,,not_found_in_cedear_list
+KDP,still_missing,False,,,,,not_found_in_cedear_list
+PCAR,exact_match,True,PCAR,PCAR,NASDAQ,3:1,matched_by_underlying_or_byma_ticker
+ROST,exact_match,True,ROST,ROST,NASDAQ,4:1,matched_by_underlying_or_byma_ticker
+FAST,still_missing,False,,,,,not_found_in_cedear_list
+ODFL,still_missing,False,,,,,not_found_in_cedear_list
+CPRT,still_missing,False,,,,,not_found_in_cedear_list
+DDOG,still_missing,False,,,,,not_found_in_cedear_list
+EA,exact_match,True,EA,EA,NASDAQ,14:1,matched_by_underlying_or_byma_ticker
+KHC,still_missing,False,,,,,not_found_in_cedear_list
+EXC,still_missing,False,,,,,not_found_in_cedear_list
+BKR,exact_match,True,BKR,BKR,NASDAQ,7:1,matched_by_underlying_or_byma_ticker
+TTWO,still_missing,False,,,,,not_found_in_cedear_list
+VRSK,still_missing,False,,,,,not_found_in_cedear_list
+XEL,still_missing,False,,,,,not_found_in_cedear_list
+ZS,still_missing,False,,,,,not_found_in_cedear_list
+FANG,still_missing,False,,,,,not_found_in_cedear_list
+CCEP,still_missing,False,,,,,not_found_in_cedear_list
+GEHC,still_missing,False,,,,,not_found_in_cedear_list
+IDXX,still_missing,False,,,,,not_found_in_cedear_list
+MCHP,still_missing,False,,,,,not_found_in_cedear_list
+CSGP,still_missing,False,,,,,not_found_in_cedear_list
+DXCM,still_missing,False,,,,,not_found_in_cedear_list
+ON,still_missing,False,,,,,not_found_in_cedear_list
+ANSS,still_missing,False,,,,,not_found_in_cedear_list
+BIIB,exact_match,True,BIIB,BIIB,NASDAQ,13:1,matched_by_underlying_or_byma_ticker
+CDW,still_missing,False,,,,,not_found_in_cedear_list
+GFS,still_missing,False,,,,,not_found_in_cedear_list
+ILMN,still_missing,False,,,,,not_found_in_cedear_list
+MDB,still_missing,False,,,,,not_found_in_cedear_list
+WBD,still_missing,False,,,,,not_found_in_cedear_list
+MRNA,exact_match,True,MRNA,MRNA,NASDAQ,19:1,matched_by_underlying_or_byma_ticker
+SIRI,still_missing,False,,,,,not_found_in_cedear_list
+SPY,exact_match,True,SPY,SPY,NYSE ARCA,60:1,matched_by_underlying_or_byma_ticker
+QQQ,exact_match,True,QQQ,QQQ,NASDAQ,20:1,matched_by_underlying_or_byma_ticker

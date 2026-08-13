@@ -1,0 +1,9 @@
+source_file,namespace,loaded,row_count,date_range
+growth_official_paper_state.csv,official_forward_paper,True,8,2026-07-10 to 2026-07-13
+growth_official_position_pnl.csv,official_forward_paper,True,6,2026-07-10 to 2026-07-13
+growth_official_trade_lifecycle.csv,official_forward_paper,True,8,2026-07-10 to 2026-07-13
+growth_official_paper_actions.csv,official_forward_paper,True,8,2026-07-10 to 2026-07-13
+growth_official_paper_trades.csv,official_forward_paper,True,3,2026-07-10 to 2026-07-10
+growth_official_estimated_cost_ledger.csv,official_forward_paper,True,3,2026-07-10 to 2026-07-10
+growth_official_paper_monitor.csv,official_forward_paper,True,2,2026-07-10 to 2026-07-13
+official_holding_metadata.csv,official_forward_paper,True,3,

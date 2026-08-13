@@ -1,0 +1,9 @@
+===== FOUR-STATE HMM INCREMENTAL PORTFOLIO TEST =====
+data_mode: reconstructed_stress_for_oos_incremental_test
+exact_canonical_rows: 14
+folds_evaluated: 28
+governance: redundant_with_dual_trend
+reason: best variant hmm_ranking_adjustment_proxy paired median OOS Sharpe delta -0.000 is not meaningful; improved 11/28 folds
+note: hmm_ranking_adjustment_proxy is not a production-parity cross-sectional ranking rebuild; it is a causal regime-conditioned proxy because daily constituent ranking panels are not available in canonical history.
+production_changed: False
+paper_changed: False

@@ -1,0 +1,2 @@
+registry_name,trial_count,source,mix_with_governed,status,notes,experiment_id,hypothesis,pre_registered_metric,start_date,allowed_parameters,pass_fail_rule,parameter_set_hash
+all_time_research_registry,14649,strategy_trial_log.csv,False,historical_exploratory_trials_only,Preserved for all-time overfitting warning; not mixed with frozen champion evaluation.,,,,,,,

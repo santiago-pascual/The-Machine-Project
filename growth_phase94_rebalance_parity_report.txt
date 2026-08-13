@@ -1,0 +1,22 @@
+===== PHASE 94 FINAL GOVERNANCE REPORT =====
+classification: exact_rebalance_parity_ready
+backtest cadence: every 5 trading sessions
+anchor date: 2023-01-04
+execution lag: close_t_signal_apply_next_session_return
+date parity match rate: 1.0
+holding parity match rate: 1.0
+weight parity match rate: 1.0
+paper history rebuilt: yes
+paper rows rebuilt: 15
+scheduled rebalance dates in paper history: 2026-06-17, 2026-06-25, 2026-07-02, 2026-07-10
+latest paper date: 2026-07-10
+next rebalance date: nan
+final holdings: KEEL, ARM, BABA, SE
+final exposure: 0.4
+final cash: 0.6
+final portfolio value: 91282.13892269076
+final corrected cumulative return: -0.0871786107730913
+production changed: False
+optimizer changed: False
+model parameters changed: False
+warnings: early replay dates before exact raw-target capture used available forecast_history fields; latest/current date uses raw_target_return_exact.

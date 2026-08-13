@@ -1,0 +1,39 @@
+===== PHASE 115 HISTORICAL REPLAY REPORT =====
+
+Final status: historical_replay_pass
+
+First replay date: 2026-07-10
+Last replay date: 2026-07-13
+Replay observations: 2
+
+Missing historical sources:
+growth_official_daily_portfolio.csv
+growth_official_position_history.csv
+growth_official_portfolio_equity.csv
+growth_official_accounting.csv
+growth_official_governance.csv
+growth_official_pipeline_history.csv
+growth_official_scheduler.csv
+growth_rebalance_history.csv
+
+Render performance:
+render smoke-test passed; lazy date-indexed official CSV lookup
+
+Playback performance:
+2 official observations; slider/previous/next/play controls available
+
+Validation results:
+      date  holdings_rows  performance_available  benchmark_available  weights_sum  portfolio_value  holdings_value_sum    value_diff  no_future_leakage     namespace warnings
+2026-07-10              4                   True                 True          1.0    100000.000000       100000.000000 -1.455192e-11               True official_only         
+2026-07-13              4                   True                 True          1.0     98845.813572        98845.813572 -1.455192e-11               True official_only         
+
+Integrity results:
+      date  holdings_equal_official_holdings  portfolio_value_equals_official_accounting  benchmark_equals_stored_benchmark  no_future_leakage  namespace_mixing  production_mutation  read_only warnings
+2026-07-10                              True                                        True                               True               True             False                False       True         
+2026-07-13                              True                                        True                               True               True             False                False       True         
+
+Scope rules:
+Only official forward historical files are used for replay dates and snapshots. Debug/reconstructed sources are not used. Missing historical feature/pipeline data is labelled unavailable instead of estimated.
+
+Rules:
+Dashboard only. Read-only. No model, optimizer, paper trading, ranking, parameter, calculation or real-order changes.

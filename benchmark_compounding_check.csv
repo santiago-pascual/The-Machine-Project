@@ -1,0 +1,4 @@
+series,observations,final_return_pct,max_compounding_diff,duplicated_compounding_suspected
+Growth,878,1417.788575013654,0.0,False
+SPY,878,1016.8761250375231,0.0,False
+QQQ,878,2654.266032221023,0.0,False

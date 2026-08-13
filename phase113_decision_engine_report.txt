@@ -1,0 +1,64 @@
+===== PHASE 113 DECISION ENGINE REPORT =====
+
+Final status: decision_engine_warning
+
+Universe count: 266
+
+Stage counts:
+                         stage  input_count  passed_count  excluded_count  retained_pct
+                 Full Universe          266           266               0      1.000000
+                Data Available          266           266               0      1.000000
+Blacklist / Symbol Eligibility          266           266               0      1.000000
+                 Basic Quality          266            53             213      0.199248
+     Institutional Tradability           53            53               0      1.000000
+            Raw Target Ranking           53            53               0      1.000000
+    Soft Exit / Prior Holdings           53             4              49      0.075472
+            Final Sanity Check            3             3               0      1.000000
+                Position Limit            3             3               0      1.000000
+               Final Portfolio            4             4               0      1.000000
+
+Final holdings:
+ARM, BABA, SE
+
+Top rejected candidates:
+AGEN, AFJK, ABVX, AIXI, ASTC, AKTX, AIRE, ANPA, ANNA, AEHL
+
+Largest exclusion reasons:
+median 20D dollar volume below $20,000,000, median 60D dollar volume below $50,000,000, reverse split/extreme discontinuity suspected, 20D average volume below 500,000 shares, price below $5, current price below $5, 60D annualized volatility above 120%, suspicious spike/gap behavior
+
+Pending signals:
+ticker pending_signal_type
+  TEAM       PENDING_ENTER
+   ARM        PENDING_HOLD
+  BABA        PENDING_HOLD
+    SE        PENDING_HOLD
+
+Missing attribution data:
+                                       item     status                                                             note
+exact feature marginal contribution weights not_stored Feature value available; exact marginal contribution not stored.
+
+Render errors:
+none; py_compile and render smoke-test passed
+
+Integrity checks:
+                                  check status                                                                              detail
+final_holdings_equal_official_portfolio   PASS                     official=['ARM', 'BABA', 'SE'], explained=['ARM', 'BABA', 'SE']
+                sankey_counts_available   PASS                                                                                  10
+       rejected_candidates_have_reasons   PASS                                                                                  20
+    no_fabricated_feature_contributions   PASS feature values shown; exact marginal contribution labeled unavailable unless stored
+             official_current_namespace   PASS                       debug/reconstructed sources not used in current decision view
+            pending_signals_no_mutation   PASS                                   pending signals read from current allocation only
+                              read_only   PASS                                                             no order/model controls
+
+Rules:
+Dashboard/export diagnostics only. No model logic, ranking, optimizer, paper trading, parameters or real orders changed.
+
+
+===== PHASE 113 UI DATA FIX =====
+
+Fixed chart titles showing undefined in Decision Engine.
+Fixed rule-path hydration from holdings/current features so selected holdings use real current_price.
+BABA Price > $5 rule status: PASS.
+Render smoke-test: PASS.
+py_compile: PASS.
+No model, ranking, optimizer, paper trading, parameter or order logic changed.

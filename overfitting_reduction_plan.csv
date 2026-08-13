@@ -1,0 +1,15 @@
+category,item,severity,evidence,recommendation,status
+overfitting_source,excessive_total_trials,critical,14647,cap total independent trials and require experiment registry,blocked_until_governed
+overfitting_source,threshold_grid_too_wide,critical,14400,reduce threshold grid to economically justified values only,blocked
+overfitting_source,tp_sl_grid_too_wide,high,200,restrict TP/SL grid to stable region and avoid repeated mining,restricted
+overfitting_source,small_sample_sizes,critical,21.0,increase walk-forward observations before promotion,blocked_for_promotion
+overfitting_source,weak_robustness_score,critical,42.84616608773379,do not promote configs below robustness threshold,blocked_for_promotion
+overfitting_source,high_pbo,critical,1.0,treat all optimized configs as research-only,blocked_for_promotion
+overfitting_source,inconsistent_full_quant_performance,high,1/4 windows improved,keep full quant diagnostic or gated only,restricted
+overfitting_source,unstable_or_rejected_best_configs,high,100.00% rejected,ignore rejected top configs,blocked
+constrained_research_rule,trial_budget,policy,,"max 5 new strategy variants, 24 threshold configs, 12 TP/SL configs per cycle",allowed_with_limits
+constrained_research_rule,minimum_evidence,policy,,"require sample_size >= 150, 4 independent windows, robustness >= 60, PBO <= 0.30",required_for_promotion
+constrained_research_rule,threshold_search,policy,,use constrained grid only; no 14k-grid reruns,restricted
+constrained_research_rule,tp_sl_search,policy,,use stable TP/SL region only; reject TP<SL unless justified,restricted
+constrained_research_rule,full_quant_research,policy,,keep diagnostic/gated only; no promotion,blocked_for_promotion
+constrained_research_rule,next_allowed_work,policy,,collect more out-of-sample data and validate existing signals,allowed

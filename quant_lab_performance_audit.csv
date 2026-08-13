@@ -1,0 +1,6 @@
+item,status,detail
+lazy_rendering,PASS,section selected before render
+cache_policy,PASS,st.cache_data wrappers for price matrices and Monte Carlo when Streamlit is available
+simulation_controls,PASS,simulation count/horizon controlled by user
+namespace_mixing,PASS,official/current and diagnostic sources are labelled
+model_mutation,PASS,read-only dashboard diagnostics

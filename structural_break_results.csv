@@ -1,0 +1,9 @@
+feature,source_column,dates,first_period_mean_ic,recent_period_mean_ic,mean_ic_change,sign_flip,cusum_stat,chow_like_t_stat,bai_perron_candidate_breaks,bai_perron_rss_improvement,volatility_increase,status
+raw_target_return_exact,expected_total_return,220.0,0.039466616365914066,0.03700363742258424,-0.0024629789433298285,False,0.8939506437328417,-0.06712214437581587,42|92,0.031074409856156247,1.0439258801553342,ok
+kalman,,,,,,,,,,,,missing
+hurst,,,,,,,,,,,,missing
+ou,,,,,,,,,,,,missing
+garch,,,,,,,,,,,,missing
+entropy,,,,,,,,,,,,missing
+regime,,,,,,,,,,,,missing
+signal_strength,signal_strength,220.0,-0.0022230344819310337,0.02069287775531239,0.022915912237243423,True,0.6852740462584288,0.5691894835423924,47|72,0.03124100449554776,0.964416798955809,ok

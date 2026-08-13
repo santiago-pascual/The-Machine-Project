@@ -1,0 +1,15 @@
+date,ticker,action,portfolio_value,trade_weight_change_abs,estimated_order_value,estimated_total_cost_bps_of_order,estimated_total_cost,paper_accounting_adjusted,reason,daily_estimated_cost
+2026-06-17,ARM,BUY,100000.0,0.3,30000.0,42.92552268409568,128.77656805228705,False,estimated from advanced_execution_costs median impact_Y_1.0; reporting only,257.5531361045741
+2026-06-17,KEEL,BUY,100000.0,0.3,30000.0,42.92552268409568,128.77656805228705,False,estimated from advanced_execution_costs median impact_Y_1.0; reporting only,257.5531361045741
+2026-06-25,AMAT,BUY,92825.802627492,0.1124999999999999,10442.902795592841,42.92552268409568,44.82670608400267,False,estimated from advanced_execution_costs median impact_Y_1.0; reporting only,239.0757657813477
+2026-06-25,ARM,REDUCE,92825.802627492,0.1875,17404.83799265475,42.92552268409568,74.71117680667119,False,estimated from advanced_execution_costs median impact_Y_1.0; reporting only,239.0757657813477
+2026-06-25,KEEL,REDUCE,92825.802627492,0.1875,17404.83799265475,42.92552268409568,74.71117680667119,False,estimated from advanced_execution_costs median impact_Y_1.0; reporting only,239.0757657813477
+2026-06-25,MU,BUY,92825.802627492,0.1124999999999999,10442.902795592841,42.92552268409568,44.82670608400267,False,estimated from advanced_execution_costs median impact_Y_1.0; reporting only,239.0757657813477
+2026-07-02,AMAT,SELL,90682.88763045328,0.1124999999999999,10201.824858425985,42.92552268409568,43.79186643795359,False,estimated from advanced_execution_costs median impact_Y_1.0; reporting only,175.16746575181435
+2026-07-02,AMBA,BUY,90682.88763045328,0.1,9068.288763045328,42.92552268409568,38.92610350040322,False,estimated from advanced_execution_costs median impact_Y_1.0; reporting only,175.16746575181435
+2026-07-02,ARM,REDUCE,90682.88763045328,0.0124999999999999,1133.536095380657,42.92552268409568,4.865762937550363,False,estimated from advanced_execution_costs median impact_Y_1.0; reporting only,175.16746575181435
+2026-07-02,KEEL,REDUCE,90682.88763045328,0.0124999999999999,1133.536095380657,42.92552268409568,4.865762937550363,False,estimated from advanced_execution_costs median impact_Y_1.0; reporting only,175.16746575181435
+2026-07-02,MU,SELL,90682.88763045328,0.1124999999999999,10201.824858425985,42.92552268409568,43.79186643795359,False,estimated from advanced_execution_costs median impact_Y_1.0; reporting only,175.16746575181435
+2026-07-02,SE,BUY,90682.88763045328,0.1,9068.288763045328,42.92552268409568,38.92610350040322,False,estimated from advanced_execution_costs median impact_Y_1.0; reporting only,175.16746575181435
+2026-07-10,AMBA,SELL,91282.13892269076,0.1,9128.213892269077,42.92552268409568,39.18333524978736,False,estimated from advanced_execution_costs median impact_Y_1.0; reporting only,78.36667049957472
+2026-07-10,BABA,BUY,91282.13892269076,0.1,9128.213892269077,42.92552268409568,39.18333524978736,False,estimated from advanced_execution_costs median impact_Y_1.0; reporting only,78.36667049957472

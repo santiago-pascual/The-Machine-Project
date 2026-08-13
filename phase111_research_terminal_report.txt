@@ -1,0 +1,64 @@
+===== PHASE 111 RESEARCH TERMINAL REPORT =====
+Final status: research_terminal_warning
+Active model: growth_champion_final_v1_0_frozen
+Lifecycle status: operational_paper_production_real_capital_blocked
+Real-capital status: real_capital_blocked
+All-time trials: 14649
+Effective independent trials: 3
+CSCV PBO: 0.6940115440115441
+Exact DSR: 2.044517205085236
+DSR p-value: 0.0013615530804788
+Reality/SPA p-value: 0.0
+Mean OOS Sharpe: 1.2381750078230702
+Positive OOS folds: 0.7857142857142857
+Locked holdout Sharpe: 2.666101717003784
+Locked holdout CAGR: 0.7618661899581078
+Locked holdout max drawdown: -0.0765175733466112
+Parameter stability: stable_plateau
+
+Feature warnings:
+- signal_strength: diagnostic_only / available / weak 20D IC; sign flip detected; removed from active ranking
+- Kalman: diagnostic / available / missing-data state; not validated in available files
+- Hurst: diagnostic / available / missing-data state; not validated in available files
+- OU: diagnostic / available / missing-data state; not validated in available files
+- GARCH/EGARCH: diagnostic / available / missing-data state; not validated in available files
+- entropy: diagnostic / available / missing-data state; not validated in available files
+- regime: diagnostic / available / missing-data state; not validated in available files
+
+Rejected/diagnostic models:
+- grid_garch: diagnostic (Grid model retained/diagnostic)
+- mle_egarch_normal: diagnostic (MLE diagnostic only)
+- mle_garch_normal: diagnostic (MLE diagnostic only)
+- realized_vol_60d: active_diagnostic (Grid model retained/diagnostic)
+- mle_egarch_student_t: diagnostic (MLE diagnostic only)
+- mle_garch_student_t: diagnostic (MLE diagnostic only)
+- HMM 2-state: diagnostic (HMM diagnostic; does not alter allocation)
+- HMM 3-state: diagnostic (HMM diagnostic; does not alter allocation)
+- HMM 4-state: diagnostic (HMM diagnostic; does not alter allocation)
+- canonical: redundant_with_dual_trend (research-only; no paper promotion)
+- hmm_diagnostic_only: redundant_with_dual_trend (research-only; no paper promotion)
+- hmm_exposure_overlay: redundant_with_dual_trend (research-only; no paper promotion)
+- hmm_ranking_adjustment_proxy: redundant_with_dual_trend (research-only; no paper promotion)
+
+Remaining blockers/warnings:
+- HIGH: CSCV PBO elevated (PBO=0.694)
+- HIGH: Official forward history short (official paper remains warmup)
+- MEDIUM: Second market-data provider absent or not fully confirmed (real-capital blocked until reliable secondary source)
+- MEDIUM: Reconstructed history is not production parity (kept separate from official forward paper)
+- MEDIUM: Real fills unavailable (execution costs are estimated)
+- HIGH: Alpha decay monitor warning (break_warnings=0; significant_drift=0; sign_flips=1; raw20_ic=0.038615769094581955)
+- LOW: HMM not incrementally useful (HMM overlay/ranking proxy remains research-only)
+- HIGH: High historical trial count (all-time trials=14649)
+
+Integrity checks:
+- research_files_load_safely: PASS ()
+- conflicting_evidence_visible: PASS (DSR/PBO/OOS/alpha warnings displayed separately)
+- no_model_changes: PASS (dashboard diagnostics only)
+- no_automatic_promotion: PASS (real capital remains blocked)
+- parameter_surface_available: PASS (900)
+- missing_features_explicit: PASS (feature evidence table includes missing-data reason)
+- lifecycle_frozen_status: PASS (operational_paper_production_real_capital_blocked)
+
+Commentary:
+The frozen model shows purged out-of-sample Sharpe of 1.238 and parameter classification stable_plateau. CSCV PBO remains 0.694, while exact DSR p-value is 0.0014. These conflicting diagnostics remain simultaneously visible. The model remains classified for operational paper validation with real-capital promotion blocked.
+Render errors: none in compile/build smoke test

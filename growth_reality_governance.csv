@@ -1,0 +1,4 @@
+candidate,classification,liquidity_confidence,survivorship_bias_risk,production_changed,real_trading,reason
+growth_candidate_v1,eligible for small-capital paper trading,low,high,False,False,"Performance survives moderate cost assumptions, but liquidity confidence is low and survivorship risk is high."
+growth_candidate_v1_drawdown_brake_18pct,eligible for small-capital paper trading,low,high,False,False,"Performance survives moderate cost assumptions, but liquidity confidence is low and survivorship risk is high."
+growth_candidate_v1_exposure_cap_60pct,eligible for small-capital paper trading,low,high,False,False,"Performance survives moderate cost assumptions, but liquidity confidence is low and survivorship risk is high."

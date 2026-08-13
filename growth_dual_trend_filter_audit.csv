@@ -1,0 +1,2 @@
+date,spy_price,spy_ma200,spy_below_200dma,spy_price_date,qqq_price,qqq_ma200,qqq_below_200dma,qqq_price_date,dual_trend_cap,base_exposure_cap_60,volatility_target_exposure,final_exposure_after_dual_trend,reason,dual_trend_filter_explicitly_in_daily_pipeline
+2026-07-13,749.1699829101562,691.5513778686524,False,2026-07-13,711.739990234375,637.7564318847657,False,2026-07-13,0.6,0.6,0.4782315699190158,0.4782315699190158,SPY and QQQ above 200D MA,True

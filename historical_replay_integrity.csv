@@ -1,0 +1,3 @@
+date,holdings_equal_official_holdings,portfolio_value_equals_official_accounting,benchmark_equals_stored_benchmark,no_future_leakage,namespace_mixing,production_mutation,read_only,warnings
+2026-07-10,True,True,True,True,False,False,True,
+2026-07-13,True,True,True,True,False,False,True,

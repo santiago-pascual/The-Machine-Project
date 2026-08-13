@@ -1,0 +1,5 @@
+plan_step,name,description,exact_or_approx
+1,batched_price_data_download,Download adjusted OHLCV from Yahoo in batches with retry and partial progress.,input_preparation
+2,causal_model_rerun,"For each date t, truncate OHLCV to t and rerun current target engine to approximate raw target.",approximation_not_snapshot_replay
+3,growth_overlay,"Apply raw target rank, soft_exit_rule, volatility_target_22pct and exposure_cap_60 causally.",causal_reconstruction
+4,label_and_benchmark,Compute future returns only after decisions and compare to SPY/QQQ.,walk_forward_evaluation

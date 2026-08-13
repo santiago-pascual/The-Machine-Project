@@ -1,0 +1,2 @@
+date,model,status,governance_classification,days_tracked,months_tracked,drift_score,expected_CAGR,realized_CAGR,expected_Sharpe,realized_Sharpe,expected_max_drawdown,realized_max_drawdown,warnings,promotion_status,reason,production_changed,paper_changed,parameter_tuning
+2026-08-13,growth_champion_final,FAILED,investigation_required,24,3,100,0.2855801774223885,-0.4048596304836557,1.072926911016683,-4.0488085141104735,-0.4500884003684993,-0.11512508963509915,Critical drift detected.,blocked_warmup,Critical drift detected.,False,False,False

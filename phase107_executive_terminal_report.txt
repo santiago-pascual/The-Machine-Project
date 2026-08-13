@@ -1,0 +1,27 @@
+===== PHASE 107 EXECUTIVE QUANT TERMINAL REPORT =====
+final_status: executive_terminal_pass
+official_date_range: 2026-07-10 to 2026-07-13
+kpi_values:
+  gross_portfolio_value: 98845.81357152593
+  estimated_net_portfolio_value: 98661.2253775902
+  gross_cumulative_return: -0.0115418642847409
+  estimated_net_cumulative_return: -0.0133877462240978
+  daily_gross_return: -0.0115418642847409
+  daily_estimated_net_return: -0.0115418642847409
+  exposure: 0.4350408594155715
+  cash: 0.5649591405844284
+  current_drawdown: -0.0115418642847409
+holdings_shown: ARM,BABA,SE
+chart_sources: growth_official_benchmark_daily.csv only
+chart_latest_growth_gross_pct: -1.154186428474091
+chart_latest_growth_net_pct: -1.3387746224097885
+chart_latest_spy_pct: -0.7656174850540931
+chart_latest_qqq_pct: -1.897977883957569
+warnings: none
+render_errors: none detected by py_compile/import audit
+namespace_mixing: False
+dashboard_only: True
+model_logic_changed: False
+paper_logic_changed: False
+data_calculations_changed: False
+real_orders: False

@@ -1,0 +1,6 @@
+check,status,detail
+official_sources_loaded,PASS,
+chart_latest_equals_gross_card,PASS,gross cumulative return vs official benchmark chart
+chart_latest_equals_net_card,PASS,estimated net cumulative return vs official benchmark chart
+holdings_equal_official_state,PASS,"ARM,BABA,SE"
+no_namespace_mixing,PASS,Executive page uses official source map only

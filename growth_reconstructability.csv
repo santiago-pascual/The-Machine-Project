@@ -1,0 +1,9 @@
+component,classification,can_reconstruct_exact_pre_2022,can_reconstruct_approx_pre_2022,price_only_possible,blocking_issue,notes
+raw_target_return_exact,not_reconstructable,False,False,False,requires model-generated target snapshots or full historical pipeline replay,Exact raw target is model target/current price before signal adjustment; needs target engine replay or stored snapshots.
+soft_exit_rule,partially_reconstructable,False,True,False,,"Rule itself is simple, but depends on prior model selections and raw target sign."
+volatility_target_22pct,fully_reconstructable,False,True,True,,Exposure formula is deterministic once strategy returns exist.
+exposure_cap_60,fully_reconstructable,True,True,True,,Fixed overlay cap; no data dependency beyond base exposure.
+expected_return,partially_reconstructable,False,True,False,,"Not used directly by growth v2 selection once raw target exact is available, but part of snapshot lineage."
+signal_strength,partially_reconstructable,False,True,False,,Growth ranking uses signal_strength as tie-breaker/support; many parts can be recomputed from prices but exact pipeline state matters.
+regime_gate,partially_reconstructable,False,True,False,,Growth v2 itself is raw-target based; regime data is still relevant for comparing to production champion.
+forecast_calibration,not_required_for_growth_v2,False,False,False,,Not active in Growth Champion v2; diagnostic/research layer only.

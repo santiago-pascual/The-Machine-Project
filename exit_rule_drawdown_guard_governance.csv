@@ -1,0 +1,4 @@
+variant,classification,reason,production_change
+soft_exit_rule+drawdown_guard,reject,defensive mode active too often,none
+turnover_penalty_overlay+drawdown_guard,reject,defensive mode active too often,none
+winner_retention_rule+drawdown_guard,reject,defensive mode active too often,none

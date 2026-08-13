@@ -1,0 +1,10 @@
+metric,value
+average_exposure,0.6016959199378112
+min_exposure,0.4
+max_exposure,1.0
+exposure_p25,0.43019896228748133
+exposure_p50,0.547290597140003
+exposure_p75,0.7726889594726774
+exposure_during_worst_drawdowns,0.5109603159703168
+exposure_during_best_periods,0.6375666229986471
+vol_target_reacts_correctly_proxy,0.2245936864183051

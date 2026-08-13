@@ -1,0 +1,11 @@
+===== FIVE SESSION GROWTH PAPER REPLAY SUMMARY =====
+backup_folder: paper_history_backup_20260712_183146
+replay_dates: 15
+first_replay_date: 2026-06-17
+last_replay_date: 2026-07-10
+old_perf_rows: 15
+new_perf_rows: 15
+final_portfolio_value: 91282.13892269076
+final_cumulative_return: -0.0871786107730913
+final_exposure: 0.4
+final_cash: 0.6

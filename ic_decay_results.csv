@@ -1,0 +1,11 @@
+horizon,subset,dates,mean_spearman_rank_ic,median_spearman_rank_ic,positive_rank_ic_rate,mean_pearson_ic,ic_decay_input,lookahead_control
+1d,all,220,0.005298061761167781,0.00642292490118577,0.509090909090909,-0.0007868265722374979,expected_daily_return_vs_realized_return,realized returns are evaluated after prediction date in historical_ic_dataset
+1d,selected_only,206,0.01615163463659921,0.0,0.44660194174757284,0.009066282630358812,expected_daily_return_vs_realized_return,realized returns are evaluated after prediction date in historical_ic_dataset
+5d,all,220,0.016326020499665143,0.032608695652173905,0.55,0.0038412566384908855,expected_daily_return_vs_realized_return,realized returns are evaluated after prediction date in historical_ic_dataset
+5d,selected_only,206,0.008694495527961067,0.0,0.45145631067961167,-0.04512022394995408,expected_daily_return_vs_realized_return,realized returns are evaluated after prediction date in historical_ic_dataset
+10d,all,220,0.026358055936276832,0.02519762845849802,0.5590909090909091,0.020375373722243153,expected_daily_return_vs_realized_return,realized returns are evaluated after prediction date in historical_ic_dataset
+10d,selected_only,206,0.05020222853374755,0.2,0.5097087378640777,0.0320407510780141,expected_daily_return_vs_realized_return,realized returns are evaluated after prediction date in historical_ic_dataset
+20d,all,220,0.03280625440297675,0.037549407114624504,0.5863636363636363,0.029447913184041268,expected_daily_return_vs_realized_return,realized returns are evaluated after prediction date in historical_ic_dataset
+20d,selected_only,206,0.016652241215243647,0.1,0.5,0.0032515814036417384,expected_daily_return_vs_realized_return,realized returns are evaluated after prediction date in historical_ic_dataset
+30d,all,218,0.033226020079986957,0.04298418972332016,0.5779816513761468,0.016482757981218295,expected_daily_return_vs_realized_return,realized returns are evaluated after prediction date in historical_ic_dataset
+30d,selected_only,204,0.036618213027172886,0.0,0.4803921568627451,-0.011478596927919691,expected_daily_return_vs_realized_return,realized returns are evaluated after prediction date in historical_ic_dataset

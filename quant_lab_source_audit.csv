@@ -1,0 +1,15 @@
+data_key,source_file,loaded,row_count,latest_date,scope,active_model_impact
+official_state,growth_official_paper_state.csv,True,8,2026-07-13,official,active
+official_performance,growth_official_paper_performance.csv,True,2,2026-07-13,official,diagnostic only
+current_features,current_growth_features.csv,True,266,2026-07-13,official,active
+current_raw_target_features,current_raw_target_features.csv,True,266,2026-07-13,official,active
+current_allocation,current_growth_candidate_allocation.csv,True,4,2026-07-13,official,diagnostic only
+vol_fresh,growth_volatility_targeting_fresh.csv,True,16,2026-07-13,official,active
+parameter_stability,parameter_stability_map.csv,True,900,,diagnostic,diagnostic only
+parameter_stability_map,parameter_stability_map.csv,True,900,,diagnostic,diagnostic only
+hmm_oos,hmm_out_of_sample_results.csv,True,93,,diagnostic,diagnostic only
+hmm_model_comparison,hmm_model_comparison.csv,True,3,,diagnostic,diagnostic only
+official_benchmark_daily,growth_official_benchmark_daily.csv,True,2,2026-07-13,official,diagnostic only
+canonical_price_history,canonical_price_history.csv,True,4,2026-07-13,diagnostic,diagnostic only
+factor_correlation_matrix,factor_correlation_matrix.csv,False,0,,diagnostic,diagnostic only
+garch_model_comparison,garch_model_comparison.csv,True,7,,diagnostic,diagnostic only

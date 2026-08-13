@@ -1,0 +1,13 @@
+gate,required_state,current_state,passed,blocker_reason,evidence_source
+Official forward history minimum,configured governance minimum,paper_days=16,False,real-capital blocker,growth_paper_governance_history.csv
+CSCV PBO threshold,configured/governance acceptable PBO,PBO=0.694,False,real-capital blocker,anti_overfitting_governance.csv
+DSR threshold,configured/governance DSR pass,DSR p=0.0014,True,,anti_overfitting_governance.csv
+Purged OOS validation,passes_oos/strong_oos_candidate,strong_oos_candidate,True,,out_of_sample_governance.csv
+Parameter stability,stable_plateau,stable_plateau,True,,parameter_governance.csv
+Multi-source market data,multi_source_confirmed,single_source_warning,False,real-capital blocker,market_data_governance.csv
+Real broker fills,available validated fills,absent,False,real-capital blocker,execution reports
+Execution slippage validation,live fill slippage validated,estimated only,False,real-capital blocker,phase110_execution_terminal_report.txt
+Accounting integrity,accounting_pass true,True,True,,official_forward_accounting_audit.csv
+Operational redundancy,redundant monitored process,single local machine,False,real-capital blocker,governance terminal
+Maximum acceptable drawdown,governance threshold,current=-0.1073756677820989,True,,growth_paper_governance_history.csv
+Governance approval,explicit approval,not granted,False,real-capital blocker,governance terminal

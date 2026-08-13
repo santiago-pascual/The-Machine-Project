@@ -1,0 +1,2 @@
+date,governance,accounting_pass,repair_backup_dir,initial_cost_charged_once,first_valid_return_date,gross_value,estimated_net_value,cumulative_estimated_costs,no_signal_date_return_leakage,weekend_return_created
+2026-07-14,official_accounting_pass,True,,True,2026-07-13,98845.81357152591,98661.2253775902,186.74356279351593,True,False

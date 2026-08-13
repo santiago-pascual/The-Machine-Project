@@ -1,0 +1,2 @@
+candidate,classification,reason,production_change,uses_hindsight
+soft_exit_rule_vol_target_22pct,extended paper trading candidate,passes deep validation constraints; no production change,none,False

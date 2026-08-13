@@ -1,0 +1,7 @@
+metric,value
+forecast_ic,0.0698453745465477
+forecast_rank_ic,-0.010104881919710368
+forecast_hit_rate,0.535466613829998
+forecast_decile_spread,0.01424582507441435
+forecast_monotonicity,-0.09090909090909088
+observations,10094.0

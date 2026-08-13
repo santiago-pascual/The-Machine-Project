@@ -1,0 +1,3 @@
+date,performance_cost,trades_cost_sum,ledger_cost_sum,duplicate_cost_rows,hold_day_cost,cost_only_trade_actions,cost_recorded_once_in_accounting,notes
+2026-07-10,186.74356279351596,186.74356279351593,186.74356279351593,0,0.0,True,True,trades and ledger mirror same estimated costs; performance deducts once in net ledger
+2026-07-13,0.0,0.0,0.0,0,0.0,True,True,trades and ledger mirror same estimated costs; performance deducts once in net ledger

@@ -1,0 +1,2 @@
+latest_date_used,raw_target_feature_source,raw_target_return_exact_available,proxy_used,cedear_filter_used,historical_stale_fallback_used,current_allocation_rows,current_raw_feature_rows,data_source,fallback_reason
+2026-07-13,raw_target_return_exact,True,False,False,False,4,266,current_growth_feature_generation,exact raw pre-signal target captured from expected_returns_model diagnostics

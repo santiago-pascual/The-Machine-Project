@@ -1,0 +1,2 @@
+candidate,classification,reason,raw_target_sharpe,baseline_sharpe,regime_gated_sharpe,raw_target_max_drawdown,production_change
+raw_target_research,research only,higher_return_but_sharpe_or_drawdown_not_superior,1.5355134902058687,1.6393324086995777,1.6449369115316776,-0.1357226341143647,none

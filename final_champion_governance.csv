@@ -1,0 +1,2 @@
+champion,classification,reason,Sharpe,max_drawdown,all_time_overfitting_warning,governed_overfitting_warning,PBO_proxy,deflated_Sharpe,promotion_status,total_trials_logged,production_change
+baseline + old regime gate,eligible for paper trading,positive historical validation with monitoring required; all-time research overfitting warning remains high,1.6449369115316776,-0.05496821296940235,high,low,0.1846573590279973,1.6299366499124903,eligible for paper trading only,14649,none

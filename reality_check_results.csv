@@ -1,0 +1,2 @@
+method,feasible,best_strategy_by_mean_excess,observed_mean_excess_return_per_period,bootstrap_samples,reality_check_p_value,note
+White_reality_check_centered_iid_bootstrap,True,crisis_overlay__realized_volatility_filter__2008-01-01,0.0016503516030623299,1000,0.0,"IID bootstrap approximation; conservative governance diagnostic, not a promotion engine."

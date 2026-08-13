@@ -1,0 +1,26 @@
+===== BENCHMARK INTEGRITY AUDIT =====
+
+strategy_file: growth_champion_reconstructed_stress_daily.csv
+observations: 878
+start_date: 2008-12-31
+end_date: 2026-06-09
+classification: statistically_valid_with_caveat
+
+Key findings:
+- PASS | same_initial_capital | Growth, SPY and QQQ normalized to 100,000 in audit recomputation.
+- PASS | SPY_adjusted_close_used | Adj Close
+- PASS | QQQ_adjusted_close_used | Adj Close
+- WARNING | growth_same_daily_frequency_as_benchmark | Strategy observations=878, median_gap_days=7.0, max_gap_days=11.0; not true daily if gaps > 1.
+- PASS | weekends_holidays_aligned | weekend_strategy_dates=0; benchmarks merge_asof to prior trading close.
+- PASS | volatility_targeting_exposure_bounds | min_exposure=0.25, max_exposure=0.6, expected cap <=0.60
+- PASS | cash_included_correctly | max_abs(exposure+cash-1)=0.0
+- PASS | curves_normalized_identically | All audited series start from same initial capital.
+- PASS | growth_cumulative_return_calculation | max_reported_vs_recomputed_equity_diff=2.3283064365386963e-10
+- PASS | no_duplicated_compounding | See benchmark_compounding_check.csv
+- PASS | no_scaling_mismatch | Equity values are dollar-normalized; chart values can be displayed as cumulative percent.
+
+Interpretation:
+- Cumulative return comparison is valid only when SPY/QQQ are reconstructed from adjusted prices aligned to the same strategy observation dates.
+- The long-horizon strategy file is not true daily frequency; it is a sparse/rebalance-observation reconstruction. Return comparisons are acceptable after date alignment, but volatility/Sharpe comparisons must account for interval frequency.
+- Blank spy_daily_return/qqq_daily_return columns in the strategy file should not be used directly for benchmark charts.
+- No strategy, ranking, optimizer, allocation, or paper logic was modified by this audit.

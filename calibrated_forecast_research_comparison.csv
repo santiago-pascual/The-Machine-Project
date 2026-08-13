@@ -1,0 +1,14 @@
+metric,baseline,regime_gated_full_quant,calibrated_forecast_research,calibrated_minus_baseline,calibrated_minus_regime_gated,source_note
+Calmar,5.39899058853452,5.439280982437588,0.3753801934514433,-5.023610395083077,-5.063900788986145,baseline/regime_gated from larger_walk_forward_summary; calibrated from walk_forward_calibrated_forecast_shadow
+SL_rate,0.1324786324786324,0.1324786324786324,,,,baseline/regime_gated from larger_walk_forward_summary; calibrated from walk_forward_calibrated_forecast_shadow
+Sharpe,1.7362553593875405,1.747677652164038,1.1204457161448236,-0.6158096432427169,-0.6272319360192145,baseline/regime_gated from larger_walk_forward_summary; calibrated from walk_forward_calibrated_forecast_shadow
+Sortino,1.8085405278008144,1.820180231954553,1.9430825011719817,0.13454197337116724,0.12290226921742864,baseline/regime_gated from larger_walk_forward_summary; calibrated from walk_forward_calibrated_forecast_shadow
+TP_minus_SL,0.1316239316239316,0.1316239316239316,,,,baseline/regime_gated from larger_walk_forward_summary; calibrated from walk_forward_calibrated_forecast_shadow
+TP_rate,0.2641025641025641,0.2641025641025641,,,,baseline/regime_gated from larger_walk_forward_summary; calibrated from walk_forward_calibrated_forecast_shadow
+cash,0.5359999999999999,0.5359999999999999,0.5490909090909091,0.013090909090909153,0.013090909090909153,baseline/regime_gated from larger_walk_forward_summary; calibrated from walk_forward_calibrated_forecast_shadow
+hit_rate,0.71,0.71,0.6409090909090909,-0.06909090909090909,-0.06909090909090909,baseline/regime_gated from larger_walk_forward_summary; calibrated from walk_forward_calibrated_forecast_shadow
+max_drawdown,-0.0422817312896928,-0.0422817312896927,-0.4674113666337668,-0.425129635344074,-0.4251296353440741,baseline/regime_gated from larger_walk_forward_summary; calibrated from walk_forward_calibrated_forecast_shadow
+realized_return,0.0910630765316125,0.0917937011828036,16.08932974999955,15.998266673467937,15.997536048816746,baseline/regime_gated from larger_walk_forward_summary; calibrated from walk_forward_calibrated_forecast_shadow
+sample_size,1170.0,1170.0,,,,baseline/regime_gated from larger_walk_forward_summary; calibrated from walk_forward_calibrated_forecast_shadow
+turnover,0.713857142857143,0.713857142857143,0.2863822938090134,-0.42747484904812955,-0.42747484904812955,baseline/regime_gated from larger_walk_forward_summary; calibrated from walk_forward_calibrated_forecast_shadow
+volatility,0.131477589437375,0.1315930409842967,0.1565956892870195,0.0251180998496445,0.025002648302722807,baseline/regime_gated from larger_walk_forward_summary; calibrated from walk_forward_calibrated_forecast_shadow

@@ -1,0 +1,2 @@
+candidate,classification,CAGR_gt_25pct,Sharpe_gt_1,DD_lt_20pct,beats_SPY_risk_adjusted,return_gap_vs_SPY,hidden_dependency_discovered,lookahead_detected,proxy_features_used,reason
+growth_candidate_v1,research_only_or_reject,True,True,False,True,2.9178771765066003,False,False,False,Uses stored historical target/current prediction tape to reconstruct exact pre-signal raw target formula; no proxy fallback.

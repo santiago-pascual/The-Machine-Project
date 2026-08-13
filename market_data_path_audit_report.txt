@@ -1,0 +1,10 @@
+===== MARKET DATA PATH AUDIT =====
+canonical_cache_path: C:\Users\Alejandra\Desktop\La Maquina Trading System (NO TOCAR)\yahoo_ohlcv_price_cache
+canonical_tickers_checked: 25
+canonical_latest_dates: 2026-07-10
+missing_or_stale_canonical_rows: 0
+auxiliary_or_duplicate_cache_directories_detected: 3
+official_growth_source_policy: canonical_market_data_manager only
+production_changed: False
+optimizer_changed: False
+paper_trading_logic_changed: False

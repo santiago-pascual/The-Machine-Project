@@ -1,0 +1,12 @@
+stage,file,expected_latest_market_date,actual_latest_date,stale,rows,status,notes
+financial_data_system_market_download/cache,financial_data_system.py / yahoo_ohlcv_price_cache,2026-06-29,2026-06-29,False,169,ok,unknown
+yahoo_cache_SPY,yahoo_ohlcv_price_cache\SPY.csv,2026-06-29,2026-06-29,False,,ok,downloads through last paper date + 5 calendar days; Yahoo end is exclusive
+yahoo_cache_QQQ,yahoo_ohlcv_price_cache\QQQ.csv,2026-06-29,2026-06-29,False,,ok,downloads through last paper date + 5 calendar days; Yahoo end is exclusive
+forecast_history,forecast_history.csv,2026-06-29,2026-06-29,False,2941,ok,
+current_raw_target_features,current_raw_target_features.csv,2026-06-29,2026-06-29,False,268,ok,
+current_growth_features,current_growth_features.csv,2026-06-29,2026-06-29,False,268,ok,
+current_growth_candidate_allocation,current_growth_candidate_allocation.csv,2026-06-29,2026-06-29,False,4,ok,
+growth_candidate_paper_state,growth_candidate_paper_state.csv,2026-06-29,2026-06-29,False,35,ok,
+growth_candidate_paper_performance,growth_candidate_paper_performance.csv,2026-06-29,2026-06-29,False,8,ok,
+benchmark_daily_returns,benchmark_daily_returns.csv,2026-06-29,2026-06-29,False,8,ok,
+growth_live_tracking,growth_live_tracking.csv,2026-06-29,2026-06-29,False,1,ok,

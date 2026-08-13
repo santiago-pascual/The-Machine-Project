@@ -1,0 +1,2 @@
+model,classification,reason,production_change
+raw_target_research,research only,does not pass all growth candidate thresholds,none

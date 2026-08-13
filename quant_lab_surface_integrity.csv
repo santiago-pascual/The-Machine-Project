@@ -1,0 +1,13 @@
+surface,source,required_input,status_planned,detail_planned,section,status_render,detail_render,render_seconds,render_status,final_status
+efficient_frontier,yahoo_ohlcv_price_cache,official holdings price cache,available,input present,,,,,available,pass
+correlation_surface,yahoo_ohlcv_price_cache,official/top candidate price cache,available,input present,,,,,available,pass
+covariance_surface,yahoo_ohlcv_price_cache,official holdings price cache,available,input present,,,,,available,pass
+volatility_target_surface,growth_volatility_targeting_fresh.csv,fresh vol target audit,available,input present,,,,,available,pass
+parameter_stability_surface,parameter_stability_map.csv,Phase 92 grid,available,input present,,,,,available,pass
+black_litterman_lab,black_litterman_*,BL grids,warning,input missing or diagnostic unavailable,,,,,warning,warning
+hmm_regime_space,hmm_out_of_sample_results.csv,HMM diagnostics,available,input present,,,,,available,pass
+feature_space_3d,current_growth_features.csv,current feature vectors,available,input present,,,,,available,pass
+pca_3d,current_growth_features.csv,numeric feature matrix,available,input present,,,,,available,pass
+stress_cube,growth_official_paper_state.csv,current official holdings,available,input present,,,,,available,pass
+monte_carlo,yahoo_ohlcv_price_cache,official holdings returns,available,input present,,,,,available,pass
+equation_explorer,code/formula registry,static equation library,available,input present,,,,,available,pass

@@ -1,0 +1,20 @@
+===== PORTFOLIO TERMINAL UI/DATA FIX REPORT =====
+status: portfolio_terminal_pass
+latest_date: 2026-07-13
+fixed_asset_daily_return: uses per-ticker official price change, not portfolio return
+fixed_risk_contribution: uses 90D covariance marginal risk contribution
+fixed_metadata: sector/industry/country/company/market_cap loaded from official_holding_metadata.csv
+fixed_liquidity: median_60d_dollar_volume and avg_volume_20d merged from current_growth_features.csv
+fixed_allocation_charts: treemap/sunburst now use categorical ticker colors with orange shade palette, not continuous equal-weight color scale
+fixed_sparklines: each holding has visible 30D price history title by ticker
+holdings:
+  ARM: return=-0.075451, pnl=-1094.14, risk=0.604250, beta=4.17, sector=Technology, industry=Semiconductors, country=United Kingdom, adv60=2785458903.04718
+  BABA: return=0.000178, pnl=2.58, risk=0.188395, beta=1.30, sector=Consumer Cyclical, industry=Internet Retail, country=China, adv60=1392123045.4345703
+  SE: return=-0.004319, pnl=-62.63, risk=0.207355, beta=1.43, sector=Consumer Cyclical, industry=Internet Retail, country=Singapore, adv60=325545870.5444336
+risk_contribution_sum: 1.000000
+asset_daily_pnl_sum: -1154.19
+namespace_mixing: False
+model_logic_changed: False
+paper_logic_changed: False
+optimizer_changed: False
+real_orders: False

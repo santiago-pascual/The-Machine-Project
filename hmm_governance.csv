@@ -1,0 +1,2 @@
+classification,best_n_states_by_BIC,best_n_states_by_AIC,bootstrap_assignment_agreement,oos_transition_persistence_proxy,incremental_alpha_spread_proxy,production_changed,paper_changed,automatic_promotion,reason
+stable_and_useful,4,4,0.9149066323245331,0.9665955265519712,0.00478122064359852,False,False,False,best BIC states=4; bootstrap agreement=0.915; alpha spread=0.00478

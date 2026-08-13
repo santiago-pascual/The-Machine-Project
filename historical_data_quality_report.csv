@@ -1,0 +1,2 @@
+start_date,end_date,requested_tickers,valid_tickers,removed_invalid_tickers,reduced_universe,step_size_days,live_prices_disabled,daily_live_files_overwritten
+2019-06-18,2026-06-17,23,23,,True,5,True,False

@@ -1,0 +1,8 @@
+check,status,detail
+final_holdings_equal_official_portfolio,PASS,"official=['ARM', 'BABA', 'SE'], explained=['ARM', 'BABA', 'SE']"
+sankey_counts_available,PASS,10
+rejected_candidates_have_reasons,PASS,20
+no_fabricated_feature_contributions,PASS,feature values shown; exact marginal contribution labeled unavailable unless stored
+official_current_namespace,PASS,debug/reconstructed sources not used in current decision view
+pending_signals_no_mutation,PASS,pending signals read from current allocation only
+read_only,PASS,no order/model controls

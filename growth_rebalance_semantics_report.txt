@@ -1,0 +1,11 @@
+===== GROWTH REBALANCE SEMANTICS AUDIT =====
+rebalance_frequency: every 5 trading sessions (STEP_DAYS = 5 and dates = px.index[LOOKBACK::STEP_DAYS])
+scheduling_method: rolling session count (No fixed weekday; schedule advances by market-data row index.)
+anchor_date: 2023-01-04 (First 2022+ reconstructed decision date after 252-session lookback.)
+signal_timing: signals use close/history through decision date t (hist = px.iloc[:loc + 1]; raw targets generated from truncated history.)
+execution_lag: close_t_signal_apply_next_session_return (entry_date = px.index[loc + 1]; exit_date = loc + STEP_DAYS + 1.)
+holding_period: target holdings frozen between rebalance dates (Loop only creates weights on decision dates; no daily soft-exit path exists.)
+soft_exit_timing: rebalance dates only (soft_keep is evaluated inside the decision_date loop only.)
+volatility_target_timing: rebalance dates only (_target_exposure(prior_returns, previous_exposure) is called inside the decision_date loop.)
+dual_trend_timing: rebalance dates only in v3 overlay (Crisis overlay is applied to scheduled reconstructed rows, not intra-period daily holdings.)
+turnover_cost_date: decision/rebalance date (turnover is stored on the decision_date row from current weights vs prior_weights.)

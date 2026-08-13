@@ -1,0 +1,8 @@
+check,status,detail
+read_only,PASS,analytical CSV generation only
+model_modifications,PASS,none
+optimizer_modifications,PASS,none
+parameter_modifications,PASS,none
+scheduler_modifications,PASS,none
+execution_modifications,PASS,none
+alpha_reconciliation,PASS,"{'total_return': 2.719839483620179, 'component_sum': 2.719839483620179, 'difference': 0.0, 'tolerance': 1e-08, 'reconciliation_pass': True}"

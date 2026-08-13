@@ -1,0 +1,2 @@
+date,fresh_prices_available,exact_raw_target_available,valid_official_date,reason,history_classification,governance
+2026-07-12,,,False,official namespace has no valid forward rows after stale-data repair,official_forward_blocked,official_forward_blocked_waiting_for_next_exact_forward_date

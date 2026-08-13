@@ -1,0 +1,11 @@
+source_file,namespace,exists_loaded,row_count,date_range
+growth_official_paper_performance.csv,official_forward_paper,True,2,2026-07-10 to 2026-07-13
+growth_official_paper_state.csv,official_forward_paper,True,8,2026-07-10 to 2026-07-13
+growth_official_paper_actions.csv,official_forward_paper,True,8,2026-07-10 to 2026-07-13
+growth_official_paper_monitor.csv,official_forward_paper,True,2,2026-07-10 to 2026-07-13
+growth_official_live_tracking.csv,official_forward_paper,True,3,2026-07-10 to 2026-07-13
+growth_official_estimated_cost_ledger.csv,official_forward_paper,True,3,2026-07-10 to 2026-07-10
+growth_official_benchmark_daily.csv,official_forward_paper,True,2,2026-07-10 to 2026-07-13
+growth_official_position_pnl.csv,official_forward_paper,True,6,2026-07-10 to 2026-07-13
+official_paper_daily_run_status.csv,official_forward_paper,True,2,2026-07-10 to 2026-07-13
+official_paper_integrity_status.csv,official_forward_paper,True,1,2026-07-13 to 2026-07-13

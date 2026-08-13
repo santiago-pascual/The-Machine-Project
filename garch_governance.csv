@@ -1,0 +1,2 @@
+classification,best_model,production_changed,paper_changed,parameter_tuning,walk_forward_only,arch_package_used,mle_backend,reason
+keep_grid_model,grid_egarch,False,False,False,True,False,scipy.optimize,best model is grid_egarch; MLE does not materially dominate grid

@@ -1,0 +1,2 @@
+classification,reasons,threshold,lookahead_safe,production_behavior_changed,real_trading
+research only,does_not_beat_baseline_sharpe | does_not_beat_regime_gated_sharpe,0.65,True,False,False

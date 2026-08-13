@@ -1,0 +1,11 @@
+stage,input_count,passed_count,excluded_count,retained_pct,source_file,latest_date
+Full Universe,266,266,0,1.0,current_growth_features.csv,2026-07-13
+Data Available,266,266,0,1.0,current_raw_target_features.csv,2026-07-13
+Blacklist / Symbol Eligibility,266,266,0,1.0,growth_universe_exclusions.csv,2026-07-13
+Basic Quality,266,53,213,0.1992481203007518,growth_universe_quality_report.csv,2026-07-13
+Institutional Tradability,53,53,0,1.0,growth_tradability_filter_report.csv,2026-07-13
+Raw Target Ranking,53,53,0,1.0,current_growth_features.csv,2026-07-13
+Soft Exit / Prior Holdings,53,4,49,0.0754716981132075,current_growth_candidate_allocation.csv,2026-07-13
+Final Sanity Check,3,3,0,1.0,final_selected_holdings_audit.csv,2026-07-13
+Position Limit,3,3,0,1.0,current_growth_candidate_allocation.csv,2026-07-13
+Final Portfolio,4,4,0,1.0,growth_official_paper_state.csv,2026-07-13

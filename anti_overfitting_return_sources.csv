@@ -1,0 +1,14 @@
+source_file,loaded,strategies,rows,date_min,date_max,return_column,reason
+growth_final_selection_daily_returns.csv,True,10,5254,2008-12-31,2026-06-10,candidate_return,loaded
+growth_final_cost_slippage_daily_returns.csv,True,30,15762,2008-12-31,2026-06-10,net_return,loaded
+growth_crisis_overlay_daily_returns.csv,True,30,15762,2008-12-31,2026-06-10,overlay_return,loaded
+growth_head_to_head_daily_returns.csv,True,5,1098,2022-01-03,2026-05-15,return,loaded
+growth_volatility_targeting_daily_returns.csv,True,1,3520,2022-01-03,2026-05-15,return,loaded
+exit_rule_walk_forward_daily_returns.csv,True,4,880,2022-01-03,2026-05-15,return,loaded
+exit_rule_drawdown_guard_daily_returns.csv,True,3,660,2022-01-03,2026-05-15,return,loaded
+raw_target_research_backtest_daily_returns.csv,True,1,660,2022-01-03,2026-05-15,portfolio_return,loaded
+raw_target_2020_daily_returns.csv,True,1,220,2022-01-03,2026-05-15,return,loaded
+raw_target_risk_controlled_daily_returns.csv,True,5,1100,2022-01-03,2026-05-15,portfolio_return,loaded
+raw_target_risk_budgeting_daily_returns.csv,True,8,1760,2022-01-03,2026-05-15,portfolio_return,loaded
+production_parity_growth_daily_returns.csv,True,1,220,2022-01-03,2026-05-15,return,loaded
+reconstructed_growth_long_horizon_daily_returns.csv,True,5,2627,2008-12-31,2026-06-10,return,loaded

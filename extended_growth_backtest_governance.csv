@@ -1,0 +1,2 @@
+classification,reason,production_changed,parameter_tuning,point_in_time_universe_confirmed
+cedear_filtered_research_possible_from_2022_actual_start,CEDEAR-filtered reference replay possible from first local snapshot date; current CEDEAR list is not point-in-time and starts before 2022 are not feasible locally,False,False,False

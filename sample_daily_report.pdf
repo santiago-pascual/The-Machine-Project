@@ -1,0 +1,537 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [5 0 R 7 0 R 9 0 R 11 0 R 13 0 R] /Count 5 >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+4 0 obj
+<< /Length 1319 >>
+stream
+BT
+/F1 9 Tf
+50 790 Td
+(DAILY INSTITUTIONAL REPORT) Tj
+0 -14 Td
+() Tj
+0 -14 Td
+() Tj
+0 -14 Td
+() Tj
+0 -14 Td
+(Generated: 2026-08-13 17:44:54) Tj
+0 -14 Td
+() Tj
+0 -14 Td
+(Period: 2026-08-13 to 2026-08-13) Tj
+0 -14 Td
+() Tj
+0 -14 Td
+() Tj
+0 -14 Td
+() Tj
+0 -14 Td
+(TABLE OF CONTENTS) Tj
+0 -14 Td
+() Tj
+0 -14 Td
+(1. Executive Summary) Tj
+0 -14 Td
+() Tj
+0 -14 Td
+(2. Performance) Tj
+0 -14 Td
+() Tj
+0 -14 Td
+(3. Portfolio) Tj
+0 -14 Td
+() Tj
+0 -14 Td
+(4. Risk) Tj
+0 -14 Td
+() Tj
+0 -14 Td
+(5. Execution) Tj
+0 -14 Td
+() Tj
+0 -14 Td
+(6. Research) Tj
+0 -14 Td
+() Tj
+0 -14 Td
+(7. Governance) Tj
+0 -14 Td
+() Tj
+0 -14 Td
+(8. Alerts) Tj
+0 -14 Td
+() Tj
+0 -14 Td
+(9. Appendix) Tj
+0 -14 Td
+() Tj
+0 -14 Td
+() Tj
+0 -14 Td
+() Tj
+0 -14 Td
+(1. EXECUTIVE SUMMARY) Tj
+0 -14 Td
+() Tj
+0 -14 Td
+(KEY METRICS) Tj
+0 -14 Td
+() Tj
+0 -14 Td
+(- **Portfolio Value**: n/a) Tj
+0 -14 Td
+(- **Net Portfolio Value**: n/a) Tj
+0 -14 Td
+(- **Gross Return**: 7.91%) Tj
+0 -14 Td
+(- **Net Return**: 7.91%) Tj
+0 -14 Td
+(- **Spy Return**: 3.01%) Tj
+0 -14 Td
+(- **Qqq Return**: 1.04%) Tj
+0 -14 Td
+(- **Exposure**: 47.09%) Tj
+0 -14 Td
+(- **Cash**: 52.91%) Tj
+0 -14 Td
+(- **Drawdown**: n/a) Tj
+0 -14 Td
+(- **Holdings**: ARM, OKLO, TEAM, VIST) Tj
+0 -14 Td
+(- **Largest Position**: ARM \(11.77%\)) Tj
+0 -14 Td
+(- **Largest Risk Contributor**: ARM \(11.77%\)) Tj
+0 -14 Td
+ET
+endstream
+endobj
+5 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 842] /Resources << /Font << /F1 3 0 R >> >> /Contents 4 0 R >>
+endobj
+6 0 obj
+<< /Length 3493 >>
+stream
+BT
+/F1 9 Tf
+50 790 Td
+(- **Health Score**: 58.0% \(Governance Blocked\)) Tj
+0 -14 Td
+(- **Active Alerts**: 5) Tj
+0 -14 Td
+(- **Governance Status**: official_forward_warmup) Tj
+0 -14 Td
+(- **Next Rebalance**: 2026-08-14) Tj
+0 -14 Td
+() Tj
+0 -14 Td
+(2. PERFORMANCE) Tj
+0 -14 Td
+() Tj
+0 -14 Td
+(PERFORMANCE STATISTICS) Tj
+0 -14 Td
+() Tj
+0 -14 Td
+(- **Cagr**: 9.45%) Tj
+0 -14 Td
+(- **Sharpe**: n/a) Tj
+0 -14 Td
+(- **Sortino**: n/a) Tj
+0 -14 Td
+(- **Calmar**: n/a) Tj
+0 -14 Td
+(- **Max Drawdown**: 0.00%) Tj
+0 -14 Td
+(- **Volatility**: n/a) Tj
+0 -14 Td
+() Tj
+0 -14 Td
+(3. PORTFOLIO) Tj
+0 -14 Td
+() Tj
+0 -14 Td
+(| date | ticker | paper_position_weight | paper_position_value | entry_price | current_price |) Tj
+0 -14 Td
+(unrealized_return | realized_return | action | model_mode | growth_paper_variant | exposure_cap) Tj
+0 -14 Td
+(| exposure_cap_60 | dual_trend_cap | vol_target_exposure | final_exposure | spy_close |) Tj
+0 -14 Td
+(spy_ma_200 | qqq_close | qqq_ma_200 | spy_below_200d | qqq_below_200d | dual_trend_reason |) Tj
+0 -14 Td
+(cash_weight | data_source | raw_target_current_features_available | raw_target_feature_source |) Tj
+0 -14 Td
+(rebalance_due | monitoring_only | previous_rebalance_date | next_rebalance_date |) Tj
+0 -14 Td
+(sessions_since_last_rebalance | observed_candidate_tickers | growth_model_version | signal_date) Tj
+0 -14 Td
+(| economic_application_date | model_version | official_forward_namespace | data_mode |) Tj
+0 -14 Td
+(real_orders |) Tj
+0 -14 Td
+(| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | ---) Tj
+0 -14 Td
+(| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | ---) Tj
+0 -14 Td
+(| --- | --- | --- | --- | --- | --- | --- | --- |) Tj
+0 -14 Td
+(| 2026-08-13 00:00:00 | ARM | 0.1177272006650303 | 12703.786351513683 | | | | 0.0944677699177632) Tj
+0 -14 Td
+(| HOLD | growth_champion_final | growth_v1_exposure_cap_60_dual_trend_filter | 0.6 | 0.6 | 0.6 |) Tj
+0 -14 Td
+(0.4709088026601212 | 0.4709088026601212 | 777.6599731445312 | 702.2683215332031 |) Tj
+0 -14 Td
+(733.030029296875 | 649.473754272461 | False | False | SPY and QQQ above 200D MA |) Tj
+0 -14 Td
+(0.5290911973398789 | current_growth_candidate_allocation | True | raw_target_return_exact |) Tj
+0 -14 Td
+(False | True | 2026-08-07 | | 4.0 | OKLO,TWLO,TEAM,VIST | growth_champion_final_v1_0_frozen |) Tj
+0 -14 Td
+(2026-08-13 00:00:00 | 2026-08-14 00:00:00 | growth_champion_final_v1_0_frozen | True |) Tj
+0 -14 Td
+(official_forward_exact | False |) Tj
+0 -14 Td
+(| 2026-08-13 00:00:00 | OKLO | 0.1177272006650303 | 12703.786351513683 | 46.79499816894531 |) Tj
+0 -14 Td
+(46.79499816894531 | 0.1382874598440715 | 0.0944677699177632 | HOLD | growth_champion_final |) Tj
+0 -14 Td
+(growth_v1_exposure_cap_60_dual_trend_filter | 0.6 | 0.6 | 0.6 | 0.4709088026601212 |) Tj
+0 -14 Td
+(0.4709088026601212 | 777.6599731445312 | 702.2683215332031 | 733.030029296875 | 649.473754272461) Tj
+0 -14 Td
+(| False | False | SPY and QQQ above 200D MA | 0.5290911973398789 |) Tj
+0 -14 Td
+(current_growth_candidate_allocation | True | raw_target_return_exact | False | True | 2026-08-07) Tj
+0 -14 Td
+(| | 4.0 | OKLO,TWLO,TEAM,VIST | growth_champion_final_v1_0_frozen | 2026-08-13 00:00:00 |) Tj
+0 -14 Td
+(2026-08-14 00:00:00 | growth_champion_final_v1_0_frozen | True | official_forward_exact | False) Tj
+0 -14 Td
+(|) Tj
+0 -14 Td
+(| 2026-08-13 00:00:00 | TEAM | 0.1177272006650303 | 12703.786351513683 | 161.68499755859375 |) Tj
+0 -14 Td
+ET
+endstream
+endobj
+7 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 842] /Resources << /Font << /F1 3 0 R >> >> /Contents 6 0 R >>
+endobj
+8 0 obj
+<< /Length 3584 >>
+stream
+BT
+/F1 9 Tf
+50 790 Td
+(161.68499755859375 | 0.733143916516809 | 0.0944677699177632 | HOLD | growth_champion_final |) Tj
+0 -14 Td
+(growth_v1_exposure_cap_60_dual_trend_filter | 0.6 | 0.6 | 0.6 | 0.4709088026601212 |) Tj
+0 -14 Td
+(0.4709088026601212 | 777.6599731445312 | 702.2683215332031 | 733.030029296875 | 649.473754272461) Tj
+0 -14 Td
+(| False | False | SPY and QQQ above 200D MA | 0.5290911973398789 |) Tj
+0 -14 Td
+(current_growth_candidate_allocation | True | raw_target_return_exact | False | True | 2026-08-07) Tj
+0 -14 Td
+(| | 4.0 | OKLO,TWLO,TEAM,VIST | growth_champion_final_v1_0_frozen | 2026-08-13 00:00:00 |) Tj
+0 -14 Td
+(2026-08-14 00:00:00 | growth_champion_final_v1_0_frozen | True | official_forward_exact | False) Tj
+0 -14 Td
+(|) Tj
+0 -14 Td
+(| 2026-08-13 00:00:00 | VIST | 0.1177272006650303 | 12703.786351513683 | 66.38999938964844 |) Tj
+0 -14 Td
+(66.38999938964844 | -0.0447482102208858 | 0.0944677699177632 | HOLD | growth_champion_final |) Tj
+0 -14 Td
+(growth_v1_exposure_cap_60_dual_trend_filter | 0.6 | 0.6 | 0.6 | 0.4709088026601212 |) Tj
+0 -14 Td
+(0.4709088026601212 | 777.6599731445312 | 702.2683215332031 | 733.030029296875 | 649.473754272461) Tj
+0 -14 Td
+(| False | False | SPY and QQQ above 200D MA | 0.5290911973398789 |) Tj
+0 -14 Td
+(current_growth_candidate_allocation | True | raw_target_return_exact | False | True | 2026-08-07) Tj
+0 -14 Td
+(| | 4.0 | OKLO,TWLO,TEAM,VIST | growth_champion_final_v1_0_frozen | 2026-08-13 00:00:00 |) Tj
+0 -14 Td
+(2026-08-14 00:00:00 | growth_champion_final_v1_0_frozen | True | official_forward_exact | False) Tj
+0 -14 Td
+(|) Tj
+0 -14 Td
+(| 2026-08-13 00:00:00 | CASH | 0.5290911973398789 | 57093.53058174712 | 1.0 | 1.0 |) Tj
+0 -14 Td
+(-0.0447482102208858 | 0.0944677699177632 | HOLD | growth_champion_final | | | | | | | | | | | |) Tj
+0 -14 Td
+(| | | | | | | | | | | | growth_champion_final_v1_0_frozen | 2026-08-13 00:00:00 | 2026-08-14) Tj
+0 -14 Td
+(00:00:00 | growth_champion_final_v1_0_frozen | True | official_forward_exact | False |) Tj
+0 -14 Td
+() Tj
+0 -14 Td
+(4. RISK) Tj
+0 -14 Td
+() Tj
+0 -14 Td
+(RISK METRICS) Tj
+0 -14 Td
+() Tj
+0 -14 Td
+(- **Volatility**: n/a) Tj
+0 -14 Td
+(- **Target Volatility**: 22.00%) Tj
+0 -14 Td
+(- **Var95**: 9.45%) Tj
+0 -14 Td
+(- **Cvar95**: n/a) Tj
+0 -14 Td
+(- **Hhi**: 0.055) Tj
+0 -14 Td
+() Tj
+0 -14 Td
+(5. EXECUTION) Tj
+0 -14 Td
+() Tj
+0 -14 Td
+(| date | signal_date | economic_application_date | ticker | action | old_weight | new_weight |) Tj
+0 -14 Td
+(weight_change | old_position_value | new_position_value | estimated_trade_value |) Tj
+0 -14 Td
+(execution_price | reason | raw_target_rank | raw_target_return_exact |) Tj
+0 -14 Td
+(holding_quality_classification | holding_risk_notes |) Tj
+0 -14 Td
+(| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | ---) Tj
+0 -14 Td
+(| --- |) Tj
+0 -14 Td
+(| 2026-08-13 00:00:00 | 2026-08-13 00:00:00 | 2026-08-14 00:00:00 | ARM | HOLD |) Tj
+0 -14 Td
+(0.1177272006650303 | 0.1177272006650303 | 0.0 | 12703.786351513683 | 12703.786351513683 | 0.0 |) Tj
+0 -14 Td
+(| official_weight_unchanged | | | | |) Tj
+0 -14 Td
+(| 2026-08-13 00:00:00 | 2026-08-13 00:00:00 | 2026-08-14 00:00:00 | OKLO | HOLD |) Tj
+0 -14 Td
+(0.1177272006650303 | 0.1177272006650303 | 0.0 | 12703.786351513683 | 12703.786351513683 | 0.0 |) Tj
+0 -14 Td
+(46.79499816894531 | official_weight_unchanged | | | | |) Tj
+0 -14 Td
+(| 2026-08-13 00:00:00 | 2026-08-13 00:00:00 | 2026-08-14 00:00:00 | TEAM | HOLD |) Tj
+0 -14 Td
+(0.1177272006650303 | 0.1177272006650303 | 0.0 | 12703.786351513683 | 12703.786351513683 | 0.0 |) Tj
+0 -14 Td
+ET
+endstream
+endobj
+9 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 842] /Resources << /Font << /F1 3 0 R >> >> /Contents 8 0 R >>
+endobj
+10 0 obj
+<< /Length 3871 >>
+stream
+BT
+/F1 9 Tf
+50 790 Td
+(161.68499755859375 | official_weight_unchanged | | | | |) Tj
+0 -14 Td
+(| 2026-08-13 00:00:00 | 2026-08-13 00:00:00 | 2026-08-14 00:00:00 | VIST | HOLD |) Tj
+0 -14 Td
+(0.1177272006650303 | 0.1177272006650303 | 0.0 | 12703.786351513683 | 12703.786351513683 | 0.0 |) Tj
+0 -14 Td
+(66.38999938964844 | official_weight_unchanged | | | | |) Tj
+0 -14 Td
+(| 2026-08-13 00:00:00 | 2026-08-13 00:00:00 | 2026-08-14 00:00:00 | CASH | HOLD |) Tj
+0 -14 Td
+(0.5290911973398789 | 0.5290911973398789 | 0.0 | 57093.53058174712 | 57093.53058174712 | 0.0 |) Tj
+0 -14 Td
+(1.0 | official_cash_rebalance | | | | |) Tj
+0 -14 Td
+() Tj
+0 -14 Td
+(6. RESEARCH) Tj
+0 -14 Td
+() Tj
+0 -14 Td
+(| all_time_trials | effective_independent_trials | CSCV_PBO | deflated_sharpe | DSR_p_value |) Tj
+0 -14 Td
+(SPA_or_reality_check_p_value | growth_champion_final_survives_multiple_testing_correction |) Tj
+0 -14 Td
+(classification | production_changed | paper_changed | parameter_tuning | reason | check |) Tj
+0 -14 Td
+(mean_test_sharpe | positive_test_fold_rate | locked_holdout_sharpe | locked_holdout_CAGR |) Tj
+0 -14 Td
+(locked_holdout_max_drawdown | mean_rank_IC_20d | embargo_days | purge_days | parameters_tuned |) Tj
+0 -14 Td
+(governance_note | active_parameters_changed | new_best_selected |) Tj
+0 -14 Td
+(| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | ---) Tj
+0 -14 Td
+(| --- | --- | --- | --- | --- | --- | --- | --- | --- |) Tj
+0 -14 Td
+(| 14649.0 | 3.0 | 0.6940115440115441 | 2.044517205085236 | 0.0013615530804788 | 0.0 | False |) Tj
+0 -14 Td
+(research_only | False | False | False | all_time_trials_high=14649; CSCV_PBO=0.694; DSR_p=0.001;) Tj
+0 -14 Td
+(reality_check_p=0.000 | Anti-overfitting | | | | | | | | | | | | |) Tj
+0 -14 Td
+(| | | | | | | | strong_oos_candidate | False | False | | | Out-of-sample | 1.2381750078230702 |) Tj
+0 -14 Td
+(0.7857142857142857 | 2.666101717003784 | 0.7618661899581078 | -0.0765175733466112 |) Tj
+0 -14 Td
+(0.0328062544029767 | 30.0 | 30.0 | False | No tuning after locked holdout. Model frozen; folds) Tj
+0 -14 Td
+(evaluate temporal stability only. | | |) Tj
+0 -14 Td
+(| | | | | | | | stable_plateau | False | False | | broad plateau; plateau_pct=76.56%;) Tj
+0 -14 Td
+(local_sharpe_std=0.016 | Parameter stability | | | | | | | | | | | False | False |) Tj
+0 -14 Td
+() Tj
+0 -14 Td
+(7. GOVERNANCE) Tj
+0 -14 Td
+() Tj
+0 -14 Td
+(Official namespace only. Real capital remains governed by current lifecycle status.) Tj
+0 -14 Td
+() Tj
+0 -14 Td
+(8. ALERTS) Tj
+0 -14 Td
+() Tj
+0 -14 Td
+(| id | timestamp | module | severity | category | description | trigger_value | threshold |) Tj
+0 -14 Td
+(status | resolved | acknowledged | source_file | first_seen | last_seen | occurrences |) Tj
+0 -14 Td
+(resolved_date | acknowledged_date | duration_days |) Tj
+0 -14 Td
+(| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | ---) Tj
+0 -14 Td
+(| --- | --- |) Tj
+0 -14 Td
+(| ALT-7A7BD7681C | 2026-08-13 17:44:54 | Risk | WARNING | Risk | Portfolio volatility exceeds) Tj
+0 -14 Td
+(target | 0.4732787829801202 | 0.22 | OPEN | False | False |) Tj
+0 -14 Td
+(growth_official_paper_performance.csv | 2026-08-13 17:44:54 | 2026-08-13 17:44:54 | 1 | | | 0 |) Tj
+0 -14 Td
+(| ALT-9703B4FBB5 | 2026-08-13 17:44:54 | Market Data | WARNING | Market Data | Missing second) Tj
+0 -14 Td
+(provider | SINGLE_SOURCE_FRESH | multi_source_confirmed | OPEN | False | False |) Tj
+0 -14 Td
+(official_market_data_governance.csv | 2026-08-13 17:44:54 | 2026-08-13 17:44:54 | 1 | | | 0 |) Tj
+0 -14 Td
+(| ALT-B25CA861D9 | 2026-08-13 17:44:54 | Governance | BLOCKER | Governance | Real capital) Tj
+0 -14 Td
+(blocked | real_capital_blocked | promotion allowed | OPEN | False | False |) Tj
+0 -14 Td
+(growth_official_paper_monitor.csv | 2026-08-13 17:44:54 | 2026-08-13 17:44:54 | 1 | | | 0 |) Tj
+0 -14 Td
+ET
+endstream
+endobj
+11 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 842] /Resources << /Font << /F1 3 0 R >> >> /Contents 10 0 R >>
+endobj
+12 0 obj
+<< /Length 2270 >>
+stream
+BT
+/F1 9 Tf
+50 790 Td
+(| ALT-4F77D0036F | 2026-08-13 17:44:54 | Governance | NOTICE | Governance | Forward history too) Tj
+0 -14 Td
+(short | official_forward_warmup | minimum paper history | OPEN | False | False |) Tj
+0 -14 Td
+(growth_official_paper_monitor.csv | 2026-08-13 17:44:54 | 2026-08-13 17:44:54 | 1 | | | 0 |) Tj
+0 -14 Td
+(| ALT-792DA776E8 | 2026-08-13 17:44:54 | Governance | WARNING | Governance | PBO elevated |) Tj
+0 -14 Td
+(0.6940115440115441 | 0.50 | OPEN | False | False | anti_overfitting_governance.csv | 2026-08-13) Tj
+0 -14 Td
+(17:44:54 | 2026-08-13 17:44:54 | 1 | | | 0 |) Tj
+0 -14 Td
+() Tj
+0 -14 Td
+(9. APPENDIX) Tj
+0 -14 Td
+() Tj
+0 -14 Td
+(| source_key | source_file | exists | rows | latest_date |) Tj
+0 -14 Td
+(| --- | --- | --- | --- | --- |) Tj
+0 -14 Td
+(| official_performance | growth_official_paper_performance.csv | True | 10 | 2026-08-13 |) Tj
+0 -14 Td
+(| official_state | growth_official_paper_state.csv | True | 46 | 2026-08-13 |) Tj
+0 -14 Td
+(| official_actions | growth_official_paper_actions.csv | True | 48 | 2026-08-13 |) Tj
+0 -14 Td
+(| official_rebalance_report | growth_official_paper_rebalance_report.csv | True | 10 |) Tj
+0 -14 Td
+(2026-08-13 |) Tj
+0 -14 Td
+(| official_monitor | growth_official_paper_monitor.csv | True | 10 | 2026-08-13 |) Tj
+0 -14 Td
+(| official_benchmark_daily | growth_official_benchmark_daily.csv | True | 10 | 2026-08-13 |) Tj
+0 -14 Td
+(| official_benchmark_equity | growth_official_benchmark_equity.csv | True | 10 | 2026-08-13 |) Tj
+0 -14 Td
+(| official_market_data_integrity | official_market_data_integrity.csv | True | 6 | |) Tj
+0 -14 Td
+(| official_accounting_reconciliation | official_accounting_reconciliation.csv | True | 2 |) Tj
+0 -14 Td
+(2026-07-13 |) Tj
+0 -14 Td
+(| active_alerts | active_alerts.csv | True | 5 | |) Tj
+0 -14 Td
+(| anti_overfitting_governance | anti_overfitting_governance.csv | True | 1 | |) Tj
+0 -14 Td
+(| out_of_sample_governance | out_of_sample_governance.csv | True | 1 | |) Tj
+0 -14 Td
+(| parameter_governance | parameter_governance.csv | True | 1 | |) Tj
+0 -14 Td
+() Tj
+0 -14 Td
+() Tj
+0 -14 Td
+() Tj
+0 -14 Td
+(Read-only report. No model, optimizer, scheduler, execution, paper, accounting, governance,) Tj
+0 -14 Td
+(parameter, or order logic changed.) Tj
+0 -14 Td
+ET
+endstream
+endobj
+13 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 842] /Resources << /Font << /F1 3 0 R >> >> /Contents 12 0 R >>
+endobj
+xref
+0 14
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000141 00000 n 
+0000000211 00000 n 
+0000001582 00000 n 
+0000001708 00000 n 
+0000005253 00000 n 
+0000005379 00000 n 
+0000009015 00000 n 
+0000009141 00000 n 
+0000013065 00000 n 
+0000013193 00000 n 
+0000015516 00000 n 
+trailer
+<< /Size 14 /Root 1 0 R >>
+startxref
+15644
+%%EOF

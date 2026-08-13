@@ -1,0 +1,16 @@
+date,raw_target_return_exact,fresh_ohlcv,current_filters_present,fresh_volatility_calculation,exact_rebalance_scheduler,all_exact_inputs
+2026-06-17,False,True,True,True,True,False
+2026-06-18,True,True,True,True,True,True
+2026-06-22,True,True,True,True,True,True
+2026-06-23,True,True,True,True,True,True
+2026-06-24,True,True,True,True,True,True
+2026-06-25,True,True,True,True,True,True
+2026-06-26,True,True,True,True,True,True
+2026-06-29,True,True,True,True,True,True
+2026-06-30,True,True,True,True,True,True
+2026-07-01,True,True,True,True,True,True
+2026-07-02,True,True,True,True,True,True
+2026-07-06,True,True,True,True,True,True
+2026-07-08,True,True,True,True,True,True
+2026-07-09,True,True,True,True,True,True
+2026-07-10,True,True,True,True,True,True

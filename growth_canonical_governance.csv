@@ -1,0 +1,2 @@
+classification,first_exact_input_date,canonical_exact_rows,reconstructed_stress_rows,source_files_audited,production_changed,paper_changed,parameters_changed,warning
+canonical_history_ready,2026-06-18,14,878,6,False,False,False,Exact history is short; reconstructed stress history is non-production-parity and must not be mixed with exact metrics.

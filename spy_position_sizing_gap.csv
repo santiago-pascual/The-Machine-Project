@@ -1,0 +1,6 @@
+metric,value,interpretation
+average_cash,0.09818181818181845,cash reduces upside capture when benchmark rises
+average_exposure,0.9018181818181817,growth model is mostly invested
+average_turnover,0.49818181818181817,high turnover can cut winners early
+average_selected_count,2.0454545454545454,few positions increases idiosyncratic gap versus SPY
+max_single_position_proxy,0.25,cap can underweight major winners if alpha rank is correct
