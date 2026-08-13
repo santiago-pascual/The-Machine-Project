@@ -1,0 +1,29 @@
+# Core data & numerical stack
+pandas
+numpy
+scipy
+
+# Market data
+yfinance
+
+# Ledoit-Wolf covariance shrinkage, meta-labeling classifiers
+# (LogisticRegression / RandomForest / GradientBoosting), StandardScaler,
+# isotonic probability calibration
+scikit-learn
+
+# Local read-only dashboard (whitepaper §19)
+streamlit
+flask       # fallback if streamlit is unavailable
+
+# --- Notes ---
+# This file lists the dependencies confirmed in the whitepaper's own module
+# descriptions. Several statistical components are implemented from scratch
+# on top of numpy/scipy/scikit-learn rather than via specialized packages:
+# the Kalman filter, the GARCH/EGARCH grid search, the Hurst exponent,
+# Hawkes intensity, the Higuchi/Lyapunov proxies, and the 2-state Gaussian
+# HMM (manual Baum-Welch) all have no external dependency (no `arch`,
+# `hmmlearn`, `pykalman`, or `cvxpy`) — see whitepaper §23 for why.
+#
+# Versions are intentionally left unpinned here. Reconcile this file against
+# your actual `import` statements and pin versions (e.g. via `pip freeze`)
+# before treating it as authoritative or publishing the repo.
