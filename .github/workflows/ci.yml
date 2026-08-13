@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.11"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: "pip"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install ruff pytest
+
+      - name: Byte-compile check (syntax sanity across all scripts)
+        run: python -m compileall -q .
+
+      - name: Lint (ruff)
+        run: ruff check . --exit-zero
+        # --exit-zero: the repo currently has ~500 research scripts with no
+        # lint baseline yet. Remove --exit-zero once the codebase is clean
+        # enough for lint failures to actually block merges (see Roadmap).
+
+      - name: Run tests
+        run: |
+          if [ -d tests ]; then
+            pytest -q
+          else
+            echo "No tests/ directory yet — skipping. See README Roadmap."
+          fi
