@@ -5,7 +5,7 @@ An independent, single-author quantitative research and paper-trading platform i
 ![Status](https://img.shields.io/badge/status-paper%20trading%20%2F%20research-yellow)
 ![Python](https://img.shields.io/badge/python-3.x-blue)
 ![License](https://img.shields.io/badge/license-proprietary-lightgrey)
-![CI](https://github.com/Santiago-Pasqual/<repo-name>/actions/workflows/ci.yml/badge.svg)
+![CI](https://github.com/Santiago-Pasqual/The-Machine-Project/actions/workflows/ci.yml/badge.svg)
 
 > **Full technical whitepaper:** [`docs/whitepaper.pdf`](docs/whitepaper.pdf) — 48 pages covering every formula, file, and design decision referenced below. This README is a condensed, code-facing entry point; the whitepaper is the canonical technical reference (currently in Spanish).
 
