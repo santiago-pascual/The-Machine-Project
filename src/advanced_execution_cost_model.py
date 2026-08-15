@@ -128,7 +128,16 @@ def load_trade_source() -> tuple[pd.DataFrame, str]:
                     action = "INCREASE"
                 else:
                     action = "REDUCE"
-                rows.append({"date": row["date"], "ticker": ticker, "weight": new, "previous_weight": old, "weight_change": change, "action": action})
+                rows.append(
+                    {
+                        "date": row["date"],
+                        "ticker": ticker,
+                        "weight": new,
+                        "previous_weight": old,
+                        "weight_change": change,
+                        "action": action,
+                    }
+                )
             prev_weights = target
         return pd.DataFrame(rows), "growth_final_selection_daily_returns.csv::growth_champion_v3_reconstructed_actions"
 
@@ -136,7 +145,9 @@ def load_trade_source() -> tuple[pd.DataFrame, str]:
     if not rec.empty and {"date", "ticker", "weight", "previous_weight"}.issubset(rec.columns):
         df = rec.copy()
         df["date"] = pd.to_datetime(df["date"], errors="coerce")
-        df["weight_change"] = pd.to_numeric(df["weight"], errors="coerce") - pd.to_numeric(df["previous_weight"], errors="coerce").fillna(0.0)
+        df["weight_change"] = pd.to_numeric(df["weight"], errors="coerce") - pd.to_numeric(df["previous_weight"], errors="coerce").fillna(
+            0.0
+        )
         df["action"] = np.where(df["weight_change"] > 0, "BUY_OR_INCREASE", np.where(df["weight_change"] < 0, "SELL_OR_REDUCE", "HOLD"))
         return df.dropna(subset=["date", "ticker"]), "reconstructed_growth_long_horizon_trades.csv"
     live = read_csv("growth_candidate_action_signals.csv")
@@ -144,6 +155,7 @@ def load_trade_source() -> tuple[pd.DataFrame, str]:
         live["date"] = pd.to_datetime(live["date"], errors="coerce")
         return live.dropna(subset=["date", "ticker"]), "growth_candidate_action_signals.csv"
     return pd.DataFrame(), "missing"
+
 
 def load_return_source() -> tuple[pd.DataFrame, str]:
     df = read_csv("growth_crisis_overlay_daily_returns.csv")
@@ -164,7 +176,9 @@ def load_return_source() -> tuple[pd.DataFrame, str]:
     return pd.DataFrame(), "missing"
 
 
-def compute_trade_costs(trades: pd.DataFrame, portfolio_value: float, y_value: float, commission_bps: float, min_fee: float) -> pd.DataFrame:
+def compute_trade_costs(
+    trades: pd.DataFrame, portfolio_value: float, y_value: float, commission_bps: float, min_fee: float
+) -> pd.DataFrame:
     cache: dict[str, pd.DataFrame] = {}
     rows = []
     active = trades.loc[~trades["ticker"].astype(str).str.upper().eq("CASH")].copy()
@@ -264,7 +278,11 @@ def capacity_analysis(costs: pd.DataFrame) -> pd.DataFrame:
                     "median_participation": float(scaled_participation.median()),
                     "trades_over_limit": int((scaled_participation > limit).sum()),
                     "pct_trades_over_limit": float((scaled_participation > limit).mean()),
-                    "capacity_status": "safe" if (scaled_participation > limit).mean() < 0.01 else "caution" if (scaled_participation > limit).mean() < 0.10 else "capacity_limited",
+                    "capacity_status": "safe"
+                    if (scaled_participation > limit).mean() < 0.01
+                    else "caution"
+                    if (scaled_participation > limit).mean() < 0.10
+                    else "capacity_limited",
                 }
             )
     return pd.DataFrame(rows)
@@ -275,7 +293,13 @@ def run(args: argparse.Namespace) -> None:
     returns, return_source = load_return_source()
     if trades.empty or returns.empty:
         empty = pd.DataFrame([{"status": "missing trades or returns", "trade_source": trade_source, "return_source": return_source}])
-        for path in ["advanced_execution_costs.csv", "market_impact_results.csv", "capacity_analysis.csv", "after_costs_equity_curves.csv", "execution_governance.csv"]:
+        for path in [
+            "advanced_execution_costs.csv",
+            "market_impact_results.csv",
+            "capacity_analysis.csv",
+            "after_costs_equity_curves.csv",
+            "execution_governance.csv",
+        ]:
             empty.to_csv(path, index=False)
         print("===== ADVANCED EXECUTION COST MODEL =====")
         print("status: missing trades or returns")
@@ -315,7 +339,12 @@ def run(args: argparse.Namespace) -> None:
                 "total_cost_drag_dollars": total_cost,
                 "annual_cost_drag_dollars": total_cost / years,
                 "annual_cost_drag_pct_of_aum": total_cost / years / args.portfolio_value,
-                "average_turnover_proxy": float(trades.assign(abs_wc=pd.to_numeric(trades["weight_change"], errors="coerce").abs()).groupby("date")["abs_wc"].sum().mean()),
+                "average_turnover_proxy": float(
+                    trades.assign(abs_wc=pd.to_numeric(trades["weight_change"], errors="coerce").abs())
+                    .groupby("date")["abs_wc"]
+                    .sum()
+                    .mean()
+                ),
                 "missing_liquidity_rate": float(costs["missing_liquidity_data"].mean()) if not costs.empty else np.nan,
             }
         )
@@ -327,9 +356,16 @@ def run(args: argparse.Namespace) -> None:
 
     safe_500k = capacity.loc[(capacity["capital"].eq(500_000)) & (capacity["participation_limit"].eq(0.05))]
     net_realistic = market.loc[market["impact_Y"].eq(1.0)]
-    if not safe_500k.empty and safe_500k.iloc[0]["capacity_status"] == "safe" and not net_realistic.empty and net_realistic.iloc[0]["net_Sharpe"] > 1.0:
+    if (
+        not safe_500k.empty
+        and safe_500k.iloc[0]["capacity_status"] == "safe"
+        and not net_realistic.empty
+        and net_realistic.iloc[0]["net_Sharpe"] > 1.0
+    ):
         classification = "robust_medium_capital"
-    elif not capacity.loc[(capacity["capital"].eq(100_000)) & (capacity["participation_limit"].eq(0.05))].empty and capacity.loc[(capacity["capital"].eq(100_000)) & (capacity["participation_limit"].eq(0.05))].iloc[0]["capacity_status"] in {"safe", "caution"}:
+    elif not capacity.loc[(capacity["capital"].eq(100_000)) & (capacity["participation_limit"].eq(0.05))].empty and capacity.loc[
+        (capacity["capital"].eq(100_000)) & (capacity["participation_limit"].eq(0.05))
+    ].iloc[0]["capacity_status"] in {"safe", "caution"}:
         classification = "robust_small_capital"
     elif not safe_500k.empty and safe_500k.iloc[0]["capacity_status"] == "capacity_limited":
         classification = "capacity_limited"
@@ -337,17 +373,21 @@ def run(args: argparse.Namespace) -> None:
         classification = "fails_execution_reality"
 
     gov = pd.DataFrame(
-        [{
-            "classification": classification,
-            "portfolio_value_assumption": args.portfolio_value,
-            "commission_bps": args.commission_bps,
-            "minimum_fee": args.minimum_fee,
-            "best_realistic_net_sharpe_Y1": float(net_realistic.iloc[0]["net_Sharpe"]) if not net_realistic.empty else np.nan,
-            "annual_cost_drag_pct_Y1": float(net_realistic.iloc[0]["annual_cost_drag_pct_of_aum"]) if not net_realistic.empty else np.nan,
-            "production_changed": False,
-            "paper_changed": False,
-            "reason": "Advanced costs applied to historical action changes with spread/slippage/square-root impact.",
-        }]
+        [
+            {
+                "classification": classification,
+                "portfolio_value_assumption": args.portfolio_value,
+                "commission_bps": args.commission_bps,
+                "minimum_fee": args.minimum_fee,
+                "best_realistic_net_sharpe_Y1": float(net_realistic.iloc[0]["net_Sharpe"]) if not net_realistic.empty else np.nan,
+                "annual_cost_drag_pct_Y1": float(net_realistic.iloc[0]["annual_cost_drag_pct_of_aum"])
+                if not net_realistic.empty
+                else np.nan,
+                "production_changed": False,
+                "paper_changed": False,
+                "reason": "Advanced costs applied to historical action changes with spread/slippage/square-root impact.",
+            }
+        ]
     )
 
     advanced_costs.to_csv("advanced_execution_costs.csv", index=False)
@@ -365,7 +405,9 @@ def run(args: argparse.Namespace) -> None:
         print(f"net_CAGR_Y1: {net_realistic.iloc[0]['net_CAGR']}")
         print(f"net_Sharpe_Y1: {net_realistic.iloc[0]['net_Sharpe']}")
         print(f"annual_cost_drag_pct_Y1: {net_realistic.iloc[0]['annual_cost_drag_pct_of_aum']}")
-    print("outputs: advanced_execution_costs.csv, market_impact_results.csv, capacity_analysis.csv, after_costs_equity_curves.csv, execution_governance.csv")
+    print(
+        "outputs: advanced_execution_costs.csv, market_impact_results.csv, capacity_analysis.csv, after_costs_equity_curves.csv, execution_governance.csv"
+    )
 
 
 def main() -> None:
@@ -379,4 +421,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

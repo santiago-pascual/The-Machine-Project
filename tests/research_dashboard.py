@@ -204,7 +204,9 @@ def _regime_summary(regime_df: pd.DataFrame, robustness: pd.DataFrame) -> dict[s
     fails = "missing"
     if not regime_df.empty:
         regime_col = "regime" if "regime" in regime_df.columns else regime_df.columns[0]
-        score_cols = [c for c in ["portfolio_sharpe", "realized_sharpe", "average_realized_return", "portfolio_return"] if c in regime_df.columns]
+        score_cols = [
+            c for c in ["portfolio_sharpe", "realized_sharpe", "average_realized_return", "portfolio_return"] if c in regime_df.columns
+        ]
         if score_cols:
             score = pd.to_numeric(regime_df[score_cols[0]], errors="coerce")
             if score.notna().any():

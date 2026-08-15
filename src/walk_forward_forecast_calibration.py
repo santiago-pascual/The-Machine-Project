@@ -161,7 +161,9 @@ def _diagnostics(forecasts: pd.DataFrame, config: WalkForwardForecastCalibration
     return pd.DataFrame(rows)
 
 
-def _select_shadow(group: pd.DataFrame, score_col: str, selected_count: int, cash_weight: float, candidate: str, horizon: int) -> pd.DataFrame:
+def _select_shadow(
+    group: pd.DataFrame, score_col: str, selected_count: int, cash_weight: float, candidate: str, horizon: int
+) -> pd.DataFrame:
     frame = group.copy()
     frame["score"] = _safe_numeric(frame[score_col], np.nan)
     frame = frame.sort_values("score", ascending=False).head(max(1, int(selected_count))).copy()
@@ -215,7 +217,15 @@ def _portfolio_shadow(forecasts: pd.DataFrame, config: WalkForwardForecastCalibr
 def _risk_metrics(returns: pd.Series) -> dict[str, float]:
     returns = pd.to_numeric(returns, errors="coerce").replace([np.inf, -np.inf], np.nan).dropna()
     if returns.empty:
-        return {"realized_return": np.nan, "volatility": np.nan, "Sharpe": np.nan, "Sortino": np.nan, "Calmar": np.nan, "max_drawdown": np.nan, "hit_rate": np.nan}
+        return {
+            "realized_return": np.nan,
+            "volatility": np.nan,
+            "Sharpe": np.nan,
+            "Sortino": np.nan,
+            "Calmar": np.nan,
+            "max_drawdown": np.nan,
+            "hit_rate": np.nan,
+        }
     equity = (1.0 + returns).cumprod()
     dd = equity / equity.cummax() - 1.0
     mean_ret = float(returns.mean())
@@ -288,14 +298,25 @@ def run_walk_forward_forecast_calibration(config: WalkForwardForecastCalibration
     diagnostics.to_csv(OUTPUT_DIAGNOSTICS, index=False)
     shadow.to_csv(OUTPUT_SHADOW, index=False)
     _print_report(diagnostics, shadow, coefficients)
-    return {"forecasts": forecasts, "coefficients": coefficients, "diagnostics": diagnostics, "shadow": shadow, "trades": trades, "daily": daily}
+    return {
+        "forecasts": forecasts,
+        "coefficients": coefficients,
+        "diagnostics": diagnostics,
+        "shadow": shadow,
+        "trades": trades,
+        "daily": daily,
+    }
 
 
 def _print_report(diagnostics: pd.DataFrame, shadow: pd.DataFrame, coefficients: pd.DataFrame) -> None:
     print("\n===== WALK-FORWARD FORECAST CALIBRATION =====")
     print("strict no-look-ahead: True")
     print(f"coefficient rows: {len(coefficients)}")
-    warnings = coefficients["warning"].replace("", np.nan).dropna().value_counts().to_dict() if not coefficients.empty and "warning" in coefficients.columns else {}
+    warnings = (
+        coefficients["warning"].replace("", np.nan).dropna().value_counts().to_dict()
+        if not coefficients.empty and "warning" in coefficients.columns
+        else {}
+    )
     print(f"warnings: {warnings if warnings else 'none'}")
 
     print("\n===== BEFORE VS AFTER FORECAST CALIBRATION =====")

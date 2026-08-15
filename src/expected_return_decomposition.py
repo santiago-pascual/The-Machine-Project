@@ -85,7 +85,18 @@ def _load_dataset() -> pd.DataFrame:
         data = data.drop(columns=[col for col in realized_cols if col in data.columns], errors="ignore")
         data = data.merge(realized[["date", "ticker", "model_mode"] + realized_cols], on=["date", "ticker", "model_mode"], how="left")
     for col in data.columns:
-        if col not in {"date", "ticker", "model_mode", "selected", "regime", "timing_model", "target_model", "covariance_method", "gate_decision", "gate_reason"}:
+        if col not in {
+            "date",
+            "ticker",
+            "model_mode",
+            "selected",
+            "regime",
+            "timing_model",
+            "target_model",
+            "covariance_method",
+            "gate_decision",
+            "gate_reason",
+        }:
             converted = pd.to_numeric(data[col], errors="coerce")
             if converted.notna().sum() > 0:
                 data[col] = converted
@@ -114,7 +125,11 @@ def _stage_frame(data: pd.DataFrame) -> pd.DataFrame:
     risk_free_adjusted_proxy = before_penalties_proxy - 0.000147
     constant_penalty_proxy = risk_free_adjusted_proxy - 0.001
     signal_adjusted_proxy = constant_penalty_proxy * (signal.clip(lower=0.0) ** 1.5) * (0.3 + 0.7 * signal.clip(0.0, 1.0))
-    regime_multiplier = np.where(data.get("regime", pd.Series("", index=data.index)).astype(str).eq("risk_on"), 1.2, np.where(data.get("regime", pd.Series("", index=data.index)).astype(str).eq("risk_off"), 0.6, 0.85))
+    regime_multiplier = np.where(
+        data.get("regime", pd.Series("", index=data.index)).astype(str).eq("risk_on"),
+        1.2,
+        np.where(data.get("regime", pd.Series("", index=data.index)).astype(str).eq("risk_off"), 0.6, 0.85),
+    )
     regime_adjusted_proxy = signal_adjusted_proxy * regime_multiplier
     confidence_adjusted_proxy = regime_adjusted_proxy * (0.5 + 0.5 * confidence.clip(0.0, 1.0))
     quality_adjusted_proxy = confidence_adjusted_proxy * (0.90 + 0.18 * quality.clip(0.0, 1.0))
@@ -291,10 +306,23 @@ def run_expected_return_decomposition() -> tuple[pd.DataFrame, pd.DataFrame, pd.
 
     print("\n===== EXPECTED RETURN DECOMPOSITION =====")
     print(f"observations: {len(stages)}")
-    print("capture note: final expected return is exact from historical outputs; prior stages are diagnostic proxies unless exposed historically.")
+    print(
+        "capture note: final expected return is exact from historical outputs; prior stages are diagnostic proxies unless exposed historically."
+    )
 
     print("\n===== EXPECTED RETURN STAGE ATTRIBUTION =====")
-    cols = ["stage", "capture_type", "mean", "std", "rank_ic_5d", "rank_ic_10d", "rank_ic_20d", "hit_rate_20d", "monotonicity_corr_20d", "variance_contribution_to_final"]
+    cols = [
+        "stage",
+        "capture_type",
+        "mean",
+        "std",
+        "rank_ic_5d",
+        "rank_ic_10d",
+        "rank_ic_20d",
+        "hit_rate_20d",
+        "monotonicity_corr_20d",
+        "variance_contribution_to_final",
+    ]
     print(attribution[cols].to_string(index=False))
 
     print("\n===== ALPHA GAIN/LOSS BY STAGE =====")

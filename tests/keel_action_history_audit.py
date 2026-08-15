@@ -33,11 +33,23 @@ def main() -> None:
         if not df.empty and "date" in df.columns:
             df["date"] = pd.to_datetime(df["date"], errors="coerce").dt.strftime("%Y-%m-%d")
 
-    keel_signals = signals[signals.get("ticker", pd.Series(dtype=str)).astype(str).str.upper().eq("KEEL")].copy() if not signals.empty else pd.DataFrame()
-    keel_trades = trades[trades.get("ticker", pd.Series(dtype=str)).astype(str).str.upper().eq("KEEL")].copy() if not trades.empty else pd.DataFrame()
-    keel_state = state[state.get("ticker", pd.Series(dtype=str)).astype(str).str.upper().eq("KEEL")].copy() if not state.empty else pd.DataFrame()
+    keel_signals = (
+        signals[signals.get("ticker", pd.Series(dtype=str)).astype(str).str.upper().eq("KEEL")].copy()
+        if not signals.empty
+        else pd.DataFrame()
+    )
+    keel_trades = (
+        trades[trades.get("ticker", pd.Series(dtype=str)).astype(str).str.upper().eq("KEEL")].copy() if not trades.empty else pd.DataFrame()
+    )
+    keel_state = (
+        state[state.get("ticker", pd.Series(dtype=str)).astype(str).str.upper().eq("KEEL")].copy() if not state.empty else pd.DataFrame()
+    )
 
-    dates = sorted(set(keel_signals.get("date", pd.Series(dtype=str)).dropna().astype(str)) | set(keel_state.get("date", pd.Series(dtype=str)).dropna().astype(str)) | set(keel_trades.get("date", pd.Series(dtype=str)).dropna().astype(str)))
+    dates = sorted(
+        set(keel_signals.get("date", pd.Series(dtype=str)).dropna().astype(str))
+        | set(keel_state.get("date", pd.Series(dtype=str)).dropna().astype(str))
+        | set(keel_trades.get("date", pd.Series(dtype=str)).dropna().astype(str))
+    )
     rows: list[dict[str, object]] = []
     for date in dates:
         sig = keel_signals[keel_signals["date"].astype(str).eq(date)]
@@ -45,7 +57,11 @@ def main() -> None:
         st = keel_state[keel_state["date"].astype(str).eq(date)]
         row = sig.iloc[-1] if not sig.empty else pd.Series(dtype=object)
         old_weight = float(pd.to_numeric(row.get("old_weight", np.nan), errors="coerce")) if not sig.empty else np.nan
-        new_weight = float(pd.to_numeric(row.get("new_weight", np.nan), errors="coerce")) if not sig.empty else (float(pd.to_numeric(st.iloc[-1].get("paper_position_weight", np.nan), errors="coerce")) if not st.empty else np.nan)
+        new_weight = (
+            float(pd.to_numeric(row.get("new_weight", np.nan), errors="coerce"))
+            if not sig.empty
+            else (float(pd.to_numeric(st.iloc[-1].get("paper_position_weight", np.nan), errors="coerce")) if not st.empty else np.nan)
+        )
         position_value = float(pd.to_numeric(st.iloc[-1].get("paper_position_value", np.nan), errors="coerce")) if not st.empty else np.nan
         rows.append(
             {

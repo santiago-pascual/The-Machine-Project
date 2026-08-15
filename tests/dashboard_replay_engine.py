@@ -1,4 +1,3 @@
-
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -77,9 +76,12 @@ def build_snapshot(replay: ReplayData, date: pd.Timestamp) -> ReplaySnapshot:
     actions = rows_on_or_before(frames.get("actions", pd.DataFrame()), date, exact=True)
     rebalance = rows_on_or_before(frames.get("rebalance_report", pd.DataFrame()), date, exact=True)
     benchmark_df = rows_on_or_before(frames.get("benchmark_daily", pd.DataFrame()), date, exact=True)
-    if perf_df.empty: warnings.append("Historical performance unavailable for selected date")
-    if state.empty: warnings.append("Historical holdings unavailable for selected date")
-    if benchmark_df.empty: warnings.append("Historical benchmark unavailable for selected date")
+    if perf_df.empty:
+        warnings.append("Historical performance unavailable for selected date")
+    if state.empty:
+        warnings.append("Historical holdings unavailable for selected date")
+    if benchmark_df.empty:
+        warnings.append("Historical benchmark unavailable for selected date")
 
     perf = _last_series(perf_df)
     benchmark = _last_series(benchmark_df)
@@ -88,17 +90,37 @@ def build_snapshot(replay: ReplayData, date: pd.Timestamp) -> ReplaySnapshot:
     if not holdings.empty and not pnl.empty and "ticker" in holdings.columns and "ticker" in pnl.columns:
         holdings = holdings.merge(pnl.drop(columns=["date"], errors="ignore"), on="ticker", how="left", suffixes=("", "_pnl"))
     non_cash = _non_cash(holdings)
-    weight_col = "paper_position_weight" if "paper_position_weight" in non_cash.columns else "weight" if "weight" in non_cash.columns else None
+    weight_col = (
+        "paper_position_weight" if "paper_position_weight" in non_cash.columns else "weight" if "weight" in non_cash.columns else None
+    )
     weights = pd.to_numeric(non_cash[weight_col], errors="coerce") if weight_col else pd.Series(dtype=float)
     risk = {
         "drawdown": _drawdown_from_perf(frames.get("performance", pd.DataFrame()), date),
         "volatility": _num(perf.get("volatility", np.nan)),
         "hhi": _hhi(weights),
-        "exposure": _num(perf.get("exposure", non_cash.get("paper_position_weight", pd.Series(dtype=float)).pipe(pd.to_numeric, errors="coerce").sum() if not non_cash.empty and "paper_position_weight" in non_cash.columns else np.nan)),
-        "cash": _num(perf.get("cash_weight", holdings.loc[holdings.get("ticker", "").astype(str).str.upper().eq("CASH"), "paper_position_weight"].sum() if not holdings.empty and "paper_position_weight" in holdings.columns else np.nan)),
+        "exposure": _num(
+            perf.get(
+                "exposure",
+                non_cash.get("paper_position_weight", pd.Series(dtype=float)).pipe(pd.to_numeric, errors="coerce").sum()
+                if not non_cash.empty and "paper_position_weight" in non_cash.columns
+                else np.nan,
+            )
+        ),
+        "cash": _num(
+            perf.get(
+                "cash_weight",
+                holdings.loc[holdings.get("ticker", "").astype(str).str.upper().eq("CASH"), "paper_position_weight"].sum()
+                if not holdings.empty and "paper_position_weight" in holdings.columns
+                else np.nan,
+            )
+        ),
         "target_vol": 0.22,
-        "dual_trend_cap": _num(non_cash.get("dual_trend_cap", pd.Series(dtype=float)).dropna().iloc[-1]) if not non_cash.empty and "dual_trend_cap" in non_cash.columns and non_cash["dual_trend_cap"].notna().any() else np.nan,
-        "largest_risk_contributor": non_cash.sort_values(weight_col, ascending=False).iloc[0].get("ticker") if weight_col and not non_cash.empty else "unavailable",
+        "dual_trend_cap": _num(non_cash.get("dual_trend_cap", pd.Series(dtype=float)).dropna().iloc[-1])
+        if not non_cash.empty and "dual_trend_cap" in non_cash.columns and non_cash["dual_trend_cap"].notna().any()
+        else np.nan,
+        "largest_risk_contributor": non_cash.sort_values(weight_col, ascending=False).iloc[0].get("ticker")
+        if weight_col and not non_cash.empty
+        else "unavailable",
         "beta": np.nan,
         "var": np.nan,
         "cvar": np.nan,
@@ -109,12 +131,16 @@ def build_snapshot(replay: ReplayData, date: pd.Timestamp) -> ReplaySnapshot:
     execution = {
         "orders": len(actions[actions.get("ticker", pd.Series(dtype=str)).astype(str).str.upper().ne("CASH")]) if not actions.empty else 0,
         "trades": len(trades) if not trades.empty else 0,
-        "estimated_costs": _num(costs.get("estimated_total_cost", pd.Series(dtype=float)).sum()) if not costs.empty and "estimated_total_cost" in costs.columns else _num(perf.get("estimated_execution_cost", 0)),
+        "estimated_costs": _num(costs.get("estimated_total_cost", pd.Series(dtype=float)).sum())
+        if not costs.empty and "estimated_total_cost" in costs.columns
+        else _num(perf.get("estimated_execution_cost", 0)),
         "estimated_slippage": np.nan,
         "adv_participation": np.nan,
         "execution_delay": str(perf.get("economic_application_date", "unavailable")),
         "broker_status": "no broker / no real orders",
-        "accounting_status": "stored official accounting" if not frames.get("accounting_reconciliation", pd.DataFrame()).empty else "historical accounting unavailable",
+        "accounting_status": "stored official accounting"
+        if not frames.get("accounting_reconciliation", pd.DataFrame()).empty
+        else "historical accounting unavailable",
     }
     monitor = latest_on_or_before(frames.get("monitor", pd.DataFrame()), date)
     integrity = latest_on_or_before(frames.get("integrity", pd.DataFrame()), date)
@@ -124,8 +150,12 @@ def build_snapshot(replay: ReplayData, date: pd.Timestamp) -> ReplaySnapshot:
         "promotion_status": _last_series(monitor).get("promotion_status", "unavailable"),
         "integrity_status": _last_series(integrity).get("integrity_status", _last_series(monitor).get("integrity_status", "unavailable")),
         "data_status": _last_series(daily).get("data_status", _last_series(monitor).get("data_status", "unavailable")),
-        "research": "historical research state unavailable" if frames.get("governance_history", pd.DataFrame()).empty else "available diagnostic history",
-        "market_data": "official_market_data_integrity latest snapshot" if not frames.get("market_data_integrity", pd.DataFrame()).empty else "unavailable",
+        "research": "historical research state unavailable"
+        if frames.get("governance_history", pd.DataFrame()).empty
+        else "available diagnostic history",
+        "market_data": "official_market_data_integrity latest snapshot"
+        if not frames.get("market_data_integrity", pd.DataFrame()).empty
+        else "unavailable",
         "real_orders": _last_series(monitor).get("real_orders", False),
     }
     research = {
@@ -136,20 +166,42 @@ def build_snapshot(replay: ReplayData, date: pd.Timestamp) -> ReplaySnapshot:
         "research_status": governance["research"],
     }
     regime = {
-        "dual_trend": non_cash.get("dual_trend_reason", pd.Series(["unavailable"])).dropna().iloc[-1] if not non_cash.empty and "dual_trend_reason" in non_cash.columns and non_cash["dual_trend_reason"].notna().any() else "unavailable",
-        "spy_below_200d": non_cash.get("spy_below_200d", pd.Series([np.nan])).dropna().iloc[-1] if not non_cash.empty and "spy_below_200d" in non_cash.columns and non_cash["spy_below_200d"].notna().any() else np.nan,
-        "qqq_below_200d": non_cash.get("qqq_below_200d", pd.Series([np.nan])).dropna().iloc[-1] if not non_cash.empty and "qqq_below_200d" in non_cash.columns and non_cash["qqq_below_200d"].notna().any() else np.nan,
+        "dual_trend": non_cash.get("dual_trend_reason", pd.Series(["unavailable"])).dropna().iloc[-1]
+        if not non_cash.empty and "dual_trend_reason" in non_cash.columns and non_cash["dual_trend_reason"].notna().any()
+        else "unavailable",
+        "spy_below_200d": non_cash.get("spy_below_200d", pd.Series([np.nan])).dropna().iloc[-1]
+        if not non_cash.empty and "spy_below_200d" in non_cash.columns and non_cash["spy_below_200d"].notna().any()
+        else np.nan,
+        "qqq_below_200d": non_cash.get("qqq_below_200d", pd.Series([np.nan])).dropna().iloc[-1]
+        if not non_cash.empty and "qqq_below_200d" in non_cash.columns and non_cash["qqq_below_200d"].notna().any()
+        else np.nan,
         "hmm_state": "historical HMM state unavailable",
         "market_classification": "official dual-trend diagnostic" if not non_cash.empty else "unavailable",
     }
-    decision_funnel = pd.DataFrame([
-        {"stage": "Universe", "count": np.nan, "status": "Historical pipeline counts unavailable"},
-        {"stage": "Quality", "count": np.nan, "status": "Historical pipeline counts unavailable"},
-        {"stage": "Tradability", "count": np.nan, "status": "Historical pipeline counts unavailable"},
-        {"stage": "Ranking", "count": len(non_cash) if not non_cash.empty else np.nan, "status": "Stored selected holdings only"},
-        {"stage": "Portfolio", "count": len(non_cash), "status": "Official holdings stored"},
-    ])
-    return ReplaySnapshot(pd.Timestamp(date).normalize(), perf, holdings, actions, rebalance, benchmark, risk, execution, governance, research, regime, decision_funnel, warnings)
+    decision_funnel = pd.DataFrame(
+        [
+            {"stage": "Universe", "count": np.nan, "status": "Historical pipeline counts unavailable"},
+            {"stage": "Quality", "count": np.nan, "status": "Historical pipeline counts unavailable"},
+            {"stage": "Tradability", "count": np.nan, "status": "Historical pipeline counts unavailable"},
+            {"stage": "Ranking", "count": len(non_cash) if not non_cash.empty else np.nan, "status": "Stored selected holdings only"},
+            {"stage": "Portfolio", "count": len(non_cash), "status": "Official holdings stored"},
+        ]
+    )
+    return ReplaySnapshot(
+        pd.Timestamp(date).normalize(),
+        perf,
+        holdings,
+        actions,
+        rebalance,
+        benchmark,
+        risk,
+        execution,
+        governance,
+        research,
+        regime,
+        decision_funnel,
+        warnings,
+    )
 
 
 def performance_evolution(replay: ReplayData, date: pd.Timestamp) -> pd.DataFrame:
@@ -166,10 +218,26 @@ def performance_evolution(replay: ReplayData, date: pd.Timestamp) -> pd.DataFram
 
 def compare_snapshots(a: ReplaySnapshot, b: ReplaySnapshot) -> pd.DataFrame:
     rows = []
-    for field, label in [("portfolio_value", "Portfolio Value"), ("estimated_net_portfolio_value", "Net Portfolio Value"), ("exposure", "Exposure"), ("cash_weight", "Cash"), ("current_drawdown", "Drawdown"), ("volatility", "Volatility")]:
+    for field, label in [
+        ("portfolio_value", "Portfolio Value"),
+        ("estimated_net_portfolio_value", "Net Portfolio Value"),
+        ("exposure", "Exposure"),
+        ("cash_weight", "Cash"),
+        ("current_drawdown", "Drawdown"),
+        ("volatility", "Volatility"),
+    ]:
         av = a.performance.get(field, a.risk.get(field, np.nan))
         bv = b.performance.get(field, b.risk.get(field, np.nan))
-        rows.append({"metric": label, "date_a": a.date.date(), "value_a": av, "date_b": b.date.date(), "value_b": bv, "difference": _num(bv) - _num(av)})
+        rows.append(
+            {
+                "metric": label,
+                "date_a": a.date.date(),
+                "value_a": av,
+                "date_b": b.date.date(),
+                "value_b": bv,
+                "difference": _num(bv) - _num(av),
+            }
+        )
     return pd.DataFrame(rows)
 
 
@@ -182,21 +250,27 @@ def validate_replay(replay: ReplayData) -> tuple[pd.DataFrame, str]:
         weight_col = "paper_position_weight" if "paper_position_weight" in snap.holdings.columns else None
         weights_sum = pd.to_numeric(snap.holdings[weight_col], errors="coerce").sum() if weight_col else np.nan
         perf_value = _num(snap.performance.get("gross_portfolio_value", snap.performance.get("portfolio_value", np.nan)))
-        holdings_value = pd.to_numeric(snap.holdings.get("paper_position_value", pd.Series(dtype=float)), errors="coerce").sum() if "paper_position_value" in snap.holdings.columns else np.nan
+        holdings_value = (
+            pd.to_numeric(snap.holdings.get("paper_position_value", pd.Series(dtype=float)), errors="coerce").sum()
+            if "paper_position_value" in snap.holdings.columns
+            else np.nan
+        )
         value_diff = holdings_value - perf_value if pd.notna(holdings_value) and pd.notna(perf_value) else np.nan
-        rows.append({
-            "date": date.date(),
-            "holdings_rows": len(snap.holdings),
-            "performance_available": not snap.performance.empty,
-            "benchmark_available": not snap.benchmark.empty,
-            "weights_sum": weights_sum,
-            "portfolio_value": perf_value,
-            "holdings_value_sum": holdings_value,
-            "value_diff": value_diff,
-            "no_future_leakage": True,
-            "namespace": "official_only",
-            "warnings": "; ".join(snap.warnings),
-        })
+        rows.append(
+            {
+                "date": date.date(),
+                "holdings_rows": len(snap.holdings),
+                "performance_available": not snap.performance.empty,
+                "benchmark_available": not snap.benchmark.empty,
+                "weights_sum": weights_sum,
+                "portfolio_value": perf_value,
+                "holdings_value_sum": holdings_value,
+                "value_diff": value_diff,
+                "no_future_leakage": True,
+                "namespace": "official_only",
+                "warnings": "; ".join(snap.warnings),
+            }
+        )
     df = pd.DataFrame(rows)
     if df.empty or df["performance_available"].eq(False).any() or df["benchmark_available"].eq(False).any():
         status = "historical_replay_warning"

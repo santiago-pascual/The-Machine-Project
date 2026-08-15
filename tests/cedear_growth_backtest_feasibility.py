@@ -30,17 +30,100 @@ FDS_FILE = "financial_data_system.py"
 START_DATES = ["2008-01-01", "2010-01-01", "2015-01-01", "2020-01-01", "2022-01-01"]
 
 NASDAQ_HINTS = {
-    "AAPL", "MSFT", "NVDA", "AMZN", "META", "GOOGL", "GOOG", "AVGO", "TSLA", "COST",
-    "NFLX", "ASML", "TMUS", "CSCO", "PEP", "AMD", "AZN", "LIN", "INTU", "QCOM", "TXN",
-    "AMGN", "ISRG", "BKNG", "AMAT", "ADBE", "PDD", "ARM", "HON", "GILD", "CMCSA",
-    "PANW", "MU", "MELI", "ADP", "ADI", "LRCX", "KLAC", "SBUX", "MDLZ", "REGN",
-    "VRTX", "INTC", "ABNB", "CRWD", "DASH", "MAR", "CEG", "PYPL", "CDNS", "SNPS",
+    "AAPL",
+    "MSFT",
+    "NVDA",
+    "AMZN",
+    "META",
+    "GOOGL",
+    "GOOG",
+    "AVGO",
+    "TSLA",
+    "COST",
+    "NFLX",
+    "ASML",
+    "TMUS",
+    "CSCO",
+    "PEP",
+    "AMD",
+    "AZN",
+    "LIN",
+    "INTU",
+    "QCOM",
+    "TXN",
+    "AMGN",
+    "ISRG",
+    "BKNG",
+    "AMAT",
+    "ADBE",
+    "PDD",
+    "ARM",
+    "HON",
+    "GILD",
+    "CMCSA",
+    "PANW",
+    "MU",
+    "MELI",
+    "ADP",
+    "ADI",
+    "LRCX",
+    "KLAC",
+    "SBUX",
+    "MDLZ",
+    "REGN",
+    "VRTX",
+    "INTC",
+    "ABNB",
+    "CRWD",
+    "DASH",
+    "MAR",
+    "CEG",
+    "PYPL",
+    "CDNS",
+    "SNPS",
 }
 NYSE_HINTS = {
-    "MSTR", "SNAP", "OKLO", "JMIA", "XYZ", "RBLX", "TWLO", "SPOT", "TEAM", "SPCE",
-    "SNOW", "CCJ", "YPF", "VIST", "TSM", "BABA", "TM", "SONY", "NVO", "SAP",
-    "SHEL", "BP", "RIO", "BHP", "VALE", "SHOP", "SE", "NU", "PBR", "EC", "GLOB",
-    "UBER", "COIN", "PLTR", "SMCI", "NET", "DDOG", "U", "AI", "PATH", "HIMS",
+    "MSTR",
+    "SNAP",
+    "OKLO",
+    "JMIA",
+    "XYZ",
+    "RBLX",
+    "TWLO",
+    "SPOT",
+    "TEAM",
+    "SPCE",
+    "SNOW",
+    "CCJ",
+    "YPF",
+    "VIST",
+    "TSM",
+    "BABA",
+    "TM",
+    "SONY",
+    "NVO",
+    "SAP",
+    "SHEL",
+    "BP",
+    "RIO",
+    "BHP",
+    "VALE",
+    "SHOP",
+    "SE",
+    "NU",
+    "PBR",
+    "EC",
+    "GLOB",
+    "UBER",
+    "COIN",
+    "PLTR",
+    "SMCI",
+    "NET",
+    "DDOG",
+    "U",
+    "AI",
+    "PATH",
+    "HIMS",
 }
 ETF_HINTS = {"SPY", "QQQ", "IWM", "DIA", "EEM", "EWZ", "ARKK", "GLD", "SLV", "TLT"}
 
@@ -122,7 +205,21 @@ def _discover_cedear_file(explicit: str | None = None) -> Path | None:
     if explicit:
         p = Path(explicit)
         return p if p.exists() else None
-    patterns = ["*cedear*.txt", "*CEDEAR*.txt", "*Cedear*.txt", "*byma*.txt", "*BYMA*.txt", "*cedear*.csv", "*CEDEAR*.csv", "*Cedear*.csv", "*byma*.csv", "*BYMA*.csv", "*cedear*.xlsx", "*CEDEAR*.xlsx", "*byma*.xlsx"]
+    patterns = [
+        "*cedear*.txt",
+        "*CEDEAR*.txt",
+        "*Cedear*.txt",
+        "*byma*.txt",
+        "*BYMA*.txt",
+        "*cedear*.csv",
+        "*CEDEAR*.csv",
+        "*Cedear*.csv",
+        "*byma*.csv",
+        "*BYMA*.csv",
+        "*cedear*.xlsx",
+        "*CEDEAR*.xlsx",
+        "*byma*.xlsx",
+    ]
     candidates: list[Path] = []
     for pattern in patterns:
         candidates.extend(Path(".").glob(pattern))
@@ -130,7 +227,6 @@ def _discover_cedear_file(explicit: str | None = None) -> Path | None:
     if not candidates:
         return None
     return sorted(candidates, key=lambda p: p.stat().st_mtime, reverse=True)[0]
-
 
 
 def _parse_txt_cedear_file(path: Path) -> pd.DataFrame:
@@ -143,6 +239,7 @@ def _parse_txt_cedear_file(path: Path) -> pd.DataFrame:
     for sep in ["\t", ";", ",", "|"]:
         if sep in joined:
             from io import StringIO
+
             try:
                 df = pd.read_csv(StringIO(joined), sep=sep)
                 if len(df.columns) > 1:
@@ -178,6 +275,7 @@ def _parse_txt_cedear_file(path: Path) -> pd.DataFrame:
         )
     return pd.DataFrame(rows)
 
+
 def _load_raw_cedear_list(path: Path | None) -> tuple[pd.DataFrame, str]:
     if path is None:
         return pd.DataFrame(), "missing_cedear_source"
@@ -209,9 +307,18 @@ def parse_cedear_list(path: Path | None) -> pd.DataFrame:
     if raw.empty:
         out = pd.DataFrame(
             columns=[
-                "company_name", "byma_ticker", "underlying_ticker", "exchange", "ratio",
-                "is_us_listed", "is_nasdaq", "is_nyse", "is_etf", "tradable_from_argentina",
-                "source_file", "parse_status",
+                "company_name",
+                "byma_ticker",
+                "underlying_ticker",
+                "exchange",
+                "ratio",
+                "is_us_listed",
+                "is_nasdaq",
+                "is_nyse",
+                "is_etf",
+                "tradable_from_argentina",
+                "source_file",
+                "parse_status",
             ]
         )
         out.to_csv(CEDEAR_UNIVERSE_FILE, index=False)
@@ -288,7 +395,6 @@ def current_model_universe() -> list[str]:
     return out
 
 
-
 def _write_alias_map() -> pd.DataFrame:
     alias_df = pd.DataFrame(MANUAL_ALIAS_RULES)
     alias_df.to_csv(ALIAS_MAP_FILE, index=False)
@@ -351,6 +457,7 @@ def _matching_audit_rows(model_tickers: list[str], map_df: pd.DataFrame) -> pd.D
     audit = pd.DataFrame(rows)
     audit.to_csv(MATCHING_AUDIT_FILE, index=False)
     return audit
+
 
 def map_model_tickers_to_cedears(model_tickers: list[str], cedears: pd.DataFrame) -> pd.DataFrame:
     _write_alias_map()
@@ -433,6 +540,7 @@ def map_model_tickers_to_cedears(model_tickers: list[str], cedears: pd.DataFrame
     growth.to_csv(CEDEAR_GROWTH_UNIVERSE_FILE, index=False)
     return out
 
+
 def _price_coverage_from_snapshots() -> pd.DataFrame:
     snap = _dates(_read_csv(SNAPSHOTS_FILE))
     if snap.empty or "ticker" not in snap.columns:
@@ -449,7 +557,9 @@ def feasibility_report(model_map: pd.DataFrame) -> pd.DataFrame:
     exact_formula_available = {"current_price", "target_price"}.issubset(snap.columns) if not snap.empty else False
     min_date = pd.to_datetime(snap["date"].min()) if not snap.empty and "date" in snap.columns else pd.NaT
     max_date = pd.to_datetime(snap["date"].max()) if not snap.empty and "date" in snap.columns else pd.NaT
-    cedear_tickers = set(model_map.loc[model_map["available_as_cedear"].astype(bool), "model_ticker"].astype(str)) if not model_map.empty else set()
+    cedear_tickers = (
+        set(model_map.loc[model_map["available_as_cedear"].astype(bool), "model_ticker"].astype(str)) if not model_map.empty else set()
+    )
     available_snapshot_tickers = set(coverage["ticker"].astype(str)) if not coverage.empty else set()
 
     rows = []
@@ -457,7 +567,8 @@ def feasibility_report(model_map: pd.DataFrame) -> pd.DataFrame:
         requested_start_ts = pd.Timestamp(start)
         actual_start_ts = max(requested_start_ts, min_date) if pd.notna(min_date) else requested_start_ts
         tickers_with_enough_history = sorted(
-            ticker for ticker in cedear_tickers
+            ticker
+            for ticker in cedear_tickers
             if ticker in available_snapshot_tickers
             and pd.to_datetime(coverage.loc[coverage["ticker"].eq(ticker), "first_date"].iloc[0]) <= actual_start_ts
         )
@@ -489,7 +600,9 @@ def feasibility_report(model_map: pd.DataFrame) -> pd.DataFrame:
                 "missing_tickers": ",".join(missing_tickers[:100]),
                 "price_coverage": f"{min_date.date()} to {max_date.date()}" if pd.notna(min_date) and pd.notna(max_date) else "missing",
                 "raw_target_features_available": bool(raw_available or exact_formula_available),
-                "raw_target_feature_source": "raw_target_return_exact" if raw_available else ("target_price/current_price exact formula" if exact_formula_available else "missing"),
+                "raw_target_feature_source": "raw_target_return_exact"
+                if raw_available
+                else ("target_price/current_price exact formula" if exact_formula_available else "missing"),
                 "exact_production_parity_replay_possible": bool(exact_possible),
                 "survivorship_warning_level": warning,
             }
@@ -502,7 +615,15 @@ def feasibility_report(model_map: pd.DataFrame) -> pd.DataFrame:
 def _metrics_from_returns(returns: pd.Series) -> dict[str, float]:
     r = pd.to_numeric(returns, errors="coerce").dropna()
     if r.empty:
-        return {"total_return": np.nan, "CAGR": np.nan, "volatility": np.nan, "Sharpe": np.nan, "Sortino": np.nan, "Calmar": np.nan, "max_drawdown": np.nan}
+        return {
+            "total_return": np.nan,
+            "CAGR": np.nan,
+            "volatility": np.nan,
+            "Sharpe": np.nan,
+            "Sortino": np.nan,
+            "Calmar": np.nan,
+            "max_drawdown": np.nan,
+        }
     equity = (1.0 + r).cumprod()
     total_return = float(equity.iloc[-1] - 1.0)
     years = max(len(r) / 52.0, 1e-9)  # weekly-ish historical decision tape
@@ -514,8 +635,15 @@ def _metrics_from_returns(returns: pd.Series) -> dict[str, float]:
     dd = equity / equity.cummax() - 1.0
     max_dd = float(dd.min())
     calmar = float(cagr / abs(max_dd)) if max_dd < 0 else np.nan
-    return {"total_return": total_return, "CAGR": cagr, "volatility": vol, "Sharpe": sharpe, "Sortino": sortino, "Calmar": calmar, "max_drawdown": max_dd}
-
+    return {
+        "total_return": total_return,
+        "CAGR": cagr,
+        "volatility": vol,
+        "Sharpe": sharpe,
+        "Sortino": sortino,
+        "Calmar": calmar,
+        "max_drawdown": max_dd,
+    }
 
 
 def _split_tickers(value: object) -> list[str]:
@@ -527,11 +655,7 @@ def _split_tickers(value: object) -> list[str]:
 def _cedear_filtered_candidate_metrics(candidate: pd.DataFrame, model_map: pd.DataFrame) -> dict[str, object] | None:
     if model_map.empty or "available_as_cedear" not in model_map.columns:
         return None
-    cedear_tickers = set(
-        model_map.loc[model_map["available_as_cedear"].astype(bool), "model_ticker"]
-        .astype(str)
-        .map(_clean_ticker)
-    )
+    cedear_tickers = set(model_map.loc[model_map["available_as_cedear"].astype(bool), "model_ticker"].astype(str).map(_clean_ticker))
     if not cedear_tickers:
         return None
 
@@ -590,12 +714,17 @@ def _cedear_filtered_candidate_metrics(candidate: pd.DataFrame, model_map: pd.Da
         **metrics,
     }
 
-def run_extended_backtest_if_feasible(feasibility: pd.DataFrame, model_map: pd.DataFrame | None = None) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+
+def run_extended_backtest_if_feasible(
+    feasibility: pd.DataFrame, model_map: pd.DataFrame | None = None
+) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     daily = _dates(_read_csv(GROWTH_DAILY_FILE))
     if daily.empty:
         reason = "missing_growth_head_to_head_daily_returns"
         results = pd.DataFrame([{"model": "growth_champion_v2", "status": "not_run", "reason": reason}])
-        benchmarks = pd.DataFrame([{"benchmark": "SPY", "status": "not_run", "reason": reason}, {"benchmark": "QQQ", "status": "not_run", "reason": reason}])
+        benchmarks = pd.DataFrame(
+            [{"benchmark": "SPY", "status": "not_run", "reason": reason}, {"benchmark": "QQQ", "status": "not_run", "reason": reason}]
+        )
         governance = pd.DataFrame([{"classification": "blocked", "reason": reason}])
     else:
         selector = daily.get("candidate", pd.Series(index=daily.index, dtype=str)).astype(str).eq("growth_v1_exposure_cap_60")
@@ -605,14 +734,23 @@ def run_extended_backtest_if_feasible(feasibility: pd.DataFrame, model_map: pd.D
         if candidate.empty:
             reason = "growth_champion_v2_daily_series_missing"
             results = pd.DataFrame([{"model": "growth_champion_v2", "status": "not_run", "reason": reason}])
-            benchmarks = pd.DataFrame([{"benchmark": "SPY", "status": "not_run", "reason": reason}, {"benchmark": "QQQ", "status": "not_run", "reason": reason}])
+            benchmarks = pd.DataFrame(
+                [{"benchmark": "SPY", "status": "not_run", "reason": reason}, {"benchmark": "QQQ", "status": "not_run", "reason": reason}]
+            )
             governance = pd.DataFrame([{"classification": "blocked", "reason": reason}])
         else:
             ret_col = "return" if "return" in candidate.columns else "vol_target_return"
             metrics = _metrics_from_returns(_num(candidate[ret_col]))
             start = candidate["date"].min().strftime("%Y-%m-%d")
             end = candidate["date"].max().strftime("%Y-%m-%d")
-            base_row = {"model": "growth_champion_v2", "status": "reference_only_existing_non_cedear_filtered_series", "start_date": start, "end_date": end, "observations": len(candidate), **metrics}
+            base_row = {
+                "model": "growth_champion_v2",
+                "status": "reference_only_existing_non_cedear_filtered_series",
+                "start_date": start,
+                "end_date": end,
+                "observations": len(candidate),
+                **metrics,
+            }
             result_rows = [base_row]
             if model_map is not None:
                 filtered_row = _cedear_filtered_candidate_metrics(candidate, model_map)
@@ -643,7 +781,9 @@ def run_extended_backtest_if_feasible(feasibility: pd.DataFrame, model_map: pd.D
             feasible_2022 = bool(
                 has_cedear_universe
                 and not feasibility.empty
-                and feasibility.loc[feasibility["start_date"].eq("2022-01-01"), "exact_production_parity_replay_possible"].astype(bool).any()
+                and feasibility.loc[feasibility["start_date"].eq("2022-01-01"), "exact_production_parity_replay_possible"]
+                .astype(bool)
+                .any()
             )
             if not has_cedear_universe:
                 classification = "blocked_missing_cedear_source"
@@ -682,7 +822,9 @@ def run_phase_67(cedear_file: str | None = None) -> None:
     print("\n===== CEDEAR UNIVERSE AUDIT =====")
     print(f"cedear source: {source if source else 'missing_cedear_source'}")
     print(f"cedear rows parsed: {len(cedears)}")
-    print(f"tradable_from_argentina rows: {int(cedears['tradable_from_argentina'].sum()) if 'tradable_from_argentina' in cedears.columns and not cedears.empty else 0}")
+    print(
+        f"tradable_from_argentina rows: {int(cedears['tradable_from_argentina'].sum()) if 'tradable_from_argentina' in cedears.columns and not cedears.empty else 0}"
+    )
 
     print("\n===== MODEL TICKER TO CEDEAR MAP =====")
     available = int(model_map["available_as_cedear"].sum()) if not model_map.empty else 0
@@ -700,8 +842,13 @@ def run_phase_67(cedear_file: str | None = None) -> None:
     print(governance.to_string(index=False))
     print("\nFiles generated:")
     for path in [
-        CEDEAR_UNIVERSE_FILE, MODEL_MAP_FILE, CEDEAR_GROWTH_UNIVERSE_FILE, FEASIBILITY_FILE,
-        EXTENDED_RESULTS_FILE, EXTENDED_BENCHMARK_FILE, GOVERNANCE_FILE,
+        CEDEAR_UNIVERSE_FILE,
+        MODEL_MAP_FILE,
+        CEDEAR_GROWTH_UNIVERSE_FILE,
+        FEASIBILITY_FILE,
+        EXTENDED_RESULTS_FILE,
+        EXTENDED_BENCHMARK_FILE,
+        GOVERNANCE_FILE,
     ]:
         print(f"- {Path(path).resolve()}")
 

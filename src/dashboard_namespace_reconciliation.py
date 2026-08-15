@@ -1,4 +1,3 @@
-
 from __future__ import annotations
 
 import shutil
@@ -105,29 +104,33 @@ def dashboard_source_audit() -> tuple[pd.DataFrame, pd.DataFrame]:
     for tab, name, path in metric_rows:
         df = read_csv(path)
         ns = namespace_for_file(path)
-        metric.append({
-            "dashboard_tab": tab,
-            "metric_or_chart": name,
-            "source_file": path,
-            "namespace": ns,
-            "latest_date": latest_date(df),
-            "row_count": len(df),
-            "mixed_with_another_namespace": False,
-        })
+        metric.append(
+            {
+                "dashboard_tab": tab,
+                "metric_or_chart": name,
+                "source_file": path,
+                "namespace": ns,
+                "latest_date": latest_date(df),
+                "row_count": len(df),
+                "mixed_with_another_namespace": False,
+            }
+        )
     metric_df = pd.DataFrame(metric)
     source_rows = []
     for group, files in [("official_forward", OFFICIAL_FILES), ("historical_debug", DEBUG_FILES), ("reconstructed_stress", RECON_FILES)]:
         for logical, path in files.items():
             df = read_csv(path)
-            source_rows.append({
-                "namespace": group,
-                "logical_source": logical,
-                "source_file": path,
-                "exists": Path(path).exists(),
-                "row_count": len(df),
-                "latest_date": latest_date(df),
-                "columns": ",".join(df.columns.astype(str).tolist()) if not df.empty else "",
-            })
+            source_rows.append(
+                {
+                    "namespace": group,
+                    "logical_source": logical,
+                    "source_file": path,
+                    "exists": Path(path).exists(),
+                    "row_count": len(df),
+                    "latest_date": latest_date(df),
+                    "columns": ",".join(df.columns.astype(str).tolist()) if not df.empty else "",
+                }
+            )
     return pd.DataFrame(source_rows), metric_df
 
 
@@ -146,7 +149,9 @@ def rebuild_official_cost_ledger() -> tuple[pd.DataFrame, pd.DataFrame, str]:
             if not vals.empty:
                 bps = float(vals.median())
         rebuilt = costable.copy()
-        rebuilt["portfolio_value"] = pd.to_numeric(rebuilt.get("new_position_value", rebuilt.get("estimated_trade_value", 0.0)), errors="coerce").fillna(0.0)
+        rebuilt["portfolio_value"] = pd.to_numeric(
+            rebuilt.get("new_position_value", rebuilt.get("estimated_trade_value", 0.0)), errors="coerce"
+        ).fillna(0.0)
         rebuilt["trade_weight_change_abs"] = pd.to_numeric(rebuilt.get("weight_change", 0.0), errors="coerce").abs().fillna(0.0)
         rebuilt["estimated_order_value"] = pd.to_numeric(rebuilt.get("estimated_trade_value", 0.0), errors="coerce").abs().fillna(0.0)
         rebuilt["estimated_total_cost_bps_of_order"] = bps
@@ -166,17 +171,25 @@ def rebuild_official_cost_ledger() -> tuple[pd.DataFrame, pd.DataFrame, str]:
     if mismatch:
         backup_dir = backup([OFFICIAL_FILES["costs"], OFFICIAL_FILES["performance"]], "Phase 103 official cost ledger rebuild")
         rebuilt.to_csv(OFFICIAL_FILES["costs"], index=False)
-    reconciliation = pd.DataFrame([{
-        "date": datetime.now().date().isoformat(),
-        "official_actions_costable_count": len(costable),
-        "existing_cost_rows": len(existing),
-        "rebuilt_cost_rows": len(rebuilt),
-        "existing_total_cost": float(pd.to_numeric(existing.get("estimated_total_cost", pd.Series(dtype=float)), errors="coerce").sum()) if not existing.empty else 0.0,
-        "rebuilt_total_cost": float(rebuilt["estimated_total_cost"].sum()) if not rebuilt.empty else 0.0,
-        "ledger_rebuilt": mismatch,
-        "backup_dir": backup_dir,
-        "official_only": True,
-    }])
+    reconciliation = pd.DataFrame(
+        [
+            {
+                "date": datetime.now().date().isoformat(),
+                "official_actions_costable_count": len(costable),
+                "existing_cost_rows": len(existing),
+                "rebuilt_cost_rows": len(rebuilt),
+                "existing_total_cost": float(
+                    pd.to_numeric(existing.get("estimated_total_cost", pd.Series(dtype=float)), errors="coerce").sum()
+                )
+                if not existing.empty
+                else 0.0,
+                "rebuilt_total_cost": float(rebuilt["estimated_total_cost"].sum()) if not rebuilt.empty else 0.0,
+                "ledger_rebuilt": mismatch,
+                "backup_dir": backup_dir,
+                "official_only": True,
+            }
+        ]
+    )
     audit = rebuilt.copy()
     audit.to_csv("official_cost_ledger_rebuild_audit.csv", index=False)
     reconciliation.to_csv("official_cost_source_reconciliation.csv", index=False)
@@ -198,15 +211,25 @@ def reconcile_official_performance() -> pd.DataFrame:
     fixed = perf.copy()
     for idx, row in fixed.iterrows():
         d = row["date"]
-        gross_ret = float(pd.to_numeric(pd.Series([row.get("gross_daily_return", row.get("daily_return", 0.0))]), errors="coerce").fillna(0.0).iloc[0])
+        gross_ret = float(
+            pd.to_numeric(pd.Series([row.get("gross_daily_return", row.get("daily_return", 0.0))]), errors="coerce").fillna(0.0).iloc[0]
+        )
         cost = float(cost_by_date.get(d, row.get("estimated_execution_cost", 0.0)))
         gross_equity = gross_equity * (1.0 + gross_ret)
         net_equity = net_equity * (1.0 + gross_ret) - cost
         gross_cum = gross_equity / INITIAL_CAPITAL - 1.0
         net_cum = net_equity / INITIAL_CAPITAL - 1.0
         day_state = state[state["date"].eq(d)] if not state.empty else pd.DataFrame()
-        holdings_cash = float(pd.to_numeric(day_state.get("paper_position_value", pd.Series(dtype=float)), errors="coerce").fillna(0.0).sum()) if not day_state.empty else np.nan
-        weight_sum = float(pd.to_numeric(day_state.get("paper_position_weight", pd.Series(dtype=float)), errors="coerce").fillna(0.0).sum()) if not day_state.empty else np.nan
+        holdings_cash = (
+            float(pd.to_numeric(day_state.get("paper_position_value", pd.Series(dtype=float)), errors="coerce").fillna(0.0).sum())
+            if not day_state.empty
+            else np.nan
+        )
+        weight_sum = (
+            float(pd.to_numeric(day_state.get("paper_position_weight", pd.Series(dtype=float)), errors="coerce").fillna(0.0).sum())
+            if not day_state.empty
+            else np.nan
+        )
         fixed.at[idx, "gross_portfolio_value"] = gross_equity
         fixed.at[idx, "gross_equity"] = gross_equity
         fixed.at[idx, "estimated_net_portfolio_value"] = net_equity
@@ -217,20 +240,24 @@ def reconcile_official_performance() -> pd.DataFrame:
         fixed.at[idx, "cumulative_return"] = gross_cum
         fixed.at[idx, "estimated_net_cumulative_return"] = net_cum
         fixed.at[idx, "estimated_net_daily_return"] = gross_ret - (cost / (net_equity + cost) if (net_equity + cost) else 0.0)
-        fixed.at[idx, "current_drawdown"] = gross_equity / fixed.loc[:idx, "gross_portfolio_value"].max() - 1.0 if "gross_portfolio_value" in fixed.columns else 0.0
-        rows.append({
-            "date": d.date().isoformat(),
-            "gross_portfolio_value": gross_equity,
-            "estimated_net_portfolio_value": net_equity,
-            "estimated_execution_cost": cost,
-            "cumulative_estimated_cost": fixed.at[idx, "cumulative_estimated_cost"],
-            "holdings_plus_cash_value": holdings_cash,
-            "weight_sum": weight_sum,
-            "gross_identity_pass": bool(abs(float(row.get("portfolio_value", gross_equity)) - gross_equity) < 1e-6),
-            "net_identity_pass": True,
-            "holdings_cash_identity_pass": bool(np.isfinite(holdings_cash) and abs(holdings_cash - gross_equity) < 1e-5),
-            "weights_sum_to_one": bool(np.isfinite(weight_sum) and abs(weight_sum - 1.0) < 1e-6),
-        })
+        fixed.at[idx, "current_drawdown"] = (
+            gross_equity / fixed.loc[:idx, "gross_portfolio_value"].max() - 1.0 if "gross_portfolio_value" in fixed.columns else 0.0
+        )
+        rows.append(
+            {
+                "date": d.date().isoformat(),
+                "gross_portfolio_value": gross_equity,
+                "estimated_net_portfolio_value": net_equity,
+                "estimated_execution_cost": cost,
+                "cumulative_estimated_cost": fixed.at[idx, "cumulative_estimated_cost"],
+                "holdings_plus_cash_value": holdings_cash,
+                "weight_sum": weight_sum,
+                "gross_identity_pass": bool(abs(float(row.get("portfolio_value", gross_equity)) - gross_equity) < 1e-6),
+                "net_identity_pass": True,
+                "holdings_cash_identity_pass": bool(np.isfinite(holdings_cash) and abs(holdings_cash - gross_equity) < 1e-5),
+                "weights_sum_to_one": bool(np.isfinite(weight_sum) and abs(weight_sum - 1.0) < 1e-6),
+            }
+        )
     fixed["date"] = fixed["date"].dt.strftime("%Y-%m-%d")
     fixed.to_csv(OFFICIAL_FILES["performance"], index=False)
     acct = pd.DataFrame(rows)
@@ -257,28 +284,36 @@ def build_position_pnl() -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
             weight = float(pd.to_numeric(pd.Series([row.get("paper_position_weight", 0.0)]), errors="coerce").fillna(0.0).iloc[0])
             cost_ticker = 0.0
             if not costs.empty and "ticker" in costs.columns:
-                cost_ticker = float(pd.to_numeric(costs[costs["ticker"].astype(str).eq(ticker)].get("estimated_total_cost", pd.Series(dtype=float)), errors="coerce").fillna(0.0).sum())
+                cost_ticker = float(
+                    pd.to_numeric(
+                        costs[costs["ticker"].astype(str).eq(ticker)].get("estimated_total_cost", pd.Series(dtype=float)), errors="coerce"
+                    )
+                    .fillna(0.0)
+                    .sum()
+                )
             ret_entry = current / entry - 1.0 if np.isfinite(entry) and entry > 0 and np.isfinite(current) else np.nan
-            rows.append({
-                "date": d.date().isoformat(),
-                "ticker": ticker,
-                "action": row.get("action", ""),
-                "entry_date": row.get("signal_date", d.date().isoformat()),
-                "entry_reference_price": entry,
-                "previous_close": np.nan,
-                "current_close": current,
-                "synthetic_units": value / current if np.isfinite(current) and current > 0 else np.nan,
-                "target_weight": weight,
-                "position_value": value,
-                "daily_return_pct": float(row.get("realized_return", 0.0)) if pd.notna(row.get("realized_return", np.nan)) else 0.0,
-                "daily_pnl": 0.0,
-                "return_since_entry_pct": ret_entry,
-                "unrealized_pnl": value * ret_entry if np.isfinite(ret_entry) else np.nan,
-                "realized_pnl_if_sold": np.nan,
-                "cumulative_estimated_costs_attributable": cost_ticker,
-                "estimated_net_pnl": (value * ret_entry - cost_ticker) if np.isfinite(ret_entry) else -cost_ticker,
-                "pnl_availability": "available" if np.isfinite(ret_entry) else "entry/current price unavailable",
-            })
+            rows.append(
+                {
+                    "date": d.date().isoformat(),
+                    "ticker": ticker,
+                    "action": row.get("action", ""),
+                    "entry_date": row.get("signal_date", d.date().isoformat()),
+                    "entry_reference_price": entry,
+                    "previous_close": np.nan,
+                    "current_close": current,
+                    "synthetic_units": value / current if np.isfinite(current) and current > 0 else np.nan,
+                    "target_weight": weight,
+                    "position_value": value,
+                    "daily_return_pct": float(row.get("realized_return", 0.0)) if pd.notna(row.get("realized_return", np.nan)) else 0.0,
+                    "daily_pnl": 0.0,
+                    "return_since_entry_pct": ret_entry,
+                    "unrealized_pnl": value * ret_entry if np.isfinite(ret_entry) else np.nan,
+                    "realized_pnl_if_sold": np.nan,
+                    "cumulative_estimated_costs_attributable": cost_ticker,
+                    "estimated_net_pnl": (value * ret_entry - cost_ticker) if np.isfinite(ret_entry) else -cost_ticker,
+                    "pnl_availability": "available" if np.isfinite(ret_entry) else "entry/current price unavailable",
+                }
+            )
         pnl = pd.DataFrame(rows)
     realized = pd.DataFrame(columns=["date", "ticker", "realized_pnl", "reason"])
     lifecycle = actions.copy() if not actions.empty else pd.DataFrame()
@@ -288,23 +323,42 @@ def build_position_pnl() -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     return pnl, realized, lifecycle
 
 
-def validate_namespace_integrity(metric_map: pd.DataFrame, cost_recon: pd.DataFrame, acct: pd.DataFrame, pnl: pd.DataFrame) -> tuple[pd.DataFrame, str]:
-    official_metrics = metric_map[metric_map["dashboard_tab"].isin(["Overview", "Current Portfolio", "Rebalance Ledger", "Costs & Slippage", "Live Validation", "Risk"])]
+def validate_namespace_integrity(
+    metric_map: pd.DataFrame, cost_recon: pd.DataFrame, acct: pd.DataFrame, pnl: pd.DataFrame
+) -> tuple[pd.DataFrame, str]:
+    official_metrics = metric_map[
+        metric_map["dashboard_tab"].isin(
+            ["Overview", "Current Portfolio", "Rebalance Ledger", "Costs & Slippage", "Live Validation", "Risk"]
+        )
+    ]
     official_only = official_metrics["namespace"].eq("official_forward").all()
-    cost_ok = bool(not cost_recon.empty and int(cost_recon.iloc[0]["rebuilt_cost_rows"]) == int(cost_recon.iloc[0]["official_actions_costable_count"]))
-    acct_ok = bool(not acct.empty and acct["net_identity_pass"].all() and acct["holdings_cash_identity_pass"].all() and acct["weights_sum_to_one"].all())
+    cost_ok = bool(
+        not cost_recon.empty and int(cost_recon.iloc[0]["rebuilt_cost_rows"]) == int(cost_recon.iloc[0]["official_actions_costable_count"])
+    )
+    acct_ok = bool(
+        not acct.empty
+        and acct["net_identity_pass"].all()
+        and acct["holdings_cash_identity_pass"].all()
+        and acct["weights_sum_to_one"].all()
+    )
     pnl_ok = bool(not pnl.empty and pnl["pnl_availability"].eq("available").all())
     status = "dashboard_namespace_pass" if official_only and cost_ok and acct_ok and pnl_ok else "dashboard_namespace_warning"
-    integrity = pd.DataFrame([{
-        "date": datetime.now().date().isoformat(),
-        "official_main_tabs_only": official_only,
-        "official_order_count_matches_cost_ledger": cost_ok,
-        "official_accounting_reconciles": acct_ok,
-        "position_pnl_available": pnl_ok,
-        "governance": status,
-    }])
+    integrity = pd.DataFrame(
+        [
+            {
+                "date": datetime.now().date().isoformat(),
+                "official_main_tabs_only": official_only,
+                "official_order_count_matches_cost_ledger": cost_ok,
+                "official_accounting_reconciles": acct_ok,
+                "position_pnl_available": pnl_ok,
+                "governance": status,
+            }
+        ]
+    )
     integrity.to_csv("dashboard_namespace_integrity.csv", index=False)
-    pd.DataFrame([{"position_pnl_available": pnl_ok, "rows": len(pnl), "governance": status}]).to_csv("dashboard_position_pnl_integrity.csv", index=False)
+    pd.DataFrame([{"position_pnl_available": pnl_ok, "rows": len(pnl), "governance": status}]).to_csv(
+        "dashboard_position_pnl_integrity.csv", index=False
+    )
     return integrity, status
 
 
@@ -328,10 +382,18 @@ def main() -> None:
         f"official_dates_retained: {latest_date(perf)}",
         f"official_order_count: {int(cost_recon.iloc[0]['rebuilt_cost_rows']) if not cost_recon.empty else 0}",
         f"official_cumulative_costs: {float(cost_recon.iloc[0]['rebuilt_total_cost']) if not cost_recon.empty else 0.0:.2f}",
-        f"gross_portfolio_value: {float(last.get('gross_portfolio_value', last.get('portfolio_value', np.nan))):.2f}" if not perf.empty else "gross_portfolio_value: missing",
-        f"estimated_net_portfolio_value: {float(last.get('estimated_net_portfolio_value', np.nan)):.2f}" if not perf.empty else "estimated_net_portfolio_value: missing",
-        f"gross_cumulative_return: {float(last.get('gross_cumulative_return', np.nan)):.6f}" if not perf.empty else "gross_cumulative_return: missing",
-        f"estimated_net_cumulative_return: {float(last.get('estimated_net_cumulative_return', np.nan)):.6f}" if not perf.empty else "estimated_net_cumulative_return: missing",
+        f"gross_portfolio_value: {float(last.get('gross_portfolio_value', last.get('portfolio_value', np.nan))):.2f}"
+        if not perf.empty
+        else "gross_portfolio_value: missing",
+        f"estimated_net_portfolio_value: {float(last.get('estimated_net_portfolio_value', np.nan)):.2f}"
+        if not perf.empty
+        else "estimated_net_portfolio_value: missing",
+        f"gross_cumulative_return: {float(last.get('gross_cumulative_return', np.nan)):.6f}"
+        if not perf.empty
+        else "gross_cumulative_return: missing",
+        f"estimated_net_cumulative_return: {float(last.get('estimated_net_cumulative_return', np.nan)):.6f}"
+        if not perf.empty
+        else "estimated_net_cumulative_return: missing",
         f"position_level_pnl_rows: {len(pnl)}",
         f"backup_before_rebuild: {backup_dir or 'none'}",
         "production_changed: False",
@@ -340,8 +402,8 @@ def main() -> None:
         "optimizer_changed: False",
         "real_orders: False",
     ]
-    Path("dashboard_namespace_reconciliation_report.txt").write_text("\n".join(lines)+"\n", encoding="utf-8")
-    Path("phase103_dashboard_reconciliation_report.txt").write_text("\n".join(lines)+"\n", encoding="utf-8")
+    Path("dashboard_namespace_reconciliation_report.txt").write_text("\n".join(lines) + "\n", encoding="utf-8")
+    Path("phase103_dashboard_reconciliation_report.txt").write_text("\n".join(lines) + "\n", encoding="utf-8")
     print("\n".join(lines))
 
 

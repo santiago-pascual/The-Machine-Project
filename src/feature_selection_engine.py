@@ -183,7 +183,11 @@ def _redundancy_penalties(features: list[str], dataset: pd.DataFrame, base_score
     corr = matrix.corr(method="pearson").abs().fillna(0.0)
     penalties = {feature: 0.0 for feature in features}
     for feature in available:
-        better = [other for other in available if other != feature and corr.loc[feature, other] >= threshold and base_scores.get(other, 0.0) > base_scores.get(feature, 0.0)]
+        better = [
+            other
+            for other in available
+            if other != feature and corr.loc[feature, other] >= threshold and base_scores.get(other, 0.0) > base_scores.get(feature, 0.0)
+        ]
         if better:
             penalties[feature] = min(0.25, 0.08 * len(better))
     return penalties
@@ -238,7 +242,9 @@ def run_feature_selection_engine(config: FeatureSelectionConfig | None = None) -
     report = pd.DataFrame(rows).fillna(0.0)
     if report.empty:
         report.to_csv(OUTPUT_REPORT, index=False)
-        Path(OUTPUT_JSON).write_text(json.dumps({"CORE": [], "SUPPORTING": [], "DIAGNOSTIC_ONLY": [], "REMOVE_FROM_ML": [], "NEEDS_MORE_DATA": []}, indent=2))
+        Path(OUTPUT_JSON).write_text(
+            json.dumps({"CORE": [], "SUPPORTING": [], "DIAGNOSTIC_ONLY": [], "REMOVE_FROM_ML": [], "NEEDS_MORE_DATA": []}, indent=2)
+        )
         return report
 
     for column in [
@@ -289,10 +295,14 @@ def run_feature_selection_engine(config: FeatureSelectionConfig | None = None) -
     ).clip(0.0, 1.0)
 
     report["base_feature_score"] = base_score
-    redundancy = _redundancy_penalties(features, sources["meta_label_dataset"], base_score.reindex(report.index), config.redundancy_threshold)
+    redundancy = _redundancy_penalties(
+        features, sources["meta_label_dataset"], base_score.reindex(report.index), config.redundancy_threshold
+    )
     report["redundancy_penalty"] = report["feature"].map(redundancy).fillna(0.0)
     degradation = _meta_degradation_penalty(sources["kalman_meta_label_comparison"])
-    report["meta_degradation_penalty"] = report["feature"].astype(str).map(lambda x: degradation.get("kalman", 0.0) if x.startswith("kalman") else 0.0)
+    report["meta_degradation_penalty"] = (
+        report["feature"].astype(str).map(lambda x: degradation.get("kalman", 0.0) if x.startswith("kalman") else 0.0)
+    )
     report["structural_penalty"] = report["feature"].astype(str).isin(EXCLUDED_ML_FEATURES).astype(float)
     report["feature_selection_score"] = (
         report["base_feature_score"] - report["redundancy_penalty"] - report["meta_degradation_penalty"] - report["structural_penalty"]
@@ -352,11 +362,15 @@ def _print_report(report: pd.DataFrame) -> None:
 
     print("\n===== FEATURES TO DEMOTE =====")
     demote = report[report["classification"].eq("DIAGNOSTIC_ONLY")]
-    print(demote[["feature", "feature_selection_score", "recommended_usage"]].head(20).to_string(index=False) if not demote.empty else "none")
+    print(
+        demote[["feature", "feature_selection_score", "recommended_usage"]].head(20).to_string(index=False) if not demote.empty else "none"
+    )
 
     print("\n===== FEATURES TO REMOVE FROM ML =====")
     remove = report[report["classification"].eq("REMOVE_FROM_ML")]
-    print(remove[["feature", "feature_selection_score", "recommended_usage"]].head(20).to_string(index=False) if not remove.empty else "none")
+    print(
+        remove[["feature", "feature_selection_score", "recommended_usage"]].head(20).to_string(index=False) if not remove.empty else "none"
+    )
 
 
 if __name__ == "__main__":

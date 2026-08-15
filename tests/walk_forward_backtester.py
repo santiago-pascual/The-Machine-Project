@@ -296,7 +296,11 @@ def _run_shadow_production_pipeline(
         weights, sharpe, best_return, best_volatility, _ = optimizer.optimize()
 
     raw_weights = pd.Series(weights, index=selected_assets, dtype=float).clip(lower=0.0)
-    raw_weights = raw_weights / float(raw_weights.sum()) if float(raw_weights.sum()) > 0 else pd.Series(1.0 / len(selected_assets), index=selected_assets)
+    raw_weights = (
+        raw_weights / float(raw_weights.sum())
+        if float(raw_weights.sum()) > 0
+        else pd.Series(1.0 / len(selected_assets), index=selected_assets)
+    )
     exposure_info = compute_net_exposure(
         regime_score=regime_score,
         regime_confidence=regime_confidence,
@@ -338,9 +342,7 @@ def _portfolio_forward_return(
     horizon: int,
 ) -> float:
     asset_returns = {
-        ticker: _future_asset_return(prices_df, ticker, t_pos, horizon)
-        for ticker in weights.index
-        if ticker in prices_df.columns
+        ticker: _future_asset_return(prices_df, ticker, t_pos, horizon) for ticker in weights.index if ticker in prices_df.columns
     }
     clean = pd.Series(asset_returns, dtype=float).dropna()
     if clean.empty:
@@ -377,7 +379,9 @@ def _build_summary(
         "average_selected_count": float(portfolio_df["selected_count"].mean()) if not portfolio_df.empty else 0.0,
         "realized_return": float((1.0 + realized_1d).prod() - 1.0) if not realized_1d.empty else 0.0,
         "realized_volatility": float(risk["annualized_volatility"]),
-        "realized_sharpe": float(risk["annualized_return_estimate"] / risk["annualized_volatility"]) if risk["annualized_volatility"] > 0 else 0.0,
+        "realized_sharpe": float(risk["annualized_return_estimate"] / risk["annualized_volatility"])
+        if risk["annualized_volatility"] > 0
+        else 0.0,
         "max_drawdown": max_drawdown,
         "Sortino": float(risk["sortino_ratio"]),
         "Calmar": float(risk["calmar_ratio"]),

@@ -93,7 +93,12 @@ def _fit_linear_calibration(frame: pd.DataFrame, forecast_col: str, realized_col
 
 
 def _error_metrics(forecast: pd.Series, realized: pd.Series) -> dict[str, float]:
-    data = pd.DataFrame({"forecast": forecast, "realized": realized}).apply(pd.to_numeric, errors="coerce").replace([np.inf, -np.inf], np.nan).dropna()
+    data = (
+        pd.DataFrame({"forecast": forecast, "realized": realized})
+        .apply(pd.to_numeric, errors="coerce")
+        .replace([np.inf, -np.inf], np.nan)
+        .dropna()
+    )
     if data.empty:
         return {"MAE": np.nan, "RMSE": np.nan, "bias": np.nan, "IC": np.nan}
     error = data["forecast"] - data["realized"]
@@ -105,7 +110,9 @@ def _error_metrics(forecast: pd.Series, realized: pd.Series) -> dict[str, float]
     }
 
 
-def _coeff_row(scope: str, group: str, horizon: int, train: pd.DataFrame, test: pd.DataFrame, forecast_col: str, realized_col: str) -> dict[str, object]:
+def _coeff_row(
+    scope: str, group: str, horizon: int, train: pd.DataFrame, test: pd.DataFrame, forecast_col: str, realized_col: str
+) -> dict[str, object]:
     coeff = _fit_linear_calibration(train, forecast_col, realized_col)
     calibrated_test = coeff["alpha"] + coeff["beta"] * _safe_numeric(test[forecast_col], np.nan)
     before = _error_metrics(test[forecast_col], test[realized_col])
@@ -146,7 +153,9 @@ def _build_coefficients(base: pd.DataFrame, config: ForecastCalibrationConfig) -
         for bucket, group_train in train.groupby("volatility_quintile"):
             group_test = test[test["volatility_quintile"].astype(str).eq(str(bucket))]
             if len(group_train) >= config.min_group_samples and len(group_test) >= 20:
-                rows.append(_coeff_row("volatility_quintile", str(bucket), horizon, group_train, group_test, "forecast_return", realized_col))
+                rows.append(
+                    _coeff_row("volatility_quintile", str(bucket), horizon, group_train, group_test, "forecast_return", realized_col)
+                )
         for ticker, group_train in train.groupby("ticker"):
             group_test = test[test["ticker"].astype(str).eq(str(ticker))]
             if len(group_train) >= config.min_ticker_samples and len(group_test) >= 20:
@@ -203,7 +212,11 @@ def _apply_calibration(base: pd.DataFrame, coefficients: pd.DataFrame, config: F
 
 def _confidence_from_coefficients(base: pd.DataFrame, coefficients: pd.DataFrame, config: ForecastCalibrationConfig) -> pd.Series:
     horizon = 20 if 20 in config.horizons else config.horizons[-1]
-    regime_mae = coefficients[(coefficients["scope"].eq("regime")) & (coefficients["horizon"].eq(f"{horizon}D"))].set_index("group")["MAE_after"] if not coefficients.empty else pd.Series(dtype=float)
+    regime_mae = (
+        coefficients[(coefficients["scope"].eq("regime")) & (coefficients["horizon"].eq(f"{horizon}D"))].set_index("group")["MAE_after"]
+        if not coefficients.empty
+        else pd.Series(dtype=float)
+    )
     global_mae_rows = coefficients[(coefficients["scope"].eq("global")) & (coefficients["horizon"].eq(f"{horizon}D"))]
     global_mae = float(global_mae_rows["MAE_after"].iloc[0]) if not global_mae_rows.empty else 0.10
     confidence = []
@@ -269,7 +282,9 @@ def run_forecast_calibration_layer(config: ForecastCalibrationConfig | None = No
     return {"coefficients": coefficients, "diagnostics": calibrated, "confidence": confidence}
 
 
-def _print_report(coefficients: pd.DataFrame, calibrated: pd.DataFrame, confidence: pd.DataFrame, config: ForecastCalibrationConfig) -> None:
+def _print_report(
+    coefficients: pd.DataFrame, calibrated: pd.DataFrame, confidence: pd.DataFrame, config: ForecastCalibrationConfig
+) -> None:
     print("\n===== FORECAST CALIBRATION LAYER =====")
     print("research only: True")
     print("production behavior changed: False")
@@ -280,7 +295,23 @@ def _print_report(coefficients: pd.DataFrame, calibrated: pd.DataFrame, confiden
     if coefficients.empty:
         print("No coefficients.")
     else:
-        cols = ["scope", "group", "horizon", "sample_size", "alpha", "beta", "r2", "MAE_before", "MAE_after", "RMSE_before", "RMSE_after", "bias_before", "bias_after", "IC_before", "IC_after"]
+        cols = [
+            "scope",
+            "group",
+            "horizon",
+            "sample_size",
+            "alpha",
+            "beta",
+            "r2",
+            "MAE_before",
+            "MAE_after",
+            "RMSE_before",
+            "RMSE_after",
+            "bias_before",
+            "bias_after",
+            "IC_before",
+            "IC_after",
+        ]
         print(coefficients[coefficients["scope"].eq("global")][cols].to_string(index=False))
 
     print("\n===== CALIBRATED CONFIDENCE REPORT =====")

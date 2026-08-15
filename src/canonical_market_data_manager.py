@@ -59,7 +59,20 @@ def _normalize_ohlcv(df: pd.DataFrame) -> pd.DataFrame:
         return pd.DataFrame()
     out["Date"] = pd.to_datetime(out[dc], errors="coerce").dt.tz_localize(None).dt.normalize()
     rename = {}
-    for src, dst in [("Open", "Open"), ("High", "High"), ("Low", "Low"), ("Close", "Close"), ("Adj Close", "Adj Close"), ("Volume", "Volume"), ("open", "Open"), ("high", "High"), ("low", "Low"), ("close", "Close"), ("adj_close", "Adj Close"), ("volume", "Volume")]:
+    for src, dst in [
+        ("Open", "Open"),
+        ("High", "High"),
+        ("Low", "Low"),
+        ("Close", "Close"),
+        ("Adj Close", "Adj Close"),
+        ("Volume", "Volume"),
+        ("open", "Open"),
+        ("high", "High"),
+        ("low", "Low"),
+        ("close", "Close"),
+        ("adj_close", "Adj Close"),
+        ("volume", "Volume"),
+    ]:
         if src in out.columns and dst not in rename.values():
             rename[src] = dst
     out = out.rename(columns=rename)
@@ -125,7 +138,7 @@ def _download_yfinance(ticker: str, start: pd.Timestamp | None, end: pd.Timestam
         except Exception as exc:  # noqa: BLE001
             last_error = str(exc)
         if attempt < timeout_retries:
-            time.sleep(min(2 ** attempt, 5))
+            time.sleep(min(2**attempt, 5))
     return pd.DataFrame(), last_error
 
 
@@ -182,18 +195,20 @@ def refresh_tickers(tickers: Iterable[str], expected_date: str | pd.Timestamp, r
             combined = _normalize_ohlcv(combined)
             combined.to_csv(CANONICAL_CACHE_DIR / f"{ticker}.csv", index=False)
         after = get_price_history(ticker)
-        rows.append({
-            "ticker": ticker,
-            "cache_path": str((CANONICAL_CACHE_DIR / f"{ticker}.csv").resolve()),
-            "expected_date": expected.date().isoformat(),
-            "latest_before": before.latest_date.date().isoformat() if pd.notna(before.latest_date) else "missing",
-            "latest_after": after.latest_date.date().isoformat() if pd.notna(after.latest_date) else "missing",
-            "refresh_attempted": True,
-            "refresh_success": pd.notna(after.latest_date) and after.latest_date >= expected,
-            "download_status": status,
-            "rows_before": len(before.data),
-            "rows_after": len(after.data),
-        })
+        rows.append(
+            {
+                "ticker": ticker,
+                "cache_path": str((CANONICAL_CACHE_DIR / f"{ticker}.csv").resolve()),
+                "expected_date": expected.date().isoformat(),
+                "latest_before": before.latest_date.date().isoformat() if pd.notna(before.latest_date) else "missing",
+                "latest_after": after.latest_date.date().isoformat() if pd.notna(after.latest_date) else "missing",
+                "refresh_attempted": True,
+                "refresh_success": pd.notna(after.latest_date) and after.latest_date >= expected,
+                "download_status": status,
+                "rows_before": len(before.data),
+                "rows_after": len(after.data),
+            }
+        )
     out = pd.DataFrame(rows)
     out.to_csv(PROVENANCE_FILE, index=False)
     return out
@@ -207,22 +222,24 @@ def return_data_provenance(tickers: Iterable[str], expected_date: str | pd.Times
         if not ticker or ticker == "CASH":
             continue
         ph = get_price_history(ticker)
-        rows.append({
-            "ticker": ticker,
-            "canonical_cache_dir": str(CANONICAL_CACHE_DIR.resolve()),
-            "cache_path": str(ph.cache_path.resolve()),
-            "exists": ph.cache_path.exists(),
-            "source": ph.source,
-            "file_format": "csv_ohlcv_yahoo_schema",
-            "latest_date": ph.latest_date.date().isoformat() if pd.notna(ph.latest_date) else "missing",
-            "expected_date": expected.date().isoformat() if pd.notna(expected) else "",
-            "row_count": len(ph.data),
-            "adjusted_close_available": ph.adjusted_close_available,
-            "close_available": ph.close_available,
-            "volume_available": ph.volume_available,
-            "fresh_for_expected_date": bool(pd.notna(expected) and pd.notna(ph.latest_date) and ph.latest_date >= expected),
-            "trading_session_gap": _trading_gap(ph.latest_date, expected) if pd.notna(expected) else np.nan,
-        })
+        rows.append(
+            {
+                "ticker": ticker,
+                "canonical_cache_dir": str(CANONICAL_CACHE_DIR.resolve()),
+                "cache_path": str(ph.cache_path.resolve()),
+                "exists": ph.cache_path.exists(),
+                "source": ph.source,
+                "file_format": "csv_ohlcv_yahoo_schema",
+                "latest_date": ph.latest_date.date().isoformat() if pd.notna(ph.latest_date) else "missing",
+                "expected_date": expected.date().isoformat() if pd.notna(expected) else "",
+                "row_count": len(ph.data),
+                "adjusted_close_available": ph.adjusted_close_available,
+                "close_available": ph.close_available,
+                "volume_available": ph.volume_available,
+                "fresh_for_expected_date": bool(pd.notna(expected) and pd.notna(ph.latest_date) and ph.latest_date >= expected),
+                "trading_session_gap": _trading_gap(ph.latest_date, expected) if pd.notna(expected) else np.nan,
+            }
+        )
     return pd.DataFrame(rows)
 
 
@@ -241,21 +258,29 @@ def validate_freshness(expected_date: str | pd.Timestamp, tickers: Iterable[str]
         canonical_latest_ts = pd.to_datetime(integrity["latest_date"], errors="coerce").min()
         canonical_latest = canonical_latest_ts.date().isoformat() if pd.notna(canonical_latest_ts) else "missing"
         classification = "STALE_DATA_BLOCKED" if stale else "SINGLE_SOURCE_FRESH"
-        reason = "stale canonical Yahoo cache for: " + ",".join(stale_rows["ticker"].astype(str).tolist()) if stale else "canonical Yahoo cache fresh; no secondary confirmation required for paper"
+        reason = (
+            "stale canonical Yahoo cache for: " + ",".join(stale_rows["ticker"].astype(str).tolist())
+            if stale
+            else "canonical Yahoo cache fresh; no secondary confirmation required for paper"
+        )
     integrity.to_csv(INTEGRITY_FILE, index=False)
-    governance = pd.DataFrame([{
-        "expected_signal_date": expected.date().isoformat(),
-        "canonical_market_date": canonical_latest,
-        "classification": classification,
-        "paper_may_run": not stale,
-        "block_new_rebalance": stale,
-        "do_not_advance_official_paper": stale,
-        "real_capital_blocked": True,
-        "reason": reason,
-        "canonical_cache_dir": str(CANONICAL_CACHE_DIR.resolve()),
-        "production_changed": False,
-        "paper_logic_changed": False,
-    }])
+    governance = pd.DataFrame(
+        [
+            {
+                "expected_signal_date": expected.date().isoformat(),
+                "canonical_market_date": canonical_latest,
+                "classification": classification,
+                "paper_may_run": not stale,
+                "block_new_rebalance": stale,
+                "do_not_advance_official_paper": stale,
+                "real_capital_blocked": True,
+                "reason": reason,
+                "canonical_cache_dir": str(CANONICAL_CACHE_DIR.resolve()),
+                "production_changed": False,
+                "paper_logic_changed": False,
+            }
+        ]
+    )
     governance.to_csv(GOVERNANCE_FILE, index=False)
     return integrity, governance
 

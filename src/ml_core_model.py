@@ -198,10 +198,19 @@ def _split_xy(dataset: pd.DataFrame, features: list[str], config: MLCoreConfig):
     x = x.fillna(x.median(numeric_only=True).fillna(0.0))
     y = pd.to_numeric(dataset["meta_label"], errors="coerce").fillna(0).astype(int)
     split_idx = max(1, min(len(dataset) - 1, int(len(dataset) * (1.0 - config.test_size))))
-    return x.iloc[:split_idx], x.iloc[split_idx:], y.iloc[:split_idx], y.iloc[split_idx:], dataset.iloc[:split_idx], dataset.iloc[split_idx:]
+    return (
+        x.iloc[:split_idx],
+        x.iloc[split_idx:],
+        y.iloc[:split_idx],
+        y.iloc[split_idx:],
+        dataset.iloc[:split_idx],
+        dataset.iloc[split_idx:],
+    )
 
 
-def _train_models(x_train: pd.DataFrame, x_test: pd.DataFrame, y_train: pd.Series, y_test: pd.Series) -> tuple[pd.DataFrame, dict[str, np.ndarray], dict[str, object]]:
+def _train_models(
+    x_train: pd.DataFrame, x_test: pd.DataFrame, y_train: pd.Series, y_test: pd.Series
+) -> tuple[pd.DataFrame, dict[str, np.ndarray], dict[str, object]]:
     rows = []
     probabilities: dict[str, np.ndarray] = {}
     fitted: dict[str, object] = {}
@@ -211,7 +220,11 @@ def _train_models(x_train: pd.DataFrame, x_test: pd.DataFrame, y_train: pd.Serie
         x_train_scaled = scaler.fit_transform(x_train)
         x_test_scaled = scaler.transform(x_test)
         models = {
-            "logistic_regression": (LogisticRegression(max_iter=500, class_weight="balanced", random_state=42), x_train_scaled, x_test_scaled),
+            "logistic_regression": (
+                LogisticRegression(max_iter=500, class_weight="balanced", random_state=42),
+                x_train_scaled,
+                x_test_scaled,
+            ),
             "random_forest_small": (
                 RandomForestClassifier(
                     n_estimators=100,
@@ -279,7 +292,11 @@ def _train_models(x_train: pd.DataFrame, x_test: pd.DataFrame, y_train: pd.Serie
 
 
 def _best_model_name(results: pd.DataFrame) -> str:
-    ok = results[results.get("status", "").astype(str).str.startswith("ok")].copy() if not results.empty and "status" in results.columns else pd.DataFrame()
+    ok = (
+        results[results.get("status", "").astype(str).str.startswith("ok")].copy()
+        if not results.empty and "status" in results.columns
+        else pd.DataFrame()
+    )
     if ok.empty:
         return ""
     return str(ok.sort_values(["test_roc_auc", "test_f1"], ascending=False)["model"].iloc[0])
@@ -341,9 +358,17 @@ def _comparison(results: pd.DataFrame, thresholds: pd.DataFrame, config: MLCoreC
     previous = _read_csv(config.previous_meta_results_path)
     best_model = _best_model_name(results)
     best = results[results["model"].eq(best_model)].head(1) if best_model else pd.DataFrame()
-    prev_ok = previous[previous.get("status", "").astype(str).str.startswith("ok")] if not previous.empty and "status" in previous.columns else pd.DataFrame()
+    prev_ok = (
+        previous[previous.get("status", "").astype(str).str.startswith("ok")]
+        if not previous.empty and "status" in previous.columns
+        else pd.DataFrame()
+    )
     prev_best = prev_ok.sort_values(["test_roc_auc", "test_f1"], ascending=False).head(1) if not prev_ok.empty else pd.DataFrame()
-    best_threshold = thresholds.sort_values(["Sharpe", "average_realized_return", "hit_rate"], ascending=False).head(1) if not thresholds.empty else pd.DataFrame()
+    best_threshold = (
+        thresholds.sort_values(["Sharpe", "average_realized_return", "hit_rate"], ascending=False).head(1)
+        if not thresholds.empty
+        else pd.DataFrame()
+    )
     rows = []
     if not best.empty:
         row = best.iloc[0]
@@ -451,7 +476,20 @@ def _print_report(
     if results.empty:
         print("No model results.")
     else:
-        show_cols = [c for c in ["model", "test_accuracy", "test_precision", "test_recall", "test_f1", "test_roc_auc", "test_positive_prediction_rate", "status"] if c in results.columns]
+        show_cols = [
+            c
+            for c in [
+                "model",
+                "test_accuracy",
+                "test_precision",
+                "test_recall",
+                "test_f1",
+                "test_roc_auc",
+                "test_positive_prediction_rate",
+                "status",
+            ]
+            if c in results.columns
+        ]
         print(results[show_cols].to_string(index=False))
 
     print("\n===== ML CORE THRESHOLD ANALYSIS =====")
@@ -468,7 +506,9 @@ def _print_report(
 
     print("\n===== ML CORE GOVERNANCE =====")
     best_model = _best_model_name(results)
-    best_threshold = thresholds.sort_values(["Sharpe", "average_realized_return"], ascending=False).head(1) if not thresholds.empty else pd.DataFrame()
+    best_threshold = (
+        thresholds.sort_values(["Sharpe", "average_realized_return"], ascending=False).head(1) if not thresholds.empty else pd.DataFrame()
+    )
     print(f"CORE: {', '.join(feature_sets.get('CORE', []))}")
     print(f"SUPPORTING: {', '.join(feature_sets.get('SUPPORTING', []))}")
     print(f"best model: {best_model or 'none'}")

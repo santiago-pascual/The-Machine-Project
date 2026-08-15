@@ -201,7 +201,9 @@ def _evaluate_config(data: pd.DataFrame, config: ThresholdConfig, horizon: int) 
     selected = _select_by_thresholds(data, config)
     period_returns = _weighted_period_returns(selected, horizon)
     realized_col = f"realized_return_{horizon}d"
-    asset_returns = _safe_numeric(selected[realized_col], default=np.nan).dropna() if realized_col in selected.columns else pd.Series(dtype=float)
+    asset_returns = (
+        _safe_numeric(selected[realized_col], default=np.nan).dropna() if realized_col in selected.columns else pd.Series(dtype=float)
+    )
 
     if "first_touch_type" in selected.columns:
         first_touch = selected["first_touch_type"].fillna("")

@@ -65,9 +65,7 @@ def _run_variant(
         blend_weight=blend_weight,
     )
     target_prices = (
-        quant_outputs["final_blended_target"].reindex(prices_df.columns)
-        if use_quant_blend
-        else base_targets.reindex(prices_df.columns)
+        quant_outputs["final_blended_target"].reindex(prices_df.columns) if use_quant_blend else base_targets.reindex(prices_df.columns)
     )
 
     expected_returns, diagnostics = compute_expected_returns(
@@ -234,11 +232,7 @@ def run_quant_blend_comparison() -> None:
     suspicious = target_comparison[target_comparison["suspicious_flags"] != "ok"]["suspicious_flags"]
     print(f"suspicious_target_flags_count: {len(suspicious)}")
     print(suspicious)
-    nearly_identical = (
-        turnover == 0
-        and abs(blend["sharpe"] - baseline["sharpe"]) < 1e-4
-        and abs(blend["cash"] - baseline["cash"]) < 1e-4
-    )
+    nearly_identical = turnover == 0 and abs(blend["sharpe"] - baseline["sharpe"]) < 1e-4 and abs(blend["cash"] - baseline["cash"]) < 1e-4
     print(f"results_nearly_identical: {nearly_identical}")
 
 

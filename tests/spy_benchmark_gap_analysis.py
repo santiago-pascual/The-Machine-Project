@@ -203,17 +203,19 @@ def _yearly_gap(raw: pd.DataFrame, spy: pd.DataFrame) -> pd.DataFrame:
         sd = spy[spy["year"].eq(year)]
         rm = _metrics("raw", rd)
         sm = _metrics("SPY", sd)
-        rows.append({
-            "year": year,
-            "raw_return": rm.get("total_return"),
-            "SPY_return": sm.get("total_return"),
-            "raw_minus_SPY": rm.get("total_return") - sm.get("total_return"),
-            "raw_Sharpe": rm.get("Sharpe"),
-            "SPY_Sharpe": sm.get("Sharpe"),
-            "raw_max_drawdown": rm.get("max_drawdown"),
-            "SPY_max_drawdown": sm.get("max_drawdown"),
-            "raw_beats_SPY": bool(rm.get("total_return", -np.inf) > sm.get("total_return", np.inf)),
-        })
+        rows.append(
+            {
+                "year": year,
+                "raw_return": rm.get("total_return"),
+                "SPY_return": sm.get("total_return"),
+                "raw_minus_SPY": rm.get("total_return") - sm.get("total_return"),
+                "raw_Sharpe": rm.get("Sharpe"),
+                "SPY_Sharpe": sm.get("Sharpe"),
+                "raw_max_drawdown": rm.get("max_drawdown"),
+                "SPY_max_drawdown": sm.get("max_drawdown"),
+                "raw_beats_SPY": bool(rm.get("total_return", -np.inf) > sm.get("total_return", np.inf)),
+            }
+        )
     return pd.DataFrame(rows)
 
 
@@ -225,18 +227,20 @@ def _stress_gap(raw: pd.DataFrame, spy: pd.DataFrame) -> pd.DataFrame:
         sd = spy[(spy["date"] >= start_dt) & (spy["date"] <= end_dt)]
         rm = _metrics("raw_target_research", rd)
         sm = _metrics("SPY_buy_hold", sd)
-        rows.append({
-            "regime_period": name,
-            "raw_return": rm.get("total_return"),
-            "SPY_return": sm.get("total_return"),
-            "raw_minus_SPY": rm.get("total_return", np.nan) - sm.get("total_return", np.nan),
-            "raw_Sharpe": rm.get("Sharpe"),
-            "SPY_Sharpe": sm.get("Sharpe"),
-            "raw_drawdown": rm.get("max_drawdown"),
-            "SPY_drawdown": sm.get("max_drawdown"),
-            "drawdown_protection": sm.get("max_drawdown", np.nan) - rm.get("max_drawdown", np.nan),
-            "observations": rm.get("observations"),
-        })
+        rows.append(
+            {
+                "regime_period": name,
+                "raw_return": rm.get("total_return"),
+                "SPY_return": sm.get("total_return"),
+                "raw_minus_SPY": rm.get("total_return", np.nan) - sm.get("total_return", np.nan),
+                "raw_Sharpe": rm.get("Sharpe"),
+                "SPY_Sharpe": sm.get("Sharpe"),
+                "raw_drawdown": rm.get("max_drawdown"),
+                "SPY_drawdown": sm.get("max_drawdown"),
+                "drawdown_protection": sm.get("max_drawdown", np.nan) - rm.get("max_drawdown", np.nan),
+                "observations": rm.get("observations"),
+            }
+        )
     return pd.DataFrame(rows)
 
 
@@ -255,17 +259,21 @@ def _performance_gap(raw_metrics: dict, spy_metrics: dict, raw_daily: pd.DataFra
         down = merged[merged["return_SPY"] < 0]
         if not down.empty:
             downside_benefit = float((down["return_raw"] - down["return_SPY"]).mean())
-    return pd.DataFrame([{
-        "comparison": "raw_target_research_vs_SPY",
-        "return_gap": raw_metrics.get("total_return", np.nan) - spy_metrics.get("total_return", np.nan),
-        "CAGR_gap": raw_metrics.get("CAGR", np.nan) - spy_metrics.get("CAGR", np.nan),
-        "Sharpe_gap": raw_metrics.get("Sharpe", np.nan) - spy_metrics.get("Sharpe", np.nan),
-        "max_drawdown_gap": raw_metrics.get("max_drawdown", np.nan) - spy_metrics.get("max_drawdown", np.nan),
-        "volatility_gap": raw_metrics.get("volatility", np.nan) - spy_metrics.get("volatility", np.nan),
-        "cash_drag_proxy": raw_cash,
-        "missed_upside_proxy": missed_upside,
-        "downside_avoidance_benefit": downside_benefit,
-    }])
+    return pd.DataFrame(
+        [
+            {
+                "comparison": "raw_target_research_vs_SPY",
+                "return_gap": raw_metrics.get("total_return", np.nan) - spy_metrics.get("total_return", np.nan),
+                "CAGR_gap": raw_metrics.get("CAGR", np.nan) - spy_metrics.get("CAGR", np.nan),
+                "Sharpe_gap": raw_metrics.get("Sharpe", np.nan) - spy_metrics.get("Sharpe", np.nan),
+                "max_drawdown_gap": raw_metrics.get("max_drawdown", np.nan) - spy_metrics.get("max_drawdown", np.nan),
+                "volatility_gap": raw_metrics.get("volatility", np.nan) - spy_metrics.get("volatility", np.nan),
+                "cash_drag_proxy": raw_cash,
+                "missed_upside_proxy": missed_upside,
+                "downside_avoidance_benefit": downside_benefit,
+            }
+        ]
+    )
 
 
 def _selected_map(raw_daily: pd.DataFrame) -> pd.DataFrame:
@@ -306,7 +314,11 @@ def _missed_winners(raw_daily: pd.DataFrame) -> pd.DataFrame:
     out["miss_reason"] = np.where(
         out["selected_by_raw"],
         "selected",
-        np.where(_num(out.get("expected_daily_return", pd.Series(index=out.index))).fillna(-np.inf) <= 0, "low_or_negative_expected_return", "not_in_raw_selection"),
+        np.where(
+            _num(out.get("expected_daily_return", pd.Series(index=out.index))).fillna(-np.inf) <= 0,
+            "low_or_negative_expected_return",
+            "not_in_raw_selection",
+        ),
     )
     return out.rename(columns={"future_return_20d": "winner_forward_return_20d"})
 
@@ -315,32 +327,44 @@ def _position_sizing(raw_daily: pd.DataFrame, raw_trades: pd.DataFrame) -> pd.Da
     rows = []
     if raw_daily.empty:
         return pd.DataFrame()
-    rows.append({
-        "metric": "average_cash",
-        "value": float(_num(raw_daily.get("cash", pd.Series(dtype=float))).mean()) if "cash" in raw_daily.columns else np.nan,
-        "interpretation": "cash reduces upside capture when benchmark rises",
-    })
-    rows.append({
-        "metric": "average_exposure",
-        "value": float(_num(raw_daily.get("exposure", pd.Series(dtype=float))).mean()) if "exposure" in raw_daily.columns else np.nan,
-        "interpretation": "growth model is mostly invested",
-    })
-    rows.append({
-        "metric": "average_turnover",
-        "value": float(_num(raw_daily.get("turnover", pd.Series(dtype=float))).mean()) if "turnover" in raw_daily.columns else np.nan,
-        "interpretation": "high turnover can cut winners early",
-    })
-    rows.append({
-        "metric": "average_selected_count",
-        "value": float(_num(raw_daily.get("selected_count", pd.Series(dtype=float))).mean()) if "selected_count" in raw_daily.columns else np.nan,
-        "interpretation": "few positions increases idiosyncratic gap versus SPY",
-    })
+    rows.append(
+        {
+            "metric": "average_cash",
+            "value": float(_num(raw_daily.get("cash", pd.Series(dtype=float))).mean()) if "cash" in raw_daily.columns else np.nan,
+            "interpretation": "cash reduces upside capture when benchmark rises",
+        }
+    )
+    rows.append(
+        {
+            "metric": "average_exposure",
+            "value": float(_num(raw_daily.get("exposure", pd.Series(dtype=float))).mean()) if "exposure" in raw_daily.columns else np.nan,
+            "interpretation": "growth model is mostly invested",
+        }
+    )
+    rows.append(
+        {
+            "metric": "average_turnover",
+            "value": float(_num(raw_daily.get("turnover", pd.Series(dtype=float))).mean()) if "turnover" in raw_daily.columns else np.nan,
+            "interpretation": "high turnover can cut winners early",
+        }
+    )
+    rows.append(
+        {
+            "metric": "average_selected_count",
+            "value": float(_num(raw_daily.get("selected_count", pd.Series(dtype=float))).mean())
+            if "selected_count" in raw_daily.columns
+            else np.nan,
+            "interpretation": "few positions increases idiosyncratic gap versus SPY",
+        }
+    )
     if not raw_trades.empty and "raw_weight" in raw_trades.columns:
-        rows.append({
-            "metric": "max_single_position_proxy",
-            "value": float(_num(raw_trades["raw_weight"]).max()),
-            "interpretation": "cap can underweight major winners if alpha rank is correct",
-        })
+        rows.append(
+            {
+                "metric": "max_single_position_proxy",
+                "value": float(_num(raw_trades["raw_weight"]).max()),
+                "interpretation": "cap can underweight major winners if alpha rank is correct",
+            }
+        )
     return pd.DataFrame(rows)
 
 
@@ -355,15 +379,29 @@ def _drawdown_comparison(raw_daily: pd.DataFrame, spy_daily: pd.DataFrame) -> pd
     return merged
 
 
-def _improvement_map(gap: pd.DataFrame, yearly: pd.DataFrame, missed: pd.DataFrame, sizing: pd.DataFrame, drawdown: pd.DataFrame) -> pd.DataFrame:
+def _improvement_map(
+    gap: pd.DataFrame, yearly: pd.DataFrame, missed: pd.DataFrame, sizing: pd.DataFrame, drawdown: pd.DataFrame
+) -> pd.DataFrame:
     gap_row = gap.iloc[0] if not gap.empty else pd.Series(dtype=object)
     missed_mask = pd.Series(dtype=bool)
     if not missed.empty and "selected_by_raw" in missed.columns:
         missed_mask = ~missed["selected_by_raw"].fillna(False).astype(bool)
     missed_count = int(missed_mask.sum()) if not missed_mask.empty else 0
-    missed_avg = float(_num(missed.loc[missed_mask, "winner_forward_return_20d"]).mean()) if not missed_mask.empty and "winner_forward_return_20d" in missed.columns else np.nan
-    avg_cash = float(sizing.loc[sizing["metric"].eq("average_cash"), "value"].iloc[0]) if not sizing.empty and sizing["metric"].eq("average_cash").any() else np.nan
-    avg_turnover = float(sizing.loc[sizing["metric"].eq("average_turnover"), "value"].iloc[0]) if not sizing.empty and sizing["metric"].eq("average_turnover").any() else np.nan
+    missed_avg = (
+        float(_num(missed.loc[missed_mask, "winner_forward_return_20d"]).mean())
+        if not missed_mask.empty and "winner_forward_return_20d" in missed.columns
+        else np.nan
+    )
+    avg_cash = (
+        float(sizing.loc[sizing["metric"].eq("average_cash"), "value"].iloc[0])
+        if not sizing.empty and sizing["metric"].eq("average_cash").any()
+        else np.nan
+    )
+    avg_turnover = (
+        float(sizing.loc[sizing["metric"].eq("average_turnover"), "value"].iloc[0])
+        if not sizing.empty and sizing["metric"].eq("average_turnover").any()
+        else np.nan
+    )
     dd_benefit = float(drawdown["raw_protection_benefit"].min()) if not drawdown.empty else np.nan
     rows = [
         {
@@ -397,7 +435,9 @@ def _improvement_map(gap: pd.DataFrame, yearly: pd.DataFrame, missed: pd.DataFra
         {
             "gap_type": "downside_protection",
             "severity": "medium" if np.isfinite(dd_benefit) and dd_benefit < 0 else "supportive",
-            "diagnosis": "raw protects drawdown better than SPY on full sample" if gap_row.get("max_drawdown_gap", 0) > 0 else "raw drawdown protection insufficient",
+            "diagnosis": "raw protects drawdown better than SPY on full sample"
+            if gap_row.get("max_drawdown_gap", 0) > 0
+            else "raw drawdown protection insufficient",
             "evidence": gap_row.get("max_drawdown_gap"),
             "do_not_change_yet": True,
         },
@@ -405,8 +445,24 @@ def _improvement_map(gap: pd.DataFrame, yearly: pd.DataFrame, missed: pd.DataFra
     if not yearly.empty:
         worst = yearly.sort_values("raw_minus_SPY").head(1)
         best = yearly.sort_values("raw_minus_SPY", ascending=False).head(1)
-        rows.append({"gap_type": "worst_relative_year", "severity": "diagnostic", "diagnosis": str(worst.to_dict("records")), "evidence": None, "do_not_change_yet": True})
-        rows.append({"gap_type": "best_relative_year", "severity": "diagnostic", "diagnosis": str(best.to_dict("records")), "evidence": None, "do_not_change_yet": True})
+        rows.append(
+            {
+                "gap_type": "worst_relative_year",
+                "severity": "diagnostic",
+                "diagnosis": str(worst.to_dict("records")),
+                "evidence": None,
+                "do_not_change_yet": True,
+            }
+        )
+        rows.append(
+            {
+                "gap_type": "best_relative_year",
+                "severity": "diagnostic",
+                "diagnosis": str(best.to_dict("records")),
+                "evidence": None,
+                "do_not_change_yet": True,
+            }
+        )
     return pd.DataFrame(rows)
 
 
@@ -453,7 +509,16 @@ def run_spy_benchmark_gap_analysis() -> dict[str, pd.DataFrame]:
     print(yearly.to_string(index=False))
 
     print("\n===== MISSED WINNERS ANALYSIS =====")
-    missed_cols = ["date", "ticker", "winner_forward_return_20d", "selected_by_raw", "raw_weight_proxy", "expected_daily_return", "signal_strength", "miss_reason"]
+    missed_cols = [
+        "date",
+        "ticker",
+        "winner_forward_return_20d",
+        "selected_by_raw",
+        "raw_weight_proxy",
+        "expected_daily_return",
+        "signal_strength",
+        "miss_reason",
+    ]
     print(missed[[c for c in missed_cols if c in missed.columns]].head(25).to_string(index=False))
 
     print("\n===== POSITION SIZING GAP =====")

@@ -1,4 +1,3 @@
-
 from __future__ import annotations
 
 from typing import Any
@@ -64,7 +63,7 @@ def _status_banner(st, bundle: dict[str, Any]) -> None:
         <div class='hero' style='border-color:{color}; box-shadow: inset 5px 0 0 {color}, 0 18px 55px rgba(0,0,0,.30);'>
           <h1>Mission Control</h1>
           <p>Bloomberg + NASA style read-only monitoring center · {MODEL_VERSION} · {VARIANT}</p>
-          <p>{status_badge(overall, overall)} <span class='small-muted'>Overall Health: <b>{health:.1f}%</b> · Latest market date: <b>{latest_market_date(bundle.get('data', {}))}</b> · Real capital blocked</span></p>
+          <p>{status_badge(overall, overall)} <span class='small-muted'>Overall Health: <b>{health:.1f}%</b> · Latest market date: <b>{latest_market_date(bundle.get("data", {}))}</b> · Real capital blocked</span></p>
         </div>
         """,
         unsafe_allow_html=True,
@@ -79,7 +78,13 @@ def _live_grid(st, grid: pd.DataFrame) -> None:
     cols = st.columns(4)
     for i, (_, row) in enumerate(grid.iterrows()):
         with cols[i % 4]:
-            metric_card(st, str(row.get("module", "module")), str(row.get("status", "WARNING")), f"latest {row.get('latest_date','')} · {row.get('source_file','')}", badge=str(row.get("status", "WARNING")))
+            metric_card(
+                st,
+                str(row.get("module", "module")),
+                str(row.get("status", "WARNING")),
+                f"latest {row.get('latest_date', '')} · {row.get('source_file', '')}",
+                badge=str(row.get("status", "WARNING")),
+            )
     with st.expander("Full module status table"):
         st.dataframe(_safe_df(grid), width="stretch", hide_index=True)
 
@@ -89,7 +94,15 @@ def _timeline(st, timeline: pd.DataFrame) -> None:
     if timeline.empty:
         alert_box(st, "Pipeline timeline unavailable.", "warning")
         return
-    fig = px.bar(timeline, x="step", y="rows", color="status", color_discrete_map=STATUS_COLORS, text="status", title="Pipeline Stages and Rows Available")
+    fig = px.bar(
+        timeline,
+        x="step",
+        y="rows",
+        color="status",
+        color_discrete_map=STATUS_COLORS,
+        text="status",
+        title="Pipeline Stages and Rows Available",
+    )
     _plot(st, fig, 390, "Pipeline Stages and Rows Available")
     st.dataframe(_safe_df(timeline), width="stretch", hide_index=True)
 
@@ -98,15 +111,23 @@ def _execution_perf(st, runtime: pd.DataFrame, data: dict[str, pd.DataFrame]) ->
     section_header(st, "Execution Performance", "Derived from files and row counts; duration is unavailable unless logged by the runner.")
     vals = {str(r.get("metric")): r.get("value") for _, r in runtime.iterrows()} if not runtime.empty else {}
     cols = st.columns(4)
-    with cols[0]: metric_card(st, "Pipeline Duration", str(vals.get("total_pipeline_duration", "n/a")))
-    with cols[1]: metric_card(st, "Slowest Module Proxy", str(vals.get("slowest_module", "n/a")), "largest row count")
-    with cols[2]: metric_card(st, "CSV Files", str(vals.get("csv_files_generated", "n/a")))
-    with cols[3]: metric_card(st, "Rows Processed", str(vals.get("rows_processed", "n/a")))
+    with cols[0]:
+        metric_card(st, "Pipeline Duration", str(vals.get("total_pipeline_duration", "n/a")))
+    with cols[1]:
+        metric_card(st, "Slowest Module Proxy", str(vals.get("slowest_module", "n/a")), "largest row count")
+    with cols[2]:
+        metric_card(st, "CSV Files", str(vals.get("csv_files_generated", "n/a")))
+    with cols[3]:
+        metric_card(st, "Rows Processed", str(vals.get("rows_processed", "n/a")))
     cols = st.columns(4)
-    with cols[0]: metric_card(st, "Holdings", str(vals.get("holdings", "n/a")))
-    with cols[1]: metric_card(st, "Trades/Actions", str(vals.get("trades", "n/a")))
-    with cols[2]: metric_card(st, "Market Rows", str(len(data.get("official_market_data_integrity", pd.DataFrame()))))
-    with cols[3]: metric_card(st, "Forecast Rows", str(len(data.get("current_raw_target_features", pd.DataFrame()))))
+    with cols[0]:
+        metric_card(st, "Holdings", str(vals.get("holdings", "n/a")))
+    with cols[1]:
+        metric_card(st, "Trades/Actions", str(vals.get("trades", "n/a")))
+    with cols[2]:
+        metric_card(st, "Market Rows", str(len(data.get("official_market_data_integrity", pd.DataFrame()))))
+    with cols[3]:
+        metric_card(st, "Forecast Rows", str(len(data.get("current_raw_target_features", pd.DataFrame()))))
 
 
 def _market_portfolio_governance(st, bundle: dict[str, Any], data: dict[str, pd.DataFrame]) -> None:
@@ -125,10 +146,16 @@ def _market_portfolio_governance(st, bundle: dict[str, Any], data: dict[str, pd.
         section_header(st, "Portfolio Snapshot")
         perf = bundle["performance"].iloc[-1] if not bundle["performance"].empty else pd.Series(dtype=object)
         state = bundle["state"]
-        holdings = state[~state.get("ticker", pd.Series(dtype=str)).astype(str).str.upper().eq("CASH")]["ticker"].astype(str).tolist() if not state.empty and "ticker" in state.columns else []
+        holdings = (
+            state[~state.get("ticker", pd.Series(dtype=str)).astype(str).str.upper().eq("CASH")]["ticker"].astype(str).tolist()
+            if not state.empty and "ticker" in state.columns
+            else []
+        )
         metric_card(st, "Portfolio Value", fmt_money(perf.get("gross_portfolio_value", perf.get("portfolio_value", np.nan))))
         metric_card(st, "Net Value", fmt_money(perf.get("estimated_net_portfolio_value", np.nan)))
-        metric_card(st, "Exposure / Cash", f"{fmt_pct(perf.get('exposure', np.nan))} / {fmt_pct(perf.get('cash_weight', perf.get('cash', np.nan)))}")
+        metric_card(
+            st, "Exposure / Cash", f"{fmt_pct(perf.get('exposure', np.nan))} / {fmt_pct(perf.get('cash_weight', perf.get('cash', np.nan)))}"
+        )
         metric_card(st, "Current Holdings", ", ".join(holdings) if holdings else "none")
     with right:
         section_header(st, "Governance Snapshot")
@@ -161,11 +188,16 @@ def _alerts_incidents(st, bundle: dict[str, Any]) -> None:
 def _next_actions_summary(st, bundle: dict[str, Any]) -> None:
     section_header(st, "Next Actions and Executive Summary", "Deterministic summary. No recommendation engine.")
     cols = st.columns(5)
-    with cols[0]: metric_card(st, "Next Rebalance", next_rebalance_date(bundle.get("data", {})))
-    with cols[1]: metric_card(st, "Forward History", "collecting")
-    with cols[2]: metric_card(st, "Market", "fresh")
-    with cols[3]: metric_card(st, "Governance", "blocked by research/paper gates")
-    with cols[4]: metric_card(st, "Accounting", "healthy" if "FAIL" not in str(bundle["grid"].to_string()) else "check required")
+    with cols[0]:
+        metric_card(st, "Next Rebalance", next_rebalance_date(bundle.get("data", {})))
+    with cols[1]:
+        metric_card(st, "Forward History", "collecting")
+    with cols[2]:
+        metric_card(st, "Market", "fresh")
+    with cols[3]:
+        metric_card(st, "Governance", "blocked by research/paper gates")
+    with cols[4]:
+        metric_card(st, "Accounting", "healthy" if "FAIL" not in str(bundle["grid"].to_string()) else "check required")
     alert_box(st, bundle["summary"], "info")
 
 
@@ -177,10 +209,22 @@ def _system_map_resources_checklist(st, bundle: dict[str, Any]) -> None:
         colors = [STATUS_COLORS.get(s, AMBER) for s in grid["status"].astype(str)]
         x = list(range(len(nodes)))
         fig = go.Figure()
-        fig.add_trace(go.Scatter(x=x, y=[0]*len(nodes), mode="markers+text", marker=dict(size=34, color=colors), text=nodes, textposition="bottom center", hovertext=grid["status"].astype(str), hoverinfo="text"))
-        for i in range(len(nodes)-1):
-            fig.add_shape(type="line", x0=i, y0=0, x1=i+1, y1=0, line=dict(color="rgba(255,138,42,0.35)", width=2))
-        fig.update_yaxes(visible=False); fig.update_xaxes(visible=False)
+        fig.add_trace(
+            go.Scatter(
+                x=x,
+                y=[0] * len(nodes),
+                mode="markers+text",
+                marker=dict(size=34, color=colors),
+                text=nodes,
+                textposition="bottom center",
+                hovertext=grid["status"].astype(str),
+                hoverinfo="text",
+            )
+        )
+        for i in range(len(nodes) - 1):
+            fig.add_shape(type="line", x0=i, y0=0, x1=i + 1, y1=0, line=dict(color="rgba(255,138,42,0.35)", width=2))
+        fig.update_yaxes(visible=False)
+        fig.update_xaxes(visible=False)
         _plot(st, fig, 260, "System Dependency Map")
     left, right = st.columns(2)
     with left:

@@ -286,7 +286,11 @@ def _decision_changes(baseline_predictions: pd.DataFrame, quant_predictions: pd.
     rows = []
     dates = sorted(set(baseline_predictions.get("date", [])) | set(quant_predictions.get("date", [])))
     for date in dates:
-        b = set(baseline_predictions[(baseline_predictions["date"] == date) & baseline_predictions["selected"].astype(bool)]["ticker"].astype(str))
+        b = set(
+            baseline_predictions[(baseline_predictions["date"] == date) & baseline_predictions["selected"].astype(bool)]["ticker"].astype(
+                str
+            )
+        )
         q = set(quant_predictions[(quant_predictions["date"] == date) & quant_predictions["selected"].astype(bool)]["ticker"].astype(str))
         overlap = b & q
         rows.append(
@@ -354,19 +358,23 @@ def run_model_mode_comparison(
     print(f"average overlap: {float(decision_changes['jaccard_overlap'].mean()) if not decision_changes.empty else np.nan:.4f}")
     print(decision_changes.head(10).to_string(index=False))
     print("\n===== BASELINE VS FULL QUANT VS REGIME GATED COMPARISON =====")
-    key_metrics = comparison[comparison["metric"].isin([
-        "realized_sharpe",
-        "realized_return",
-        "realized_volatility",
-        "max_drawdown",
-        "Sortino",
-        "Calmar",
-        "average_cash",
-        "average_turnover",
-        "TP_rate",
-        "SL_rate",
-        "TP_minus_SL",
-    ])]
+    key_metrics = comparison[
+        comparison["metric"].isin(
+            [
+                "realized_sharpe",
+                "realized_return",
+                "realized_volatility",
+                "max_drawdown",
+                "Sortino",
+                "Calmar",
+                "average_cash",
+                "average_turnover",
+                "TP_rate",
+                "SL_rate",
+                "TP_minus_SL",
+            ]
+        )
+    ]
     print(key_metrics.to_string(index=False))
     print("\nRegime-gated decision changes:")
     print(f"average overlap: {float(gated_decision_changes['jaccard_overlap'].mean()) if not gated_decision_changes.empty else np.nan:.4f}")

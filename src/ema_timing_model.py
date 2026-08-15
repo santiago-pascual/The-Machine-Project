@@ -212,13 +212,8 @@ def compute_daily_timing(prices_df: pd.DataFrame) -> pd.DataFrame:
         else:
             structure_state = "intermediate_structure"
 
-        ema_timing_score = (
-            0.32 * trend_score
-            + 0.30 * structure_score
-            + 0.25 * short_pullback_score
-            + 0.13 * long_pullback_score
-        )
-        ema_timing_score *= (1.0 - 0.40 * extension_penalty)
+        ema_timing_score = 0.32 * trend_score + 0.30 * structure_score + 0.25 * short_pullback_score + 0.13 * long_pullback_score
+        ema_timing_score *= 1.0 - 0.40 * extension_penalty
         ema_timing_score += 0.10 * early_reversal_intensity
         ema_timing_score = float(np.clip(ema_timing_score, 0.0, 1.0))
 
@@ -368,16 +363,9 @@ def compute_spy_ema_regime(timing_mode: str = "daily") -> dict[str, float | str]
     e30150 = _safe_div(v30 - v150, v150, default=0.0)
     e150200 = _safe_div(v150 - v200, v200, default=0.0)
 
-    short_score = (
-        0.40 * _sigmoid(p21 * 10.0)
-        + 0.30 * _sigmoid(p30 * 10.0)
-        + 0.30 * _sigmoid(e2130 * 18.0)
-    )
+    short_score = 0.40 * _sigmoid(p21 * 10.0) + 0.30 * _sigmoid(p30 * 10.0) + 0.30 * _sigmoid(e2130 * 18.0)
     long_score = (
-        0.30 * _sigmoid(p150 * 7.0)
-        + 0.30 * _sigmoid(p200 * 7.0)
-        + 0.20 * _sigmoid(e30150 * 12.0)
-        + 0.20 * _sigmoid(e150200 * 12.0)
+        0.30 * _sigmoid(p150 * 7.0) + 0.30 * _sigmoid(p200 * 7.0) + 0.20 * _sigmoid(e30150 * 12.0) + 0.20 * _sigmoid(e150200 * 12.0)
     )
     macro_ema_score = float(np.clip(0.6 * short_score + 0.4 * long_score, 0.0, 1.0))
     if macro_ema_score >= 0.67:

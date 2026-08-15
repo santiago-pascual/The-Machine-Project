@@ -92,12 +92,7 @@ def _load_calibrated_slice(
         metadata["failure_reason"] = f"stale_calibration_file_{staleness_days}d"
         return pd.DataFrame(), metadata
 
-    latest_rows = (
-        df[df["date"].eq(latest_date)]
-        .sort_values(["ticker"])
-        .drop_duplicates(subset=["ticker"], keep="last")
-        .set_index("ticker")
-    )
+    latest_rows = df[df["date"].eq(latest_date)].sort_values(["ticker"]).drop_duplicates(subset=["ticker"], keep="last").set_index("ticker")
     return latest_rows.reindex(tickers), metadata
 
 

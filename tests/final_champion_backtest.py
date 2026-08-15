@@ -113,9 +113,15 @@ def _load_champion_daily() -> pd.DataFrame:
     daily["quarter"] = daily["date"].dt.to_period("Q").astype(str)
     daily["cash_bucket"] = np.where(daily["cash_weight"] >= daily["cash_weight"].median(), "high_cash", "low_cash")
     rolling_vol = daily["realized_portfolio_return_1d"].rolling(20, min_periods=5).std()
-    daily["volatility_regime"] = np.where(rolling_vol >= rolling_vol.quantile(0.75), "high_volatility", np.where(rolling_vol <= rolling_vol.quantile(0.25), "low_volatility", "normal_volatility"))
+    daily["volatility_regime"] = np.where(
+        rolling_vol >= rolling_vol.quantile(0.75),
+        "high_volatility",
+        np.where(rolling_vol <= rolling_vol.quantile(0.25), "low_volatility", "normal_volatility"),
+    )
     rolling_abs = daily["realized_portfolio_return_1d"].abs().rolling(20, min_periods=5).mean()
-    daily["correlation_proxy_regime"] = np.where(rolling_abs >= rolling_abs.quantile(0.75), "high_correlation_proxy", "normal_correlation_proxy")
+    daily["correlation_proxy_regime"] = np.where(
+        rolling_abs >= rolling_abs.quantile(0.75), "high_correlation_proxy", "normal_correlation_proxy"
+    )
     return daily
 
 
@@ -129,8 +135,7 @@ def _load_champion_trades() -> pd.DataFrame:
         snapshots = snapshots.drop(columns=[col for col in cols if col in snapshots.columns], errors="ignore")
         snapshots = snapshots.merge(realized[["date", "ticker", "model_mode"] + cols], on=["date", "ticker", "model_mode"], how="left")
     trades = snapshots[
-        snapshots["model_mode"].astype(str).eq(CHAMPION_MODE)
-        & _bool(snapshots.get("selected", pd.Series(False, index=snapshots.index)))
+        snapshots["model_mode"].astype(str).eq(CHAMPION_MODE) & _bool(snapshots.get("selected", pd.Series(False, index=snapshots.index)))
     ].copy()
     return trades
 
@@ -143,7 +148,11 @@ def _labels_metrics(trades: pd.DataFrame) -> dict[str, float]:
     merged = trades[["date", "ticker"]].drop_duplicates().merge(labels20, on=["date", "ticker"], how="left")
     tp = float((merged["first_touch_type"].astype(str) == "take_profit").mean()) if "first_touch_type" in merged else np.nan
     sl = float((merged["first_touch_type"].astype(str) == "stop_loss").mean()) if "first_touch_type" in merged else np.nan
-    hit = float((_num(merged.get("realized_return_at_barrier", pd.Series(dtype=float))) > 0).mean()) if "realized_return_at_barrier" in merged else np.nan
+    hit = (
+        float((_num(merged.get("realized_return_at_barrier", pd.Series(dtype=float))) > 0).mean())
+        if "realized_return_at_barrier" in merged
+        else np.nan
+    )
     return {"TP_rate": tp, "SL_rate": sl, "TP_minus_SL": tp - sl if np.isfinite(tp) and np.isfinite(sl) else np.nan, "hit_rate": hit}
 
 
@@ -214,22 +223,48 @@ def _stress_test(daily: pd.DataFrame, trades: pd.DataFrame) -> pd.DataFrame:
 def _robustness(daily: pd.DataFrame, trades: pd.DataFrame, stress: pd.DataFrame) -> pd.DataFrame:
     returns = _num(daily["realized_portfolio_return_1d"]).dropna()
     year_perf = stress[stress["section"].eq("year")].copy()
-    best_year_share = float(year_perf["realized_return"].max() / max(1e-12, year_perf["realized_return"].sum())) if not year_perf.empty and year_perf["realized_return"].sum() != 0 else np.nan
+    best_year_share = (
+        float(year_perf["realized_return"].max() / max(1e-12, year_perf["realized_return"].sum()))
+        if not year_perf.empty and year_perf["realized_return"].sum() != 0
+        else np.nan
+    )
     ticker_contrib = pd.DataFrame()
     if not trades.empty and {"ticker", "weight", "realized_return_1d"}.issubset(trades.columns):
         ticker_contrib = trades.copy()
         ticker_contrib["contribution"] = _num(ticker_contrib["weight"]).fillna(0.0) * _num(ticker_contrib["realized_return_1d"]).fillna(0.0)
         ticker_contrib = ticker_contrib.groupby("ticker")["contribution"].sum().sort_values(ascending=False)
-    top_ticker_share = float(ticker_contrib.iloc[0] / ticker_contrib.sum()) if not ticker_contrib.empty and ticker_contrib.sum() != 0 else np.nan
+    top_ticker_share = (
+        float(ticker_contrib.iloc[0] / ticker_contrib.sum()) if not ticker_contrib.empty and ticker_contrib.sum() != 0 else np.nan
+    )
     regime_perf = stress[stress["section"].eq("regime")]
-    top_regime_share = float(regime_perf["realized_return"].max() / max(1e-12, regime_perf["realized_return"].sum())) if not regime_perf.empty and regime_perf["realized_return"].sum() != 0 else np.nan
+    top_regime_share = (
+        float(regime_perf["realized_return"].max() / max(1e-12, regime_perf["realized_return"].sum()))
+        if not regime_perf.empty and regime_perf["realized_return"].sum() != 0
+        else np.nan
+    )
     sorted_trade_returns = _num(trades.get("realized_return_20d", pd.Series(dtype=float))).dropna().sort_values(ascending=False)
-    top_trade_share = float(sorted_trade_returns.head(max(1, int(len(sorted_trade_returns) * 0.05))).sum() / sorted_trade_returns.sum()) if len(sorted_trade_returns) and sorted_trade_returns.sum() != 0 else np.nan
+    top_trade_share = (
+        float(sorted_trade_returns.head(max(1, int(len(sorted_trade_returns) * 0.05))).sum() / sorted_trade_returns.sum())
+        if len(sorted_trade_returns) and sorted_trade_returns.sum() != 0
+        else np.nan
+    )
     rows = [
         {"check": "depends_on_one_year", "value": best_year_share, "flag": bool(np.isfinite(best_year_share) and best_year_share > 0.70)},
-        {"check": "depends_on_one_ticker", "value": top_ticker_share, "flag": bool(np.isfinite(top_ticker_share) and top_ticker_share > 0.35)},
-        {"check": "depends_on_one_regime", "value": top_regime_share, "flag": bool(np.isfinite(top_regime_share) and top_regime_share > 0.70)},
-        {"check": "returns_concentrated_in_few_trades", "value": top_trade_share, "flag": bool(np.isfinite(top_trade_share) and top_trade_share > 0.60)},
+        {
+            "check": "depends_on_one_ticker",
+            "value": top_ticker_share,
+            "flag": bool(np.isfinite(top_ticker_share) and top_ticker_share > 0.35),
+        },
+        {
+            "check": "depends_on_one_regime",
+            "value": top_regime_share,
+            "flag": bool(np.isfinite(top_regime_share) and top_regime_share > 0.70),
+        },
+        {
+            "check": "returns_concentrated_in_few_trades",
+            "value": top_trade_share,
+            "flag": bool(np.isfinite(top_trade_share) and top_trade_share > 0.60),
+        },
         {"check": "drawdown_acceptable", "value": _max_drawdown(returns), "flag": bool(_max_drawdown(returns) > -0.10)},
     ]
     return pd.DataFrame(rows)
@@ -238,8 +273,16 @@ def _robustness(daily: pd.DataFrame, trades: pd.DataFrame, stress: pd.DataFrame)
 def _anti_overfit_summary() -> dict[str, object]:
     clean = _read_csv(CLEAN_RESEARCH_FILE)
     trials = _read_csv(TRIAL_LOG_FILE)
-    governed = clean[clean["trial_group"].astype(str).eq("governed_trials")].iloc[0] if not clean.empty and "trial_group" in clean.columns and (clean["trial_group"].astype(str).eq("governed_trials")).any() else pd.Series(dtype=object)
-    exploratory = clean[clean["trial_group"].astype(str).eq("exploratory_trials")].iloc[0] if not clean.empty and "trial_group" in clean.columns and (clean["trial_group"].astype(str).eq("exploratory_trials")).any() else pd.Series(dtype=object)
+    governed = (
+        clean[clean["trial_group"].astype(str).eq("governed_trials")].iloc[0]
+        if not clean.empty and "trial_group" in clean.columns and (clean["trial_group"].astype(str).eq("governed_trials")).any()
+        else pd.Series(dtype=object)
+    )
+    exploratory = (
+        clean[clean["trial_group"].astype(str).eq("exploratory_trials")].iloc[0]
+        if not clean.empty and "trial_group" in clean.columns and (clean["trial_group"].astype(str).eq("exploratory_trials")).any()
+        else pd.Series(dtype=object)
+    )
     return {
         "all_time_overfitting_warning": exploratory.get("overfitting_warning", "missing"),
         "governed_overfitting_warning": governed.get("overfitting_warning", "missing"),
@@ -257,7 +300,9 @@ def _governance(results: pd.DataFrame, robustness: pd.DataFrame, anti: dict[str,
     paper_too_short = len(paper_short) < 60
     if row["Sharpe"] >= 1.5 and row["max_drawdown"] > -0.10 and len(flags) <= 2:
         classification = "eligible for extended paper trading" if paper_too_short else "production review candidate"
-        reason = "strong historical validation but paper history too short" if paper_too_short else "historical and paper evidence acceptable"
+        reason = (
+            "strong historical validation but paper history too short" if paper_too_short else "historical and paper evidence acceptable"
+        )
     elif row["Sharpe"] >= 1.0:
         classification = "eligible for paper trading"
         reason = "positive historical validation with monitoring required"

@@ -1,4 +1,3 @@
-
 from __future__ import annotations
 
 from pathlib import Path
@@ -82,7 +81,9 @@ def _script_download_info() -> dict[str, str]:
     if fds.exists():
         text = fds.read_text(encoding="utf-8", errors="ignore")
         if "end_date = datetime.today()" in text:
-            info["financial_data_system_download_request"] = "uses datetime.today() as yfinance end date for day-based downloads; period mode also used when configured"
+            info["financial_data_system_download_request"] = (
+                "uses datetime.today() as yfinance end date for day-based downloads; period mode also used when configured"
+            )
         if "yf.download" in text:
             info["financial_data_system_yfinance"] = "present"
     bench = Path("benchmark_daily_series_export.py")
@@ -100,51 +101,59 @@ def run_audit() -> tuple[pd.DataFrame, str]:
     script_info = _script_download_info()
     rows = []
 
-    rows.append({
-        "stage": "financial_data_system_market_download/cache",
-        "file": "financial_data_system.py / yahoo_ohlcv_price_cache",
-        "expected_latest_market_date": expected.date().isoformat(),
-        "actual_latest_date": cache["latest_cache_date_any"].date().isoformat() if pd.notna(cache["latest_cache_date_any"]) else "",
-        "stale": bool(pd.isna(cache["latest_cache_date_any"]) or cache["latest_cache_date_any"] < expected),
-        "rows": cache["cache_file_count"],
-        "status": cache["cache_status"],
-        "notes": script_info.get("financial_data_system_download_request", "unknown"),
-    })
-    rows.append({
-        "stage": "yahoo_cache_SPY",
-        "file": str(CACHE_DIR / "SPY.csv"),
-        "expected_latest_market_date": expected.date().isoformat(),
-        "actual_latest_date": cache["latest_cache_date_spy"].date().isoformat() if pd.notna(cache["latest_cache_date_spy"]) else "",
-        "stale": bool(pd.isna(cache["latest_cache_date_spy"]) or cache["latest_cache_date_spy"] < expected),
-        "rows": "",
-        "status": "ok" if pd.notna(cache["latest_cache_date_spy"]) else "missing_or_unparseable",
-        "notes": script_info.get("benchmark_download_request", "unknown"),
-    })
-    rows.append({
-        "stage": "yahoo_cache_QQQ",
-        "file": str(CACHE_DIR / "QQQ.csv"),
-        "expected_latest_market_date": expected.date().isoformat(),
-        "actual_latest_date": cache["latest_cache_date_qqq"].date().isoformat() if pd.notna(cache["latest_cache_date_qqq"]) else "",
-        "stale": bool(pd.isna(cache["latest_cache_date_qqq"]) or cache["latest_cache_date_qqq"] < expected),
-        "rows": "",
-        "status": "ok" if pd.notna(cache["latest_cache_date_qqq"]) else "missing_or_unparseable",
-        "notes": script_info.get("benchmark_download_request", "unknown"),
-    })
+    rows.append(
+        {
+            "stage": "financial_data_system_market_download/cache",
+            "file": "financial_data_system.py / yahoo_ohlcv_price_cache",
+            "expected_latest_market_date": expected.date().isoformat(),
+            "actual_latest_date": cache["latest_cache_date_any"].date().isoformat() if pd.notna(cache["latest_cache_date_any"]) else "",
+            "stale": bool(pd.isna(cache["latest_cache_date_any"]) or cache["latest_cache_date_any"] < expected),
+            "rows": cache["cache_file_count"],
+            "status": cache["cache_status"],
+            "notes": script_info.get("financial_data_system_download_request", "unknown"),
+        }
+    )
+    rows.append(
+        {
+            "stage": "yahoo_cache_SPY",
+            "file": str(CACHE_DIR / "SPY.csv"),
+            "expected_latest_market_date": expected.date().isoformat(),
+            "actual_latest_date": cache["latest_cache_date_spy"].date().isoformat() if pd.notna(cache["latest_cache_date_spy"]) else "",
+            "stale": bool(pd.isna(cache["latest_cache_date_spy"]) or cache["latest_cache_date_spy"] < expected),
+            "rows": "",
+            "status": "ok" if pd.notna(cache["latest_cache_date_spy"]) else "missing_or_unparseable",
+            "notes": script_info.get("benchmark_download_request", "unknown"),
+        }
+    )
+    rows.append(
+        {
+            "stage": "yahoo_cache_QQQ",
+            "file": str(CACHE_DIR / "QQQ.csv"),
+            "expected_latest_market_date": expected.date().isoformat(),
+            "actual_latest_date": cache["latest_cache_date_qqq"].date().isoformat() if pd.notna(cache["latest_cache_date_qqq"]) else "",
+            "stale": bool(pd.isna(cache["latest_cache_date_qqq"]) or cache["latest_cache_date_qqq"] < expected),
+            "rows": "",
+            "status": "ok" if pd.notna(cache["latest_cache_date_qqq"]) else "missing_or_unparseable",
+            "notes": script_info.get("benchmark_download_request", "unknown"),
+        }
+    )
 
     stage_dates = {}
     for stage, path, col in STAGES:
         latest, row_count, status = _latest_csv_date(path, col)
         stage_dates[stage] = latest
-        rows.append({
-            "stage": stage,
-            "file": str(path),
-            "expected_latest_market_date": expected.date().isoformat(),
-            "actual_latest_date": latest.date().isoformat() if pd.notna(latest) else "",
-            "stale": bool(pd.isna(latest) or latest < expected),
-            "rows": row_count,
-            "status": status,
-            "notes": "",
-        })
+        rows.append(
+            {
+                "stage": stage,
+                "file": str(path),
+                "expected_latest_market_date": expected.date().isoformat(),
+                "actual_latest_date": latest.date().isoformat() if pd.notna(latest) else "",
+                "stale": bool(pd.isna(latest) or latest < expected),
+                "rows": row_count,
+                "status": status,
+                "notes": "",
+            }
+        )
 
     audit = pd.DataFrame(rows)
     audit.to_csv(AUDIT_OUT, index=False)
@@ -179,12 +188,16 @@ def run_audit() -> tuple[pd.DataFrame, str]:
     lines.append("")
     lines.append("Stage freshness:")
     for _, row in audit.iterrows():
-        lines.append(f"- {row['stage']}: actual={row['actual_latest_date'] or 'missing'} expected={row['expected_latest_market_date']} stale={row['stale']} status={row['status']}")
+        lines.append(
+            f"- {row['stage']}: actual={row['actual_latest_date'] or 'missing'} expected={row['expected_latest_market_date']} stale={row['stale']} status={row['status']}"
+        )
     lines.append("")
     lines.append(f"Blocking stage: {blocking_stage}")
     lines.append(f"Explanation: {reason}")
     lines.append("")
-    lines.append("Important note: if the audit is run before Yahoo has published today's close, the expected latest market date may be same-day while Yahoo/cache legitimately remains on the prior completed close.")
+    lines.append(
+        "Important note: if the audit is run before Yahoo has published today's close, the expected latest market date may be same-day while Yahoo/cache legitimately remains on the prior completed close."
+    )
     summary = "\n".join(lines)
     SUMMARY_OUT.write_text(summary, encoding="utf-8")
     return audit, summary

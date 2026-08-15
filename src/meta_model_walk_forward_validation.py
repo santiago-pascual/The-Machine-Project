@@ -346,7 +346,21 @@ def _print_report(results: pd.DataFrame, folds: pd.DataFrame, comparison: pd.Dat
     if results.empty:
         print("No fold results.")
     else:
-        show_cols = ["fold", "candidate", "trades", "sample_reduction", "average_return", "Sharpe", "TP_rate", "SL_rate", "hit_rate", "precision", "recall", "ROC_AUC", "Brier"]
+        show_cols = [
+            "fold",
+            "candidate",
+            "trades",
+            "sample_reduction",
+            "average_return",
+            "Sharpe",
+            "TP_rate",
+            "SL_rate",
+            "hit_rate",
+            "precision",
+            "recall",
+            "ROC_AUC",
+            "Brier",
+        ]
         print(results[[c for c in show_cols if c in results.columns]].to_string(index=False))
 
     print("\n===== META MODEL GOVERNANCE =====")

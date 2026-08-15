@@ -64,6 +64,7 @@ def _daily_download_end_date() -> datetime:
     offset = int(os.getenv("YFINANCE_END_DATE_OFFSET_DAYS", "0") or "0")
     return datetime.today() + timedelta(days=offset)
 
+
 DEFAULT_RISK_FREE_RATE = 0.037
 TRADING_DAYS_PER_YEAR = 252
 
@@ -156,14 +157,8 @@ class _CompactReportPrinter:
         self.section_line_count += len(shown)
         self.original_print("\n".join(shown), end=end)
         if len(lines) > remaining:
-            self.original_print(
-                f"[compact mode] section truncated after {self.max_lines_per_section} lines."
-            )
-        if (
-            self.early_exit_after_final_allocation
-            and self.active_section == "FINAL_ALLOCATION"
-            and "Use final_weight_percent" in text
-        ):
+            self.original_print(f"[compact mode] section truncated after {self.max_lines_per_section} lines.")
+        if self.early_exit_after_final_allocation and self.active_section == "FINAL_ALLOCATION" and "Use final_weight_percent" in text:
             sys.stdout.flush()
             sys.stderr.flush()
             os._exit(0)
@@ -436,9 +431,7 @@ def _validate_weights(weights: Iterable[float], n_assets: int) -> np.ndarray:
         raise ValueError("'weights' must be a one-dimensional list or array.")
 
     if len(weights_array) != n_assets:
-        raise ValueError(
-            f"'weights' length ({len(weights_array)}) must match the number of assets ({n_assets})."
-        )
+        raise ValueError(f"'weights' length ({len(weights_array)}) must match the number of assets ({n_assets}).")
 
     return weights_array
 
@@ -558,10 +551,7 @@ def get_risk_free_rate(default_rate: float = DEFAULT_RISK_FREE_RATE) -> tuple[fl
     and daily risk-free rates. Falls back to a default rate if the API fails.
     """
     api_key = "28556facd59b4c6cd5554266559aec06"
-    url = (
-        "https://api.stlouisfed.org/fred/series/observations"
-        f"?series_id=FEDFUNDS&api_key={api_key}&file_type=json"
-    )
+    url = f"https://api.stlouisfed.org/fred/series/observations?series_id=FEDFUNDS&api_key={api_key}&file_type=json"
 
     try:
         with _temporary_disable_proxies():
@@ -603,9 +593,7 @@ def generate_target_prices(
     manual_series = pd.Series(manual_targets or {}, dtype=float)
     latest_prices = prices_df.ffill().iloc[-1]
     volatility_series = prices_df.pct_change().std().reindex(prices_df.columns).fillna(0.0)
-    momentum_series = (
-        prices_df.ffill().iloc[-1] / prices_df.ffill().tail(10).mean() - 1
-    ).replace([np.inf, -np.inf], np.nan).fillna(0.0)
+    momentum_series = (prices_df.ffill().iloc[-1] / prices_df.ffill().tail(10).mean() - 1).replace([np.inf, -np.inf], np.nan).fillna(0.0)
 
     generated_targets: dict[str, float] = {}
 
@@ -776,9 +764,7 @@ def run_backtest(
         if forward_prices.empty:
             break
 
-        available_tickers = [
-            c for c in historical_prices.columns if historical_prices[c].dropna().shape[0] >= min_history_required
-        ]
+        available_tickers = [c for c in historical_prices.columns if historical_prices[c].dropna().shape[0] >= min_history_required]
         historical_prices = historical_prices[available_tickers]
         available_assets_counts.append(len(available_tickers))
 
@@ -968,7 +954,7 @@ def run_backtest(
         if forward_prices.shape[0] < 2:
             raise ValueError("future_prices debe tener al menos 2 filas.")
 
-        capital *= (1.0 + period_return)
+        capital *= 1.0 + period_return
         cash_weights.append(cash_weight)
         sum_asset_weights.append(float(w_aligned.sum()))
         optimized_period_returns.append(period_return)
@@ -1072,12 +1058,8 @@ def analyze_backtest_performance(
 
     best_idx = int(bt["return"].idxmax())
     worst_idx = int(bt["return"].idxmin())
-    print(
-        f"Mejor período: {bt.loc[best_idx, 'date'].date()} | return={float(bt.loc[best_idx, 'return']):.6f}"
-    )
-    print(
-        f"Peor período: {bt.loc[worst_idx, 'date'].date()} | return={float(bt.loc[worst_idx, 'return']):.6f}"
-    )
+    print(f"Mejor período: {bt.loc[best_idx, 'date'].date()} | return={float(bt.loc[best_idx, 'return']):.6f}")
+    print(f"Peor período: {bt.loc[worst_idx, 'date'].date()} | return={float(bt.loc[worst_idx, 'return']):.6f}")
 
     positive = bt.loc[bt["return"] > 0, "return"]
     negative = bt.loc[bt["return"] < 0, "return"]
@@ -1141,9 +1123,7 @@ def analyze_backtest_performance(
     print("Activos que destruyen valor:")
     print(summary.sort_values("total_contribution", ascending=True).head(10))
 
-    recurrent_losers = summary[
-        (summary["total_contribution"] < 0) & (summary["negative_contribution_rate"] >= 0.5)
-    ]
+    recurrent_losers = summary[(summary["total_contribution"] < 0) & (summary["negative_contribution_rate"] >= 0.5)]
     print("Activos recurrentemente perdedores:")
     print(recurrent_losers if not recurrent_losers.empty else "Ninguno detectado")
 
@@ -1236,54 +1216,199 @@ def calculate_quality_score(
 
     consistency_norm = _minmax_scale(downside_df["consistency"].astype(float).fillna(0.0))
 
-    quality = (
-        0.35 * sharpe_norm
-        + 0.25 * downside_norm
-        + 0.20 * stability_norm
-        + 0.20 * consistency_norm
-    ).clip(0.0, 1.0)
+    quality = (0.35 * sharpe_norm + 0.25 * downside_norm + 0.20 * stability_norm + 0.20 * consistency_norm).clip(0.0, 1.0)
     return quality.reindex(returns_df.columns).fillna(0.5)
 
 
 CORE_TICKERS = [
-    "AAPL", "NVDA", "MSTR",
-    "SNAP", "OKLO", "JMIA", "XYZ", "RKLB", "RBLX",
-    "AVGO", "INTC",
-    "TWLO", "SPOT", "TEAM", "SPCE", "SNOW",
-    "TSM", "LRCX", "TSLA", "ASTS", "RGTI", "KEEL",
+    "AAPL",
+    "NVDA",
+    "MSTR",
+    "SNAP",
+    "OKLO",
+    "JMIA",
+    "XYZ",
+    "RKLB",
+    "RBLX",
+    "AVGO",
+    "INTC",
+    "TWLO",
+    "SPOT",
+    "TEAM",
+    "SPCE",
+    "SNOW",
+    "TSM",
+    "LRCX",
+    "TSLA",
+    "ASTS",
+    "RGTI",
+    "KEEL",
 ]
 
 
 GLOBAL_IMPORTANT_TICKERS = [
-    "CCJ", "YPF", "VIST",
-    "ASML", "ARM", "TSM", "BABA", "TCEHY", "TM", "SONY",
-    "NVO", "SAP", "SHEL", "BP", "RIO", "BHP", "VALE",
-    "MELI", "SHOP", "SE", "NU", "PBR", "EC", "GLOB",
-    "UBER", "COIN", "PLTR", "AMD", "SMCI", "MU", "NET",
+    "CCJ",
+    "YPF",
+    "VIST",
+    "ASML",
+    "ARM",
+    "TSM",
+    "BABA",
+    "TCEHY",
+    "TM",
+    "SONY",
+    "NVO",
+    "SAP",
+    "SHEL",
+    "BP",
+    "RIO",
+    "BHP",
+    "VALE",
+    "MELI",
+    "SHOP",
+    "SE",
+    "NU",
+    "PBR",
+    "EC",
+    "GLOB",
+    "UBER",
+    "COIN",
+    "PLTR",
+    "AMD",
+    "SMCI",
+    "MU",
+    "NET",
 ]
 
 
 NASDAQ_FALLBACK_TICKERS = [
-    "AAPL", "MSFT", "NVDA", "AMZN", "META", "GOOGL", "GOOG", "AVGO",
-    "TSLA", "COST", "NFLX", "ASML", "TMUS", "CSCO", "PEP", "AMD",
-    "AZN", "LIN", "INTU", "QCOM", "TXN", "AMGN", "ISRG", "BKNG",
-    "AMAT", "ADBE", "PDD", "ARM", "HON", "GILD", "CMCSA", "PANW",
-    "ADP", "VRTX", "SBUX", "MU", "MELI", "ADI", "LRCX", "KLAC",
-    "CRWD", "MDLZ", "REGN", "CEG", "SNPS", "CDNS", "MAR", "ORLY",
-    "CTAS", "DASH", "FTNT", "PYPL", "CSX", "ABNB", "ROP", "WDAY",
-    "MNST", "ADSK", "AEP", "NXPI", "PAYX", "MRVL", "CHTR", "KDP",
-    "PCAR", "ROST", "FAST", "ODFL", "CPRT", "DDOG", "TEAM", "EA",
-    "KHC", "EXC", "BKR", "TTWO", "VRSK", "XEL", "ZS", "FANG",
-    "CCEP", "GEHC", "IDXX", "MCHP", "CSGP", "DXCM", "ON", "ANSS",
-    "BIIB", "CDW", "GFS", "ILMN", "MDB", "WBD", "MRNA", "SIRI",
+    "AAPL",
+    "MSFT",
+    "NVDA",
+    "AMZN",
+    "META",
+    "GOOGL",
+    "GOOG",
+    "AVGO",
+    "TSLA",
+    "COST",
+    "NFLX",
+    "ASML",
+    "TMUS",
+    "CSCO",
+    "PEP",
+    "AMD",
+    "AZN",
+    "LIN",
+    "INTU",
+    "QCOM",
+    "TXN",
+    "AMGN",
+    "ISRG",
+    "BKNG",
+    "AMAT",
+    "ADBE",
+    "PDD",
+    "ARM",
+    "HON",
+    "GILD",
+    "CMCSA",
+    "PANW",
+    "ADP",
+    "VRTX",
+    "SBUX",
+    "MU",
+    "MELI",
+    "ADI",
+    "LRCX",
+    "KLAC",
+    "CRWD",
+    "MDLZ",
+    "REGN",
+    "CEG",
+    "SNPS",
+    "CDNS",
+    "MAR",
+    "ORLY",
+    "CTAS",
+    "DASH",
+    "FTNT",
+    "PYPL",
+    "CSX",
+    "ABNB",
+    "ROP",
+    "WDAY",
+    "MNST",
+    "ADSK",
+    "AEP",
+    "NXPI",
+    "PAYX",
+    "MRVL",
+    "CHTR",
+    "KDP",
+    "PCAR",
+    "ROST",
+    "FAST",
+    "ODFL",
+    "CPRT",
+    "DDOG",
+    "TEAM",
+    "EA",
+    "KHC",
+    "EXC",
+    "BKR",
+    "TTWO",
+    "VRSK",
+    "XEL",
+    "ZS",
+    "FANG",
+    "CCEP",
+    "GEHC",
+    "IDXX",
+    "MCHP",
+    "CSGP",
+    "DXCM",
+    "ON",
+    "ANSS",
+    "BIIB",
+    "CDW",
+    "GFS",
+    "ILMN",
+    "MDB",
+    "WBD",
+    "MRNA",
+    "SIRI",
 ]
 
 
 NASDAQ_DEFAULT_LIMIT = 250
 NASDAQ_EXCLUDED_SYMBOL_PATTERNS = (
-    "$", "^", ".", "/", "=", "+",
-    "W", "WS", "WT", "WTS", "U", "UN", "UNIT", "R", "RT", "RIGHT",
-    "P", "PR", "PRA", "PRB", "PRC", "PRD", "PRE", "PRF", "PRG", "PRH",
+    "$",
+    "^",
+    ".",
+    "/",
+    "=",
+    "+",
+    "W",
+    "WS",
+    "WT",
+    "WTS",
+    "U",
+    "UN",
+    "UNIT",
+    "R",
+    "RT",
+    "RIGHT",
+    "P",
+    "PR",
+    "PRA",
+    "PRB",
+    "PRC",
+    "PRD",
+    "PRE",
+    "PRF",
+    "PRG",
+    "PRH",
 )
 
 
@@ -1324,9 +1449,7 @@ def fetch_nasdaq_listed_tickers(limit: int | None = NASDAQ_DEFAULT_LIMIT) -> lis
             & (nasdaq_df["ETF"].astype(str).str.upper() == "N")
             & (nasdaq_df["Financial Status"].astype(str).str.upper() == "N")
         ]
-        tickers = _dedupe_tickers(
-            symbol for symbol in nasdaq_df["Symbol"].tolist() if _is_tradeable_common_symbol(symbol)
-        )
+        tickers = _dedupe_tickers(symbol for symbol in nasdaq_df["Symbol"].tolist() if _is_tradeable_common_symbol(symbol))
         if limit is not None:
             tickers = tickers[: max(0, int(limit))]
         return tickers
@@ -1347,17 +1470,25 @@ def build_trading_universe(
         if include_full_nasdaq
         else NASDAQ_FALLBACK_TICKERS[: max(0, int(nasdaq_limit or len(NASDAQ_FALLBACK_TICKERS)))]
     )
-    return _dedupe_tickers([
-        *CORE_TICKERS,
-        *GLOBAL_IMPORTANT_TICKERS,
-        *nasdaq_tickers,
-    ])
+    return _dedupe_tickers(
+        [
+            *CORE_TICKERS,
+            *GLOBAL_IMPORTANT_TICKERS,
+            *nasdaq_tickers,
+        ]
+    )
 
 
 def main() -> None:
     tickers = build_trading_universe(include_full_nasdaq=True, nasdaq_limit=NASDAQ_DEFAULT_LIMIT)
     model_mode = os.getenv("MODEL_MODE", "baseline").strip().lower() or "baseline"
-    allowed_model_modes = {"baseline", "full_quant_research", "regime_gated_full_quant", "calibrated_forecast_research", "raw_target_research"}
+    allowed_model_modes = {
+        "baseline",
+        "full_quant_research",
+        "regime_gated_full_quant",
+        "calibrated_forecast_research",
+        "raw_target_research",
+    }
     if model_mode not in allowed_model_modes:
         raise ValueError(f"Invalid model_mode={model_mode}. Allowed values: {sorted(allowed_model_modes)}")
     run_model_mode_comparison = os.getenv("RUN_MODEL_MODE_COMPARISON", "0").strip().lower() in {"1", "true", "yes", "on"}
@@ -1372,9 +1503,12 @@ def main() -> None:
     paper_meta_filter_enabled = os.getenv("PAPER_META_FILTER_ENABLED", "0").strip().lower() in {"1", "true", "yes", "on"}
     paper_meta_filter_model = os.getenv("PAPER_META_FILTER_MODEL", "logistic_isotonic").strip().lower() or "logistic_isotonic"
     paper_meta_filter_threshold = float(os.getenv("PAPER_META_FILTER_THRESHOLD", "0.65"))
-    use_walk_forward_calibrated_forecasts = (
-        os.getenv("USE_WALK_FORWARD_CALIBRATED_FORECASTS", "0").strip().lower() in {"1", "true", "yes", "on"}
-    )
+    use_walk_forward_calibrated_forecasts = os.getenv("USE_WALK_FORWARD_CALIBRATED_FORECASTS", "0").strip().lower() in {
+        "1",
+        "true",
+        "yes",
+        "on",
+    }
     use_raw_target_return = os.getenv("USE_RAW_TARGET_RETURN", "0").strip().lower() in {"1", "true", "yes", "on"}
     calibrated_forecast_file = os.getenv(
         "WALK_FORWARD_CALIBRATED_FORECASTS_FILE",
@@ -1405,20 +1539,16 @@ def main() -> None:
         compact_report_mode = True
     report_sections_env = os.getenv("REPORT_SECTIONS_TO_SHOW", "").strip()
     if report_sections_env:
-        report_sections_to_show = [
-            section.strip().upper()
-            for section in report_sections_env.split(",")
-            if section.strip()
-        ]
+        report_sections_to_show = [section.strip().upper() for section in report_sections_env.split(",") if section.strip()]
     if compact_report_mode:
         _install_compact_report_mode(
             report_sections_to_show,
-            early_exit_after_final_allocation=not (
-                set(report_sections_to_show) & LATE_COMPACT_REPORT_SECTIONS
-            ),
+            early_exit_after_final_allocation=not (set(report_sections_to_show) & LATE_COMPACT_REPORT_SECTIONS),
         )
+
     def report_enabled(section_name: str) -> bool:
         return (not compact_report_mode) or (section_name in set(report_sections_to_show))
+
     post_timing_edge_threshold = 0.0002
     epsilon = 1e-6
     target_method = "basic"
@@ -1550,8 +1680,7 @@ def main() -> None:
             return
         if use_live_prices:
             print(
-                f"[INFO] Live price mode enabled for {len(prices_df.columns)} tickers. "
-                "Missing live prices will use last historical close."
+                f"[INFO] Live price mode enabled for {len(prices_df.columns)} tickers. Missing live prices will use last historical close."
             )
         advanced_target_outputs: dict[str, pd.Series] | None = None
         if target_method == "advanced":
@@ -1561,22 +1690,15 @@ def main() -> None:
             target_prices = generate_target_prices(
                 prices_df,
                 method=basic_target_generation_method,
-                manual_targets=(
-                    manual_short_term_targets
-                    if allow_manual_targets_for_expected_returns
-                    else None
-                ),
+                manual_targets=(manual_short_term_targets if allow_manual_targets_for_expected_returns else None),
             )
         returns_df = calculate_daily_returns(prices_df)
         prices_df = prices_df[returns_df.columns]
         target_prices = pd.Series(target_prices, dtype=float).reindex(prices_df.columns)
-        manual_long_term_target_series = (
-            pd.Series(manual_long_term_targets, dtype=float)
-            .reindex(prices_df.columns)
+        manual_long_term_target_series = pd.Series(manual_long_term_targets, dtype=float).reindex(prices_df.columns)
+        manual_target_gap_pct = (manual_long_term_target_series / prices_df.ffill().iloc[-1].replace(0, np.nan) - 1.0).replace(
+            [np.inf, -np.inf], np.nan
         )
-        manual_target_gap_pct = (
-            manual_long_term_target_series / prices_df.ffill().iloc[-1].replace(0, np.nan) - 1.0
-        ).replace([np.inf, -np.inf], np.nan)
         market_regime = compute_market_regime_model(prices_df=prices_df, returns_df=returns_df)
         regime_score = float(market_regime["risk_score"])
         regime_type = str(market_regime["regime"])
@@ -1633,9 +1755,7 @@ def main() -> None:
         if use_raw_target_return:
             expected_return_source_used = "compute_expected_returns(raw_target_return_mode)"
         black_litterman_status = "diagnostic"
-        if model_mode == "full_quant_research" or (
-            model_mode == "regime_gated_full_quant" and bool(full_quant_gate["allow_full_quant"])
-        ):
+        if model_mode == "full_quant_research" or (model_mode == "regime_gated_full_quant" and bool(full_quant_gate["allow_full_quant"])):
             target_prices = quant_target_outputs["quant_target_price"].reindex(prices_df.columns)
         elif use_quant_target_blend:
             target_prices = quant_target_outputs["final_blended_target"].reindex(prices_df.columns)
@@ -1713,13 +1833,9 @@ def main() -> None:
                 float(manual_long_term_target) if pd.notna(manual_long_term_target) else np.nan
             )
             expected_diagnostics[ticker]["manual_target_gap_pct"] = (
-                float(manual_target_gap_pct.get(ticker, np.nan))
-                if pd.notna(manual_target_gap_pct.get(ticker, np.nan))
-                else np.nan
+                float(manual_target_gap_pct.get(ticker, np.nan)) if pd.notna(manual_target_gap_pct.get(ticker, np.nan)) else np.nan
             )
-            expected_diagnostics[ticker]["manual_targets_allowed_for_expected_returns"] = bool(
-                allow_manual_targets_for_expected_returns
-            )
+            expected_diagnostics[ticker]["manual_targets_allowed_for_expected_returns"] = bool(allow_manual_targets_for_expected_returns)
             expected_diagnostics[ticker]["old_target_price"] = float(quant_target_outputs["old_target_price"].loc[ticker])
             expected_diagnostics[ticker]["quant_target_price"] = float(quant_target_outputs["quant_target_price"].loc[ticker])
             expected_diagnostics[ticker]["target_blend_weight"] = float(
@@ -1730,12 +1846,8 @@ def main() -> None:
             expected_diagnostics[ticker]["gbm_target"] = float(quant_target_outputs["gbm_median_target"].loc[ticker])
             expected_diagnostics[ticker]["kalman_target"] = float(quant_target_outputs["kalman_target"].loc[ticker])
             expected_diagnostics[ticker]["ou_target"] = float(quant_target_outputs["ou_target"].loc[ticker])
-            expected_diagnostics[ticker]["target_confidence_quant"] = float(
-                quant_target_outputs["target_confidence"].loc[ticker]
-            )
-            expected_diagnostics[ticker]["target_method_selected"] = str(
-                quant_target_outputs["target_method_selected"].loc[ticker]
-            )
+            expected_diagnostics[ticker]["target_confidence_quant"] = float(quant_target_outputs["target_confidence"].loc[ticker])
+            expected_diagnostics[ticker]["target_method_selected"] = str(quant_target_outputs["target_method_selected"].loc[ticker])
             expected_diagnostics[ticker]["quant_target_blend_enabled"] = bool(use_quant_target_blend)
 
         raw_expected_returns = expected_daily_returns.replace([np.inf, -np.inf], np.nan).fillna(0.0)
@@ -1750,23 +1862,17 @@ def main() -> None:
         scaled_returns = normalized_returns * 0.003
 
         target_confidence_series = pd.Series(
-            {
-                ticker: float(expected_diagnostics.get(ticker, {}).get("target_confidence", np.nan))
-                for ticker in prices_df.columns
-            },
+            {ticker: float(expected_diagnostics.get(ticker, {}).get("target_confidence", np.nan)) for ticker in prices_df.columns},
             index=prices_df.columns,
             dtype=float,
         )
         signal_confidence_series = pd.Series(
-            {
-                ticker: float(expected_diagnostics.get(ticker, {}).get("signal_strength", 0.5))
-                for ticker in prices_df.columns
-            },
+            {ticker: float(expected_diagnostics.get(ticker, {}).get("signal_strength", 0.5)) for ticker in prices_df.columns},
             index=prices_df.columns,
             dtype=float,
         )
         confidence_series = target_confidence_series.fillna(signal_confidence_series).clip(0.0, 1.0)
-        scaled_returns *= (0.5 + 0.5 * confidence_series)
+        scaled_returns *= 0.5 + 0.5 * confidence_series
         scaled_returns.loc[scaled_returns < -0.003] *= 1.2
 
         if regime_type == "risk_off":
@@ -1802,7 +1908,9 @@ def main() -> None:
         downside_penalty_multiplier_all = (1.05 - 0.20 * downside_risk_norm).clip(0.85, 1.05)
         downside_penalty_multiplier_all = downside_penalty_multiplier_all.reindex(prices_df.columns).fillna(1.0)
         expected_before_downside_all = expected_daily_returns.reindex(prices_df.columns).fillna(0.0)
-        expected_daily_returns = (expected_before_downside_all * downside_penalty_multiplier_all).replace([np.inf, -np.inf], np.nan).fillna(0.0)
+        expected_daily_returns = (
+            (expected_before_downside_all * downside_penalty_multiplier_all).replace([np.inf, -np.inf], np.nan).fillna(0.0)
+        )
         downside_rank_changed = (
             expected_before_downside_all.sort_values(ascending=False).index.tolist()
             != expected_daily_returns.sort_values(ascending=False).index.tolist()
@@ -1853,9 +1961,7 @@ def main() -> None:
                 diagnostics_created_defaults.append(col)
 
         diagnostics_df_full["quality_score"] = (
-            diagnostics_df_full["quality_score"]
-            .reindex(prices_df.columns)
-            .combine_first(quality_score_all.reindex(prices_df.columns))
+            diagnostics_df_full["quality_score"].reindex(prices_df.columns).combine_first(quality_score_all.reindex(prices_df.columns))
         )
         diagnostics_df_full["downside_ratio"] = (
             diagnostics_df_full["downside_ratio"]
@@ -1951,22 +2057,16 @@ def main() -> None:
             for ticker in prices_df.columns:
                 if ticker not in expected_diagnostics:
                     expected_diagnostics[ticker] = {}
-                expected_diagnostics[ticker]["expected_daily_return"] = float(
-                    expected_daily_returns.reindex([ticker]).fillna(0.0).iloc[0]
-                )
+                expected_diagnostics[ticker]["expected_daily_return"] = float(expected_daily_returns.reindex([ticker]).fillna(0.0).iloc[0])
                 if "target_confidence" in diagnostics_df_full.columns:
                     conf_value = diagnostics_df_full["target_confidence"].reindex([ticker]).iloc[0]
                     if pd.notna(conf_value):
                         expected_diagnostics[ticker]["target_confidence"] = float(conf_value)
 
-        status_series = pd.Series(
-            {ticker: expected_diagnostics[ticker]["status"] for ticker in prices_df.columns}
-        )
+        status_series = pd.Series({ticker: expected_diagnostics[ticker]["status"] for ticker in prices_df.columns})
         optimization_universe = status_series[status_series != "unreachable_target"].index.tolist()
         if exclude_bearish_assets:
-            optimization_universe = [
-                ticker for ticker in optimization_universe if status_series[ticker] != "bearish_or_low_probability"
-            ]
+            optimization_universe = [ticker for ticker in optimization_universe if status_series[ticker] != "bearish_or_low_probability"]
         optimization_universe = [
             ticker
             for ticker in optimization_universe
@@ -1976,7 +2076,11 @@ def main() -> None:
             optimization_universe = list(prices_df.columns)
 
         positive_returns = pd.Series(
-            [float(expected_daily_returns.loc[ticker]) for ticker in optimization_universe if float(expected_daily_returns.loc[ticker]) > 0],
+            [
+                float(expected_daily_returns.loc[ticker])
+                for ticker in optimization_universe
+                if float(expected_daily_returns.loc[ticker]) > 0
+            ],
             dtype=float,
         )
         if len(positive_returns) > 0:
@@ -1994,7 +2098,9 @@ def main() -> None:
         expected_series = expected_daily_returns.reindex(optimization_universe).astype(float).fillna(0.0)
         signal_series = diagnostics_df_full.loc[optimization_universe, "signal_strength"].astype(float).fillna(0.0)
         volatility_series_selection = volatility.reindex(optimization_universe).astype(float).fillna(0.0)
-        risk_adjusted_return_series = (expected_series / (volatility_series_selection + 1e-8)).replace([np.inf, -np.inf], np.nan).fillna(0.0)
+        risk_adjusted_return_series = (
+            (expected_series / (volatility_series_selection + 1e-8)).replace([np.inf, -np.inf], np.nan).fillna(0.0)
+        )
         quality_series_selection = quality_score_all.reindex(optimization_universe).astype(float).fillna(0.5)
         target_confidence_series = pd.Series(
             [float(expected_diagnostics.get(ticker, {}).get("target_confidence", np.nan)) for ticker in optimization_universe],
@@ -2002,8 +2108,11 @@ def main() -> None:
             dtype=float,
         ).fillna(0.5)
         asset_sharpe_for_selection = (
-            (returns_df.mean() - rf_daily) / returns_df.std()
-        ).replace([np.inf, -np.inf], np.nan).reindex(optimization_universe).fillna(0.0)
+            ((returns_df.mean() - rf_daily) / returns_df.std())
+            .replace([np.inf, -np.inf], np.nan)
+            .reindex(optimization_universe)
+            .fillna(0.0)
+        )
 
         expected_rank = expected_series.rank(pct=True, method="average")
         signal_rank = signal_series.rank(pct=True, method="average")
@@ -2012,12 +2121,7 @@ def main() -> None:
         risk_adjusted_rank = risk_adjusted_return_series.rank(pct=True, method="average")
         quality_rank = quality_series_selection.rank(pct=True, method="average")
 
-        base_selection_score = (
-            0.40 * expected_rank
-            + 0.24 * signal_rank
-            + 0.14 * confidence_rank
-            + 0.08 * sharpe_rank
-        ).fillna(0.0)
+        base_selection_score = (0.40 * expected_rank + 0.24 * signal_rank + 0.14 * confidence_rank + 0.08 * sharpe_rank).fillna(0.0)
         enriched_selection_score = (
             0.36 * expected_rank
             + 0.20 * signal_rank
@@ -2038,12 +2142,8 @@ def main() -> None:
             signal_median_positive = float(signal_series.median()) if len(signal_series) else 0.0
 
         score_threshold = float(selection_score_series.quantile(0.70)) if len(selection_score_series) else 1.0
-        candidate_mask = (
-            (selection_score_series >= score_threshold)
-            | (
-                (expected_series > expected_median_positive)
-                & (signal_series > signal_median_positive)
-            )
+        candidate_mask = (selection_score_series >= score_threshold) | (
+            (expected_series > expected_median_positive) & (signal_series > signal_median_positive)
         )
         candidate_tickers = selection_score_series[candidate_mask].sort_values(ascending=False).index.tolist()
 
@@ -2100,8 +2200,8 @@ def main() -> None:
         spy_macro_regime = str(spy_ema_regime["spy_macro_regime"])
         spy_macro_score = float(spy_ema_regime.get("macro_ema_score", 0.5))
         timing_adjusted_expected_returns = (
-            timing_adjusted_expected_returns * (0.7 + 0.6 * spy_macro_score)
-        ).replace([np.inf, -np.inf], np.nan).fillna(0.0)
+            (timing_adjusted_expected_returns * (0.7 + 0.6 * spy_macro_score)).replace([np.inf, -np.inf], np.nan).fillna(0.0)
+        )
         trend_persistence_df = compute_trend_persistence(
             prices_df=selected_prices_df,
             returns_df=filtered_returns_df,
@@ -2115,17 +2215,19 @@ def main() -> None:
         )
         if use_trend_persistence_for_timing:
             timing_adjusted_expected_returns = (
-                apply_trend_persistence_to_expected_returns(
-                    adjusted_expected_returns=filtered_expected_daily_returns,
-                    trend_persistence_df=trend_persistence_df,
+                (
+                    apply_trend_persistence_to_expected_returns(
+                        adjusted_expected_returns=filtered_expected_daily_returns,
+                        trend_persistence_df=trend_persistence_df,
+                    )
+                    * (0.7 + 0.6 * spy_macro_score)
                 )
-                * (0.7 + 0.6 * spy_macro_score)
-            ).replace([np.inf, -np.inf], np.nan).fillna(0.0)
+                .replace([np.inf, -np.inf], np.nan)
+                .fillna(0.0)
+            )
         final_expected_returns_for_selection = timing_adjusted_expected_returns.copy()
         final_signal_strengths_for_selection = (
-            diagnostics_df_full.loc[final_expected_returns_for_selection.index, "signal_strength"]
-            .astype(float)
-            .fillna(0.0)
+            diagnostics_df_full.loc[final_expected_returns_for_selection.index, "signal_strength"].astype(float).fillna(0.0)
         )
         filtered_expected_daily_returns_pre_timing = filtered_expected_daily_returns.copy()
         selection_score_selected = selection_score_series.reindex(selected_tickers).fillna(0.0)
@@ -2182,9 +2284,7 @@ def main() -> None:
             and len(positives_and_signal_pool) >= 4
         ):
             post_timing_edge_threshold_raw *= 0.85
-        dynamic_post_timing_threshold = float(
-            np.clip(post_timing_edge_threshold_raw, post_timing_threshold_min, post_timing_threshold_max)
-        )
+        dynamic_post_timing_threshold = float(np.clip(post_timing_edge_threshold_raw, post_timing_threshold_min, post_timing_threshold_max))
 
         timing_adjusted_ranked = final_expected_returns_for_selection.sort_values(ascending=False).index.tolist()
         post_timing_removed_reasons: dict[str, str] = {}
@@ -2227,16 +2327,11 @@ def main() -> None:
         diversification_floor_used = False
         diversification_floor_reason = "none"
 
-        if (
-            selected_n_natural >= 4
-            and regime_type == "risk_on"
-            and market_mode_pre_timing == "aggressive"
-        ):
+        if selected_n_natural >= 4 and regime_type == "risk_on" and market_mode_pre_timing == "aggressive":
             strong_entry_candidates = [
                 ticker
                 for ticker in selected_tickers
-                if bool(timing_df.loc[ticker, "entry_valid"])
-                and float(timing_adjusted_expected_returns.loc[ticker]) > 0
+                if bool(timing_df.loc[ticker, "entry_valid"]) and float(timing_adjusted_expected_returns.loc[ticker]) > 0
             ]
             if len(post_timing_selected_tickers) < 3 and len(strong_entry_candidates) >= 3:
                 fill_ranked = sorted(
@@ -2284,7 +2379,8 @@ def main() -> None:
                     float(timing_df.loc[ticker, "ema_timing_score"])
                     if ticker in timing_df.index and "ema_timing_score" in timing_df.columns
                     else 0.0
-                ) > 0.2
+                )
+                > 0.2
             ]
             if selected_n_natural >= 4 and len(preserve4_pool) >= 4 and len(post_timing_selected_tickers) < 4:
                 fill_ranked = sorted(
@@ -2324,9 +2420,7 @@ def main() -> None:
             fourth_return = float(final_expected_returns_for_selection.loc[fourth_candidate])
             fourth_signal = float(diagnostics_df_full.loc[fourth_candidate, "signal_strength"])
             corr_matrix = returns_df[post_timing_selected_tickers].corr().fillna(0.0)
-            avg_abs_corr_with_core = float(
-                corr_matrix.loc[fourth_candidate, core_assets].abs().mean()
-            ) if core_assets else 1.0
+            avg_abs_corr_with_core = float(corr_matrix.loc[fourth_candidate, core_assets].abs().mean()) if core_assets else 1.0
             diversification_benefit = float(1.0 - avg_abs_corr_with_core)
             top3_returns = final_expected_returns_for_selection.reindex(core_assets).fillna(0.0).sort_values(ascending=False)
             top3_sum = float(top3_returns.sum())
@@ -2353,20 +2447,18 @@ def main() -> None:
 
         post_timing_removed_assets = [ticker for ticker in selected_tickers if ticker not in post_timing_selected_tickers]
         post_timing_positive_before = int((final_expected_returns_for_selection > 0).sum())
-        post_timing_positive_after = int(
-            (final_expected_returns_for_selection.reindex(post_timing_selected_tickers).fillna(0.0) > 0).sum()
-        )
+        post_timing_positive_after = int((final_expected_returns_for_selection.reindex(post_timing_selected_tickers).fillna(0.0) > 0).sum())
 
         selected_tickers = post_timing_selected_tickers
         selected_n_post_threshold = len(selected_tickers)
         discarded_low_edge = [
             ticker
             for ticker in optimization_universe
-                if ticker not in selected_tickers
-                and (
-                    float(final_expected_returns_for_selection.reindex([ticker]).fillna(0.0).iloc[0]) <= dynamic_post_timing_threshold
-                    or float(diagnostics_df_full.loc[ticker, "signal_strength"]) <= signal_edge_threshold
-                )
+            if ticker not in selected_tickers
+            and (
+                float(final_expected_returns_for_selection.reindex([ticker]).fillna(0.0).iloc[0]) <= dynamic_post_timing_threshold
+                or float(diagnostics_df_full.loc[ticker, "signal_strength"]) <= signal_edge_threshold
+            )
         ]
         discarded_assets = [ticker for ticker in optimization_universe if ticker not in selected_tickers]
         filtered_returns_df = returns_df[selected_tickers]
@@ -2448,11 +2540,7 @@ def main() -> None:
             top2_ret = float(base_rank_guard.iloc[1])
             top1_sig = float(sig_rank_guard.loc[top1_ticker])
             top2_sig = float(sig_rank_guard.loc[top2_ticker])
-            clearly_dominant = (
-                top1_ret > 0
-                and (top1_ret - top2_ret) > max(0.00012, abs(top1_ret) * 0.20)
-                and (top1_sig - top2_sig) > 0.10
-            )
+            clearly_dominant = top1_ret > 0 and (top1_ret - top2_ret) > max(0.00012, abs(top1_ret) * 0.20) and (top1_sig - top2_sig) > 0.10
             if clearly_dominant:
                 old_mult = float(combined_multiplier.loc[top1_ticker])
                 new_mult = max(old_mult, dominance_guard_min_multiplier)
@@ -2461,10 +2549,12 @@ def main() -> None:
                     dominance_guard_acted = True
                     dominance_guard_assets.append(top1_ticker)
 
-        close_gap_threshold = max(0.00006, float(pre_quality_expected_selected.std()) * 0.18 if len(pre_quality_expected_selected) > 1 else 0.00006)
+        close_gap_threshold = max(
+            0.00006, float(pre_quality_expected_selected.std()) * 0.18 if len(pre_quality_expected_selected) > 1 else 0.00006
+        )
         final_expected_returns_for_selection = (
-            final_expected_returns_for_selection * combined_multiplier
-        ).replace([np.inf, -np.inf], np.nan).fillna(0.0)
+            (final_expected_returns_for_selection * combined_multiplier).replace([np.inf, -np.inf], np.nan).fillna(0.0)
+        )
 
         base_order_for_preservation = pre_quality_expected_selected.sort_values(ascending=False).index.tolist()
         final_preserved = final_expected_returns_for_selection.copy()
@@ -2484,10 +2574,10 @@ def main() -> None:
         edge_swaps_count = _count_ranking_swaps(edge_base_order, edge_final_order)
         edge_ranking_changed = edge_base_order != edge_final_order
         edge_impact_pct = (
-            (final_expected_returns_for_selection - pre_quality_expected_selected)
-            / (pre_quality_expected_selected.abs() + 1e-8)
-            * 100.0
-        ).replace([np.inf, -np.inf], np.nan).fillna(0.0)
+            ((final_expected_returns_for_selection - pre_quality_expected_selected) / (pre_quality_expected_selected.abs() + 1e-8) * 100.0)
+            .replace([np.inf, -np.inf], np.nan)
+            .fillna(0.0)
+        )
 
         selection_filter_removed: dict[str, str] = {}
         if regime_type == "risk_on" and market_mode_pre_timing == "aggressive" and len(final_expected_returns_for_selection) >= 4:
@@ -2529,17 +2619,21 @@ def main() -> None:
         )
         timing_df = timing_df.reindex(final_expected_returns_for_selection.index)
         timing_df["timing_action"] = timing_df.get("timing_action", pd.Series(index=timing_df.index, dtype=object)).fillna("hold")
-        timing_df["timing_reason"] = timing_df.get("timing_reason", pd.Series(index=timing_df.index, dtype=object)).fillna("score_based_hold")
+        timing_df["timing_reason"] = timing_df.get("timing_reason", pd.Series(index=timing_df.index, dtype=object)).fillna(
+            "score_based_hold"
+        )
 
-        final_series_frame = pd.DataFrame(
-            {
-                "expected": final_expected_returns_for_selection,
-                "signal": final_signal_strengths_for_selection,
-            }
-        ).replace([np.inf, -np.inf], np.nan).dropna()
-        final_series_frame = final_series_frame.loc[
-            [idx for idx in final_series_frame.index if idx in filtered_returns_df.columns]
-        ]
+        final_series_frame = (
+            pd.DataFrame(
+                {
+                    "expected": final_expected_returns_for_selection,
+                    "signal": final_signal_strengths_for_selection,
+                }
+            )
+            .replace([np.inf, -np.inf], np.nan)
+            .dropna()
+        )
+        final_series_frame = final_series_frame.loc[[idx for idx in final_series_frame.index if idx in filtered_returns_df.columns]]
         final_expected_returns_for_selection = final_series_frame["expected"].astype(float)
         final_signal_strengths_for_selection = final_series_frame["signal"].astype(float)
         selected_tickers = final_expected_returns_for_selection.index.tolist()
@@ -2558,9 +2652,9 @@ def main() -> None:
         selected_downside_multiplier = downside_penalty_multiplier_all.reindex(filtered_returns_df.columns).fillna(1.0)
         quality_multiplier_selected = (0.90 + 0.18 * selected_quality_score).clip(0.90, 1.08)
         combined_multiplier_selected = (selected_downside_multiplier * quality_multiplier_selected).clip(0.80, 1.12)
-        quality_corr_selected = float(
-            selected_quality_score.corr(final_expected_returns_for_selection)
-        ) if len(selected_quality_score) > 1 else 0.0
+        quality_corr_selected = (
+            float(selected_quality_score.corr(final_expected_returns_for_selection)) if len(selected_quality_score) > 1 else 0.0
+        )
 
         std_after_scaling_final = (
             float(final_expected_returns_for_selection.std()) if len(final_expected_returns_for_selection) > 1 else 0.0
@@ -2577,9 +2671,15 @@ def main() -> None:
         else:
             top_assets_boost = True
 
-        positive_share = float((final_expected_returns_for_selection > epsilon).mean()) if len(final_expected_returns_for_selection) else 0.0
-        negative_share = float((final_expected_returns_for_selection < -epsilon).mean()) if len(final_expected_returns_for_selection) else 0.0
-        neutral_share = float((final_expected_returns_for_selection.abs() <= epsilon).mean()) if len(final_expected_returns_for_selection) else 1.0
+        positive_share = (
+            float((final_expected_returns_for_selection > epsilon).mean()) if len(final_expected_returns_for_selection) else 0.0
+        )
+        negative_share = (
+            float((final_expected_returns_for_selection < -epsilon).mean()) if len(final_expected_returns_for_selection) else 0.0
+        )
+        neutral_share = (
+            float((final_expected_returns_for_selection.abs() <= epsilon).mean()) if len(final_expected_returns_for_selection) else 1.0
+        )
         unreachable_share = float((status_series == "unreachable_target").mean()) if len(status_series) else 0.0
         if len(final_expected_returns_for_selection) <= 1:
             positive_for_dispersion = expected_daily_returns[expected_daily_returns > 0].sort_values(ascending=False)
@@ -2594,12 +2694,9 @@ def main() -> None:
             dispersion_reference_returns = final_expected_returns_for_selection
             dispersion_reference_name = "selected"
 
-        expected_returns_std = (
-            float(dispersion_reference_returns.std()) if len(dispersion_reference_returns) > 1 else 0.0
-        )
+        expected_returns_std = float(dispersion_reference_returns.std()) if len(dispersion_reference_returns) > 1 else 0.0
         no_opportunity = (
-            len(final_expected_returns_for_selection) == 0
-            or float(final_expected_returns_for_selection.max()) < no_opportunity_threshold
+            len(final_expected_returns_for_selection) == 0 or float(final_expected_returns_for_selection.max()) < no_opportunity_threshold
         )
         max_expected_return = float(final_expected_returns_for_selection.max())
         mean_expected_return = float(final_expected_returns_for_selection.mean())
@@ -2619,9 +2716,7 @@ def main() -> None:
             exposure_signal_strengths = diagnostics_df_full.loc[candidate_tickers, "signal_strength"].astype(float)
         else:
             exposure_expected_returns = (
-                dispersion_reference_returns
-                if len(filtered_expected_daily_returns) <= 1
-                else filtered_expected_daily_returns
+                dispersion_reference_returns if len(filtered_expected_daily_returns) <= 1 else filtered_expected_daily_returns
             )
             exposure_signal_strengths = diagnostics_df_full.loc[
                 exposure_expected_returns.index,
@@ -2645,7 +2740,7 @@ def main() -> None:
         regime_base_exposure = {"risk_on": 0.8, "neutral": 0.6, "risk_off": 0.3}.get(regime_type, 0.6)
         raw_net_exposure = float(exposure_info["net_exposure"])
         net_exposure = 0.85 * raw_net_exposure + 0.15 * regime_base_exposure
-        net_exposure *= (0.90 + 0.20 * regime_confidence)
+        net_exposure *= 0.90 + 0.20 * regime_confidence
         if raw_net_exposure < 0.25:
             net_exposure = min(net_exposure, raw_net_exposure + 0.20)
             exposure_gap_reason = "limited_uplift_from_low_raw"
@@ -2753,7 +2848,10 @@ def main() -> None:
                     "ret": final_expected_returns_for_selection,
                     "sig": final_signal_strengths_for_selection,
                 }
-            ).notna().all().all()
+            )
+            .notna()
+            .all()
+            .all()
         )
         final_pipeline_consistent = bool(
             no_nan_final_series
@@ -2764,7 +2862,11 @@ def main() -> None:
         portfolio_expected_avg = float(final_expected_returns_for_selection.mean()) if len(final_expected_returns_for_selection) else 0.0
         portfolio_dispersion = float(final_expected_returns_for_selection.std()) if len(final_expected_returns_for_selection) > 1 else 0.0
         positive_sum = float(final_expected_returns_for_selection[final_expected_returns_for_selection > 0].sum())
-        top1_edge = float(final_expected_returns_for_selection.sort_values(ascending=False).iloc[0]) if len(final_expected_returns_for_selection) else 0.0
+        top1_edge = (
+            float(final_expected_returns_for_selection.sort_values(ascending=False).iloc[0])
+            if len(final_expected_returns_for_selection)
+            else 0.0
+        )
         edge_concentration = float(top1_edge / positive_sum) if positive_sum > 0 else 1.0
         portfolio_quality_avg = float(selected_quality_score.mean()) if len(selected_quality_score) else 0.0
         if len(non_cash_weights) and float(non_cash_weights.sum()) > 0:
@@ -2774,10 +2876,7 @@ def main() -> None:
         else:
             portfolio_downside_agg = 0.0
         portfolio_is_strong = bool(
-            portfolio_expected_avg > 0.0003
-            and edge_concentration < 0.75
-            and portfolio_quality_avg > 0.45
-            and portfolio_downside_agg < 1.20
+            portfolio_expected_avg > 0.0003 and edge_concentration < 0.75 and portfolio_quality_avg > 0.45 and portfolio_downside_agg < 1.20
         )
         best_sharpe_annual = best_sharpe * np.sqrt(TRADING_DAYS_PER_YEAR)
         covariance_optimizer_comparison = compare_covariance_optimizer_outputs(
@@ -2812,10 +2911,7 @@ def main() -> None:
     print(f"covariance method used: {covariance_method}")
     print(f"Black-Litterman status: {black_litterman_status}")
     print(f"quant target status: {quant_target_decision_status}")
-    print(
-        "walk-forward calibrated forecasts: "
-        f"{'active' if use_walk_forward_calibrated_forecasts else 'diagnostic/disabled'}"
-    )
+    print(f"walk-forward calibrated forecasts: {'active' if use_walk_forward_calibrated_forecasts else 'diagnostic/disabled'}")
     if use_walk_forward_calibrated_forecasts:
         print_calibrated_forecast_research_report(calibrated_forecast_report, calibrated_forecast_metadata)
     if use_raw_target_return:
@@ -2835,14 +2931,15 @@ def main() -> None:
             print("\ntickers most changed:")
             print(
                 changed.sort_values("abs_delta", ascending=False)
-                .head(10)
-                [[
-                    "baseline_pipeline_expected_return",
-                    "raw_target_expected_return",
-                    "current_expected_return",
-                    "delta_vs_baseline",
-                    "fallback_to_baseline",
-                ]]
+                .head(10)[
+                    [
+                        "baseline_pipeline_expected_return",
+                        "raw_target_expected_return",
+                        "current_expected_return",
+                        "delta_vs_baseline",
+                        "fallback_to_baseline",
+                    ]
+                ]
                 .to_string()
             )
     if model_mode == "regime_gated_full_quant":
@@ -2895,10 +2992,7 @@ def main() -> None:
     print(f"Regime Confidence: {regime_confidence:.4f}")
     print(f"No Opportunity Detected: {no_opportunity}")
     if no_opportunity:
-        print(
-            "No opportunity detected: "
-            f"max_return = {max_expected_return:.6f}, mean_return = {mean_expected_return:.6f}"
-        )
+        print(f"No opportunity detected: max_return = {max_expected_return:.6f}, mean_return = {mean_expected_return:.6f}")
     print(f"Portfolio Return: {portfolio_return}")
     print(f"Portfolio Volatility: {portfolio_volatility}")
     print(f"Sharpe (Daily): {portfolio_sharpe_ratio}")
@@ -2915,7 +3009,9 @@ def main() -> None:
     print("\n===== MARKET REGIME MODEL =====")
     print(f"VIX actual: {float(market_regime.get('vix', float('nan'))):.4f}")
     print(f"VIX z-score: {float(market_regime.get('vix_z', 0.0)):.4f}")
-    print(f"SPY momentum (20d, 60d): {float(market_regime.get('spy_momentum_20d', 0.0)):.6f}, {float(market_regime.get('spy_momentum_60d', 0.0)):.6f}")
+    print(
+        f"SPY momentum (20d, 60d): {float(market_regime.get('spy_momentum_20d', 0.0)):.6f}, {float(market_regime.get('spy_momentum_60d', 0.0)):.6f}"
+    )
     print(f"realized vol: {float(market_regime.get('realized_vol', 0.0)):.6f}")
     print(f"vol ratio: {float(market_regime.get('vol_regime_ratio', 0.0)):.6f}")
     print(f"breadth: {float(market_regime.get('breadth', 0.0)):.4f}")
@@ -2965,9 +3061,7 @@ def main() -> None:
         print("ema_timing_score distribution:")
         print(ema_score_series.describe())
         if "timing_adjusted_return" in timing_df.columns:
-            corr_val = float(
-                ema_score_series.corr(timing_df["timing_adjusted_return"].astype(float))
-            ) if len(ema_score_series) > 1 else 0.0
+            corr_val = float(ema_score_series.corr(timing_df["timing_adjusted_return"].astype(float))) if len(ema_score_series) > 1 else 0.0
             print(f"correlation(score, timing_adjusted_return): {corr_val:.6f}")
 
     print("\n===== TREND PERSISTENCE ENGINE =====")
@@ -3008,9 +3102,7 @@ def main() -> None:
             "disagreement_reason",
         ]
         trend_breakdown = trend_persistence_df.join(
-            ema_trend_persistence_comparison[
-                ["ema_timing_score", "ema_action", "agreement", "disagreement_reason"]
-            ],
+            ema_trend_persistence_comparison[["ema_timing_score", "ema_action", "agreement", "disagreement_reason"]],
             how="left",
         )
         print(trend_breakdown[[col for col in trend_breakdown_cols if col in trend_breakdown.columns]])
@@ -3038,9 +3130,7 @@ def main() -> None:
             "agreement",
             "disagreement_reason",
         ]
-        disagreement_analysis = ema_trend_persistence_comparison[
-            ema_trend_persistence_comparison["agreement"].eq("disagreement")
-        ]
+        disagreement_analysis = ema_trend_persistence_comparison[ema_trend_persistence_comparison["agreement"].eq("disagreement")]
         if disagreement_analysis.empty:
             print("No disagreements.")
         else:
@@ -3071,10 +3161,7 @@ def main() -> None:
     print("\n===== POST TIMING FILTER CHECK =====")
     print(f"post_timing_edge_threshold raw: {post_timing_edge_threshold_raw:.6f}")
     print(f"post_timing_edge_threshold final: {dynamic_post_timing_threshold:.6f}")
-    print(
-        "clamp min/max aplicado: "
-        f"{post_timing_threshold_min:.6f} / {post_timing_threshold_max:.6f}"
-    )
+    print(f"clamp min/max aplicado: {post_timing_threshold_min:.6f} / {post_timing_threshold_max:.6f}")
     print(f"cantidad de activos positivos antes del filtro: {post_timing_positive_before}")
     print(f"cantidad después del filtro: {post_timing_positive_after}")
     print(f"activos removidos por post-timing: {post_timing_removed_assets}")
@@ -3280,9 +3367,7 @@ def main() -> None:
         "target_confidence",
         "final_blended_target",
     ]
-    missing_target_report_columns = [
-        col for col in required_target_report_columns if col not in target_comparison_report.columns
-    ]
+    missing_target_report_columns = [col for col in required_target_report_columns if col not in target_comparison_report.columns]
     if "final_blended_target" not in target_comparison_report.columns:
         target_comparison_report["final_blended_target"] = target_comparison_report.get(
             "quant_target_price",
@@ -3290,18 +3375,18 @@ def main() -> None:
         )
     old_target_safe = target_comparison_report["old_target_price"].replace(0, np.nan)
     target_comparison_report["old_vs_quant_diff_pct"] = (
-        (target_comparison_report["quant_target_price"] / old_target_safe - 1.0) * 100.0
-    ).replace([np.inf, -np.inf], np.nan).fillna(0.0)
+        ((target_comparison_report["quant_target_price"] / old_target_safe - 1.0) * 100.0).replace([np.inf, -np.inf], np.nan).fillna(0.0)
+    )
     target_comparison_report["gbm_expected_vs_median_pct"] = (
-        (target_comparison_report["gbm_expected_target"] / target_comparison_report["gbm_median_target"].replace(0, np.nan) - 1.0)
-        * 100.0
-    ).replace([np.inf, -np.inf], np.nan).fillna(0.0)
+        ((target_comparison_report["gbm_expected_target"] / target_comparison_report["gbm_median_target"].replace(0, np.nan) - 1.0) * 100.0)
+        .replace([np.inf, -np.inf], np.nan)
+        .fillna(0.0)
+    )
     gbm_reference = target_comparison_report[["gbm_median_target", "gbm_expected_target"]].mean(axis=1)
     kalman_direction = target_comparison_report["kalman_target"] - target_comparison_report["old_target_price"]
     ou_direction = target_comparison_report["ou_target"] - target_comparison_report["old_target_price"]
     target_comparison_report["ou_against_trend"] = (
-        np.sign(kalman_direction.replace(0, np.nan)).fillna(0.0)
-        != np.sign(ou_direction.replace(0, np.nan)).fillna(0.0)
+        np.sign(kalman_direction.replace(0, np.nan)).fillna(0.0) != np.sign(ou_direction.replace(0, np.nan)).fillna(0.0)
     ) & (
         (target_comparison_report["ou_target"] - gbm_reference).abs()
         / target_comparison_report["old_target_price"].replace(0, np.nan).abs()
@@ -3338,9 +3423,7 @@ def main() -> None:
         "ou_against_trend",
         "suspicious_flags",
     ]
-    existing_target_report_display_columns = [
-        col for col in target_report_display_columns if col in target_comparison_report.columns
-    ]
+    existing_target_report_display_columns = [col for col in target_report_display_columns if col in target_comparison_report.columns]
     print(
         target_comparison_report[existing_target_report_display_columns].sort_values(
             "old_vs_quant_diff_pct",
@@ -3362,13 +3445,17 @@ def main() -> None:
     print(downside_print)
 
     print("\n===== QUALITY SCORE =====")
-    quality_print = pd.DataFrame(
-        {
-            "quality_score": quality_score_all.reindex(selected_tickers).fillna(0.5),
-            "signal_strength": final_signal_strengths_for_selection.reindex(selected_tickers).fillna(0.0),
-            "expected_daily_return": final_expected_returns_for_selection.reindex(selected_tickers).fillna(0.0),
-        }
-    ).replace([np.inf, -np.inf], np.nan).dropna()
+    quality_print = (
+        pd.DataFrame(
+            {
+                "quality_score": quality_score_all.reindex(selected_tickers).fillna(0.5),
+                "signal_strength": final_signal_strengths_for_selection.reindex(selected_tickers).fillna(0.0),
+                "expected_daily_return": final_expected_returns_for_selection.reindex(selected_tickers).fillna(0.0),
+            }
+        )
+        .replace([np.inf, -np.inf], np.nan)
+        .dropna()
+    )
     print(quality_print.sort_values("quality_score", ascending=False))
 
     print("\n===== UNIVERSE EXPECTED RETURN DISTRIBUTION =====")
@@ -3389,7 +3476,9 @@ def main() -> None:
 
     print("\n===== FILTER ATTRITION REPORT =====")
     assets_positive_before_timing = int((expected_daily_returns.reindex(prices_df.columns).fillna(0.0) > 0).sum())
-    assets_positive_after_timing = int((timing_adjusted_expected_returns > 0).sum()) if "timing_adjusted_expected_returns" in locals() else 0
+    assets_positive_after_timing = (
+        int((timing_adjusted_expected_returns > 0).sum()) if "timing_adjusted_expected_returns" in locals() else 0
+    )
     assets_above_edge_threshold = int((expected_series > edge_threshold).sum()) if "expected_series" in locals() else 0
     print(f"total universe assets: {len(prices_df.columns)}")
     print(f"assets positive before timing: {assets_positive_before_timing}")
@@ -3418,13 +3507,18 @@ def main() -> None:
     print(repeated_counts.head(10))
 
     print("\n===== OPPORTUNITY RANKING =====")
-    opportunity_ranking = pd.DataFrame(
-        {
-            "Expected Daily Return": final_expected_returns_for_selection,
-            "Signal Strength": final_signal_strengths_for_selection,
-            "Status": status_series.reindex(final_expected_returns_for_selection.index).fillna("unknown"),
-        }
-    ).replace([np.inf, -np.inf], np.nan).dropna().sort_values(by=["Signal Strength", "Expected Daily Return"], ascending=False)
+    opportunity_ranking = (
+        pd.DataFrame(
+            {
+                "Expected Daily Return": final_expected_returns_for_selection,
+                "Signal Strength": final_signal_strengths_for_selection,
+                "Status": status_series.reindex(final_expected_returns_for_selection.index).fillna("unknown"),
+            }
+        )
+        .replace([np.inf, -np.inf], np.nan)
+        .dropna()
+        .sort_values(by=["Signal Strength", "Expected Daily Return"], ascending=False)
+    )
     print(opportunity_ranking)
 
     print("\n===== ADJUSTED EXPECTED RETURNS =====")
@@ -3445,8 +3539,7 @@ def main() -> None:
     print(final_expected_returns_for_selection.sort_values(ascending=False).head(5))
     print(f"scaling method used: {scaling_method}")
     print(
-        "exponent / parameters usados: "
-        f"exponent={scaling_exponent:.2f}, alpha={scaling_alpha:.2f}, vol_strength={volatility_strength:.2f}"
+        f"exponent / parameters usados: exponent={scaling_exponent:.2f}, alpha={scaling_alpha:.2f}, vol_strength={volatility_strength:.2f}"
     )
     print(f"volatility adjustment aplicado: {'si' if volatility_adjustment_applied else 'no'}")
     print(
@@ -3549,33 +3642,37 @@ def main() -> None:
         )
 
     print("\n===== SELECTED ASSETS EXPECTED RETURN % =====")
-    selected_assets_expected_df = pd.DataFrame(
-        {
-            "expected_daily_return": final_expected_returns_for_selection.reindex(selected_tickers).fillna(0.0),
-            "expected_percent": final_expected_returns_for_selection.reindex(selected_tickers).fillna(0.0) * 100,
-            "days_to_target": selected_days_to_target.reindex(selected_tickers).fillna(TRADING_DAYS_PER_YEAR),
-            "expected_total_return": (
-                (1.0 + final_expected_returns_for_selection.reindex(selected_tickers).fillna(0.0))
-                ** selected_days_to_target.reindex(selected_tickers).fillna(TRADING_DAYS_PER_YEAR)
-                - 1.0
-            ),
-            "expected_total_percent": (
-                (
+    selected_assets_expected_df = (
+        pd.DataFrame(
+            {
+                "expected_daily_return": final_expected_returns_for_selection.reindex(selected_tickers).fillna(0.0),
+                "expected_percent": final_expected_returns_for_selection.reindex(selected_tickers).fillna(0.0) * 100,
+                "days_to_target": selected_days_to_target.reindex(selected_tickers).fillna(TRADING_DAYS_PER_YEAR),
+                "expected_total_return": (
                     (1.0 + final_expected_returns_for_selection.reindex(selected_tickers).fillna(0.0))
                     ** selected_days_to_target.reindex(selected_tickers).fillna(TRADING_DAYS_PER_YEAR)
                     - 1.0
-                )
-                * 100.0
-            ),
-            "risk_adjusted_return": (
-                final_expected_returns_for_selection.reindex(selected_tickers).fillna(0.0)
-                / (volatility.reindex(selected_tickers).fillna(0.0) + 1e-8)
-            ),
-            "signal_strength": final_signal_strengths_for_selection.reindex(selected_tickers).fillna(0.0),
-            "timing_action": timing_df.reindex(selected_tickers)["timing_action"].fillna("hold"),
-            "timing_reason": timing_df.reindex(selected_tickers)["timing_reason"].fillna("score_based_hold"),
-        }
-    ).replace([np.inf, -np.inf], np.nan).dropna()
+                ),
+                "expected_total_percent": (
+                    (
+                        (1.0 + final_expected_returns_for_selection.reindex(selected_tickers).fillna(0.0))
+                        ** selected_days_to_target.reindex(selected_tickers).fillna(TRADING_DAYS_PER_YEAR)
+                        - 1.0
+                    )
+                    * 100.0
+                ),
+                "risk_adjusted_return": (
+                    final_expected_returns_for_selection.reindex(selected_tickers).fillna(0.0)
+                    / (volatility.reindex(selected_tickers).fillna(0.0) + 1e-8)
+                ),
+                "signal_strength": final_signal_strengths_for_selection.reindex(selected_tickers).fillna(0.0),
+                "timing_action": timing_df.reindex(selected_tickers)["timing_action"].fillna("hold"),
+                "timing_reason": timing_df.reindex(selected_tickers)["timing_reason"].fillna("score_based_hold"),
+            }
+        )
+        .replace([np.inf, -np.inf], np.nan)
+        .dropna()
+    )
     print(selected_assets_expected_df.sort_values("expected_daily_return", ascending=False))
 
     print("\n===== EXPOSURE CONTROL =====")
@@ -3672,7 +3769,9 @@ def main() -> None:
 
     target_confidence_for_bl = pd.Series(
         {
-            ticker: float(diagnostics_df_full.get("target_confidence_quant", pd.Series(dtype=float)).reindex(prices_df.columns).get(ticker, np.nan))
+            ticker: float(
+                diagnostics_df_full.get("target_confidence_quant", pd.Series(dtype=float)).reindex(prices_df.columns).get(ticker, np.nan)
+            )
             for ticker in prices_df.columns
         },
         index=prices_df.columns,

@@ -1,4 +1,3 @@
-
 from __future__ import annotations
 
 from pathlib import Path
@@ -42,7 +41,13 @@ def _exclusion_stage(row: pd.Series, selected: bool) -> str:
         return "Blacklist / Symbol Eligibility"
     if row.get("quality_pass", True) is False or "missing ohlcv" in reason or "price below" in reason or "spike" in reason:
         return "Basic Quality"
-    if row.get("passed_tradability_filter", True) is False or "volume" in reason or "history" in reason or "market cap" in reason or "volatility" in reason:
+    if (
+        row.get("passed_tradability_filter", True) is False
+        or "volume" in reason
+        or "history" in reason
+        or "market cap" in reason
+        or "volatility" in reason
+    ):
         return "Institutional Tradability"
     if bool(row.get("raw_target_selected", False)) is False:
         return "Position Limit"
@@ -93,7 +98,11 @@ def build_exports() -> dict[str, int]:
     raw_col = "raw_target_return_exact" if "raw_target_return_exact" in df.columns else "raw_target_return"
     df[raw_col] = _num(df.get(raw_col, np.nan))
     eligible = df.copy()
-    eligible["ranking_eligible"] = eligible.get("quality_pass", True).fillna(False).astype(bool) & eligible.get("passed_tradability_filter", True).fillna(False).astype(bool) & eligible.get("exact_raw_target_available", True).fillna(False).astype(bool)
+    eligible["ranking_eligible"] = (
+        eligible.get("quality_pass", True).fillna(False).astype(bool)
+        & eligible.get("passed_tradability_filter", True).fillna(False).astype(bool)
+        & eligible.get("exact_raw_target_available", True).fillna(False).astype(bool)
+    )
     df["ranking_eligible"] = eligible["ranking_eligible"]
     rank_pool = eligible[eligible["ranking_eligible"]].copy().sort_values(raw_col, ascending=False)
     rank_pool["computed_raw_target_rank"] = range(1, len(rank_pool) + 1)
@@ -124,38 +133,119 @@ def build_exports() -> dict[str, int]:
         cost_sum = costs.groupby("ticker", dropna=False)["estimated_total_cost"].sum().reset_index()
         explain = explain.merge(cost_sum, on="ticker", how="left")
     if not state.empty and "ticker" in state.columns:
-        state_cols = [c for c in ["ticker", "paper_position_weight", "paper_position_value", "action", "signal_date", "economic_application_date", "rebalance_due", "monitoring_only", "next_rebalance_date", "sessions_since_last_rebalance"] if c in state.columns]
-        explain = explain.merge(state[state_cols].drop_duplicates("ticker", keep="last"), on="ticker", how="left", suffixes=("", "_official"))
+        state_cols = [
+            c
+            for c in [
+                "ticker",
+                "paper_position_weight",
+                "paper_position_value",
+                "action",
+                "signal_date",
+                "economic_application_date",
+                "rebalance_due",
+                "monitoring_only",
+                "next_rebalance_date",
+                "sessions_since_last_rebalance",
+            ]
+            if c in state.columns
+        ]
+        explain = explain.merge(
+            state[state_cols].drop_duplicates("ticker", keep="last"), on="ticker", how="left", suffixes=("", "_official")
+        )
     state_exposure = _num(state.get("final_exposure", pd.Series(dtype=float))).dropna() if not state.empty else pd.Series(dtype=float)
-    allocation_exposure = _num(allocation.get("final_exposure", pd.Series(dtype=float))).dropna() if not allocation.empty else pd.Series(dtype=float)
-    final_exposure = state_exposure.iloc[-1] if not state_exposure.empty else allocation_exposure.iloc[-1] if not allocation_exposure.empty else np.nan
-    explain["reason_summary"] = explain.apply(lambda r: f"{r.get('ticker')} was selected because it ranked {int(r.get('raw_target_rank')) if pd.notna(r.get('raw_target_rank')) else 'n/a'} by raw_target_return_exact, passed quality/tradability checks, remained within the final position limit, and the risk overlay permitted {final_exposure:.1%} total exposure." if pd.notna(final_exposure) else f"{r.get('ticker')} was selected by the current official growth allocation after passing available filters.", axis=1)
+    allocation_exposure = (
+        _num(allocation.get("final_exposure", pd.Series(dtype=float))).dropna() if not allocation.empty else pd.Series(dtype=float)
+    )
+    final_exposure = (
+        state_exposure.iloc[-1] if not state_exposure.empty else allocation_exposure.iloc[-1] if not allocation_exposure.empty else np.nan
+    )
+    explain["reason_summary"] = explain.apply(
+        lambda r: (
+            f"{r.get('ticker')} was selected because it ranked {int(r.get('raw_target_rank')) if pd.notna(r.get('raw_target_rank')) else 'n/a'} by raw_target_return_exact, passed quality/tradability checks, remained within the final position limit, and the risk overlay permitted {final_exposure:.1%} total exposure."
+            if pd.notna(final_exposure)
+            else f"{r.get('ticker')} was selected by the current official growth allocation after passing available filters."
+        ),
+        axis=1,
+    )
     explain.to_csv("growth_portfolio_explainability.csv", index=False)
 
     pending = allocation.copy()
     if not pending.empty and "ticker" in pending.columns:
         pending["ticker"] = pending["ticker"].astype(str).str.upper()
         pending["currently_official_holding"] = pending["ticker"].isin(selected_tickers)
-        pending["pending_signal_type"] = pending.apply(lambda r: "PENDING_ENTER" if r.get("ticker") not in selected_tickers and r.get("ticker") != "CASH" else "PENDING_HOLD" if r.get("ticker") in selected_tickers else "CASH", axis=1)
+        pending["pending_signal_type"] = pending.apply(
+            lambda r: (
+                "PENDING_ENTER"
+                if r.get("ticker") not in selected_tickers and r.get("ticker") != "CASH"
+                else "PENDING_HOLD"
+                if r.get("ticker") in selected_tickers
+                else "CASH"
+            ),
+            axis=1,
+        )
         pending.to_csv("growth_pending_decision_signals.csv", index=False)
     else:
-        pd.DataFrame(columns=["ticker", "pending_signal_type", "currently_official_holding"]).to_csv("growth_pending_decision_signals.csv", index=False)
+        pd.DataFrame(columns=["ticker", "pending_signal_type", "currently_official_holding"]).to_csv(
+            "growth_pending_decision_signals.csv", index=False
+        )
 
     rows = []
     stages = [
         ("Full Universe", len(df), len(df), "current_growth_features.csv"),
-        ("Data Available", len(df), int(df.get("exact_raw_target_available", True).fillna(False).astype(bool).sum()), "current_raw_target_features.csv"),
-        ("Blacklist / Symbol Eligibility", int(df.get("exact_raw_target_available", True).fillna(False).astype(bool).sum()), int((df.get("exact_raw_target_available", True).fillna(False).astype(bool)).sum()), "growth_universe_exclusions.csv"),
-        ("Basic Quality", len(df), int(df.get("quality_pass", False).fillna(False).astype(bool).sum()), "growth_universe_quality_report.csv"),
-        ("Institutional Tradability", int(df.get("quality_pass", False).fillna(False).astype(bool).sum()), int((df.get("quality_pass", False).fillna(False).astype(bool) & df.get("passed_tradability_filter", False).fillna(False).astype(bool)).sum()), "growth_tradability_filter_report.csv"),
+        (
+            "Data Available",
+            len(df),
+            int(df.get("exact_raw_target_available", True).fillna(False).astype(bool).sum()),
+            "current_raw_target_features.csv",
+        ),
+        (
+            "Blacklist / Symbol Eligibility",
+            int(df.get("exact_raw_target_available", True).fillna(False).astype(bool).sum()),
+            int((df.get("exact_raw_target_available", True).fillna(False).astype(bool)).sum()),
+            "growth_universe_exclusions.csv",
+        ),
+        (
+            "Basic Quality",
+            len(df),
+            int(df.get("quality_pass", False).fillna(False).astype(bool).sum()),
+            "growth_universe_quality_report.csv",
+        ),
+        (
+            "Institutional Tradability",
+            int(df.get("quality_pass", False).fillna(False).astype(bool).sum()),
+            int(
+                (
+                    df.get("quality_pass", False).fillna(False).astype(bool)
+                    & df.get("passed_tradability_filter", False).fillna(False).astype(bool)
+                ).sum()
+            ),
+            "growth_tradability_filter_report.csv",
+        ),
         ("Raw Target Ranking", int(df["ranking_eligible"].sum()), int(df["ranking_eligible"].sum()), "current_growth_features.csv"),
-        ("Soft Exit / Prior Holdings", int(df["ranking_eligible"].sum()), len(allocation[allocation.get("ticker", "").astype(str).str.upper().ne("CASH")]) if not allocation.empty else len(selected_tickers), "current_growth_candidate_allocation.csv"),
+        (
+            "Soft Exit / Prior Holdings",
+            int(df["ranking_eligible"].sum()),
+            len(allocation[allocation.get("ticker", "").astype(str).str.upper().ne("CASH")])
+            if not allocation.empty
+            else len(selected_tickers),
+            "current_growth_candidate_allocation.csv",
+        ),
         ("Final Sanity Check", len(selected_tickers), len(selected_tickers), "final_selected_holdings_audit.csv"),
         ("Position Limit", len(selected_tickers), len(selected_tickers), "current_growth_candidate_allocation.csv"),
         ("Final Portfolio", len(selected_tickers) + 1, len(selected_tickers) + 1, "growth_official_paper_state.csv"),
     ]
     for stage, input_count, passed_count, source in stages:
-        rows.append({"stage": stage, "input_count": input_count, "passed_count": passed_count, "excluded_count": max(input_count - passed_count, 0), "retained_pct": passed_count / input_count if input_count else np.nan, "source_file": source, "latest_date": df.get("date", pd.Series([""])).iloc[0] if "date" in df.columns else ""})
+        rows.append(
+            {
+                "stage": stage,
+                "input_count": input_count,
+                "passed_count": passed_count,
+                "excluded_count": max(input_count - passed_count, 0),
+                "retained_pct": passed_count / input_count if input_count else np.nan,
+                "source_file": source,
+                "latest_date": df.get("date", pd.Series([""])).iloc[0] if "date" in df.columns else "",
+            }
+        )
     pd.DataFrame(rows).to_csv("growth_decision_funnel.csv", index=False)
     return {"features": len(df), "top20": len(top20), "rejected": min(len(rejected), 80), "explain": len(explain), "funnel": len(rows)}
 

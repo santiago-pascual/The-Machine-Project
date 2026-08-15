@@ -120,7 +120,9 @@ def _universe_audit() -> pd.DataFrame:
             "value": bool(uses_current_nasdaq),
             "point_in_time_confirmed": pit_confirmed,
             "survivorship_bias_risk": "high" if uses_current_nasdaq else risk,
-            "reason": "Current ticker list usage creates future-survivor risk for historical dates." if uses_current_nasdaq else "Current-list usage not detected directly.",
+            "reason": "Current ticker list usage creates future-survivor risk for historical dates."
+            if uses_current_nasdaq
+            else "Current-list usage not detected directly.",
         },
         {
             "audit_item": "delisted_failed_tickers",
@@ -180,7 +182,9 @@ def _availability_audit() -> pd.DataFrame:
         first_trade_lag = np.nan if pd.isna(first_trade) else int((first_trade - first_available).days)
         pre_trade_prices = s[s["date"] <= first_trade].copy() if not pd.isna(first_trade) else pd.DataFrame()
         if len(pre_trade_prices) >= 4:
-            perf_into_first_trade = float(_num(pre_trade_prices["current_price"]).iloc[-1] / _num(pre_trade_prices["current_price"]).iloc[0] - 1.0)
+            perf_into_first_trade = float(
+                _num(pre_trade_prices["current_price"]).iloc[-1] / _num(pre_trade_prices["current_price"]).iloc[0] - 1.0
+            )
             appears_after_runup = bool(first_trade_lag <= 45 and perf_into_first_trade > 0.30)
         else:
             perf_into_first_trade = np.nan
@@ -241,7 +245,9 @@ def _liquidity_data() -> pd.DataFrame:
                     "median_daily_volume": float(volume.median()) if volume.notna().any() else np.nan,
                     "average_daily_dollar_volume": float(dollar_volume.mean()) if dollar_volume.notna().any() else np.nan,
                     "median_daily_dollar_volume": float(dollar_volume.median()) if dollar_volume.notna().any() else np.nan,
-                    "minimum_20d_rolling_dollar_volume": float(dollar_volume.rolling(20, min_periods=5).mean().min()) if dollar_volume.notna().sum() >= 5 else np.nan,
+                    "minimum_20d_rolling_dollar_volume": float(dollar_volume.rolling(20, min_periods=5).mean().min())
+                    if dollar_volume.notna().sum() >= 5
+                    else np.nan,
                     "liquidity_confidence": "medium" if dollar_volume.notna().sum() > 20 else "low",
                     "liquidity_reason": "Computed from local snapshot volume fields.",
                 }

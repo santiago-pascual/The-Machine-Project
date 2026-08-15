@@ -1,4 +1,3 @@
-
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -8,23 +7,31 @@ import pandas as pd
 
 try:
     import streamlit as _streamlit
+
     _cache_data = _streamlit.cache_data
 except Exception:
+
     def _cache_data(**_kwargs):
         def deco(func):
             return func
+
         return deco
+
 
 import plotly.express as px
 
 try:
     import streamlit as _streamlit
+
     _cache_data = _streamlit.cache_data
 except Exception:
+
     def _cache_data(**_kwargs):
         def deco(func):
             return func
+
         return deco
+
 
 import plotly.graph_objects as go
 
@@ -47,6 +54,7 @@ from dashboard_theme import (
 )
 
 COLORWAY = [ORANGE, BRIGHT_ORANGE, AMBER, CYAN, GREEN, RED]
+
 
 @dataclass
 class SurfaceResult:
@@ -95,7 +103,9 @@ def _current_weights(data: dict[str, pd.DataFrame], tickers: list[str]) -> np.nd
     holdings = current_holdings(data, "Official Forward Paper")
     if holdings.empty:
         return np.repeat(1 / max(len(tickers), 1), len(tickers))
-    weight_col = "paper_position_weight" if "paper_position_weight" in holdings.columns else "weight" if "weight" in holdings.columns else None
+    weight_col = (
+        "paper_position_weight" if "paper_position_weight" in holdings.columns else "weight" if "weight" in holdings.columns else None
+    )
     if weight_col is None:
         return np.repeat(1 / max(len(tickers), 1), len(tickers))
     mapping = holdings.assign(ticker=holdings["ticker"].astype(str).str.upper()).set_index("ticker")[weight_col].to_dict()
@@ -128,11 +138,20 @@ def render_efficient_frontier(st, data: dict[str, pd.DataFrame]) -> SurfaceResul
     ew = np.repeat(1 / len(mu), len(mu))
     cur = _current_weights(data, list(mu.index))
     for label, w in [("equal weight", ew), ("current official weights", cur)]:
-        rows.append({"volatility": float(np.sqrt(max(w @ cov.values @ w, 0))), "expected_return_proxy": float(np.dot(mu.values, w)), "hhi": float(np.square(w).sum()), "type": label})
+        rows.append(
+            {
+                "volatility": float(np.sqrt(max(w @ cov.values @ w, 0))),
+                "expected_return_proxy": float(np.dot(mu.values, w)),
+                "hhi": float(np.square(w).sum()),
+                "type": label,
+            }
+        )
     if include_cash:
         rows.append({"volatility": 0.0, "expected_return_proxy": 0.0, "hhi": 0.0, "type": "cash-heavy reference"})
     df = pd.DataFrame(rows)
-    fig = px.scatter_3d(df, x="volatility", y="expected_return_proxy", z="hhi", color="type", color_discrete_sequence=COLORWAY, opacity=0.72)
+    fig = px.scatter_3d(
+        df, x="volatility", y="expected_return_proxy", z="hhi", color="type", color_discrete_sequence=COLORWAY, opacity=0.72
+    )
     _chart(st, fig, "Efficient Frontier 3D — optimizer diagnostic only")
     source_caption(st, "yahoo_ohlcv_price_cache + official holdings", "diagnostic only")
     return SurfaceResult("efficient_frontier", "available", "yahoo_ohlcv_price_cache", f"{len(df)} portfolios")
@@ -162,9 +181,12 @@ def render_correlation_surface(st, data: dict[str, pd.DataFrame]) -> SurfaceResu
     _chart(st, hfig, "2D Correlation Heatmap", 430)
     vals = corr.where(~np.eye(len(corr), dtype=bool)).stack().dropna()
     cols = st.columns(3)
-    with cols[0]: metric_card(st, "Avg Pairwise Corr", fmt_num(vals.mean(), 3))
-    with cols[1]: metric_card(st, "Highest Pair", fmt_num(vals.max(), 3))
-    with cols[2]: metric_card(st, "Lowest Pair", fmt_num(vals.min(), 3))
+    with cols[0]:
+        metric_card(st, "Avg Pairwise Corr", fmt_num(vals.mean(), 3))
+    with cols[1]:
+        metric_card(st, "Highest Pair", fmt_num(vals.max(), 3))
+    with cols[2]:
+        metric_card(st, "Lowest Pair", fmt_num(vals.min(), 3))
     source_caption(st, "yahoo_ohlcv_price_cache", f"official diagnostic · obs {len(returns)}")
     return SurfaceResult("correlation_surface", "available", "yahoo_ohlcv_price_cache", f"lookback={lookback}, obs={len(returns)}")
 
@@ -184,6 +206,7 @@ def render_covariance_surface(st, data: dict[str, pd.DataFrame]) -> SurfaceResul
     elif method == "Ledoit-Wolf if available":
         try:
             from sklearn.covariance import LedoitWolf
+
             lw = LedoitWolf().fit(returns.dropna().values)
             cov = pd.DataFrame(lw.covariance_, index=returns.columns, columns=returns.columns)
         except Exception:
@@ -192,14 +215,21 @@ def render_covariance_surface(st, data: dict[str, pd.DataFrame]) -> SurfaceResul
         cov = cov * 252
     vals = np.linalg.eigvalsh(cov.values) if cov.shape[0] else np.array([])
     cond = float(np.nanmax(vals) / max(np.nanmin(vals[vals > 1e-12]) if np.any(vals > 1e-12) else np.nan, 1e-12)) if vals.size else np.nan
-    eff_rank = float(np.exp(-np.sum((vals / vals.sum()) * np.log(np.maximum(vals / vals.sum(), 1e-12))))) if vals.size and vals.sum() > 0 else np.nan
+    eff_rank = (
+        float(np.exp(-np.sum((vals / vals.sum()) * np.log(np.maximum(vals / vals.sum(), 1e-12)))))
+        if vals.size and vals.sum() > 0
+        else np.nan
+    )
     fig = go.Figure(data=[go.Surface(z=cov.values, x=list(cov.columns), y=list(cov.index), colorscale="Cividis")])
     fig.update_layout(scene={"xaxis_title": "Ticker", "yaxis_title": "Ticker", "zaxis_title": "Covariance"})
     _chart(st, fig, "Covariance Surface")
     cols = st.columns(3)
-    with cols[0]: metric_card(st, "Condition Number", fmt_num(cond, 2))
-    with cols[1]: metric_card(st, "Effective Rank", fmt_num(eff_rank, 2))
-    with cols[2]: metric_card(st, "Method", method, "Growth official uses equal-weight allocation; covariance shown diagnostic")
+    with cols[0]:
+        metric_card(st, "Condition Number", fmt_num(cond, 2))
+    with cols[1]:
+        metric_card(st, "Effective Rank", fmt_num(eff_rank, 2))
+    with cols[2]:
+        metric_card(st, "Method", method, "Growth official uses equal-weight allocation; covariance shown diagnostic")
     source_caption(st, "yahoo_ohlcv_price_cache", "diagnostic covariance")
     return SurfaceResult("covariance_surface", "available", "yahoo_ohlcv_price_cache", f"method={method}, lookback={lookback}")
 
@@ -223,19 +253,29 @@ def render_volatility_target_surface(st, data: dict[str, pd.DataFrame]) -> Surfa
     with left:
         fig = go.Figure(data=[go.Surface(x=x, y=y, z=exact, colorscale="Oranges", showscale=True)])
         if np.isfinite(cur_vol) and np.isfinite(cur_exposure):
-            fig.add_trace(go.Scatter3d(x=[cur_vol], y=[cur_target], z=[cur_exposure], mode="markers+text", text=["current"], marker={"size": 8, "color": CYAN}))
+            fig.add_trace(
+                go.Scatter3d(
+                    x=[cur_vol], y=[cur_target], z=[cur_exposure], mode="markers+text", text=["current"], marker={"size": 8, "color": CYAN}
+                )
+            )
         fig.update_layout(scene={"xaxis_title": "Estimated portfolio vol", "yaxis_title": "Target vol", "zaxis_title": "Final exposure"})
         _chart(st, fig, "Exact Policy Surface", 520)
     with right:
         fig = go.Figure(data=[go.Surface(x=x, y=y, z=unclipped, colorscale="Viridis", showscale=True)])
-        fig.update_layout(scene={"xaxis_title": "Estimated portfolio vol", "yaxis_title": "Target vol", "zaxis_title": "Unclipped exposure"})
+        fig.update_layout(
+            scene={"xaxis_title": "Estimated portfolio vol", "yaxis_title": "Target vol", "zaxis_title": "Unclipped exposure"}
+        )
         _chart(st, fig, "Unclipped Vol Target Surface", 520)
     reason = "floor region" if np.isfinite(cur_exposure) and abs(cur_exposure - 0.40) < 1e-6 else "cap/dual-trend/continuous region"
     cols = st.columns(4)
-    with cols[0]: metric_card(st, "Current Est. Vol", fmt_pct(cur_vol))
-    with cols[1]: metric_card(st, "Target Vol", fmt_pct(cur_target))
-    with cols[2]: metric_card(st, "Final Exposure", fmt_pct(cur_exposure))
-    with cols[3]: metric_card(st, "Binding Region", reason)
+    with cols[0]:
+        metric_card(st, "Current Est. Vol", fmt_pct(cur_vol))
+    with cols[1]:
+        metric_card(st, "Target Vol", fmt_pct(cur_target))
+    with cols[2]:
+        metric_card(st, "Final Exposure", fmt_pct(cur_exposure))
+    with cols[3]:
+        metric_card(st, "Binding Region", reason)
     source_caption(st, "growth_volatility_targeting_fresh.csv", "official diagnostic")
     return SurfaceResult("volatility_target_surface", "available", "growth_volatility_targeting_fresh.csv", reason)
 
@@ -247,9 +287,27 @@ def render_parameter_stability_surface(st, data: dict[str, pd.DataFrame]) -> Sur
         df = data.get("parameter_stability_map", pd.DataFrame())
     if df.empty:
         return _warn(st, "Parameter Stability Surface", "parameter_stability_map.csv", "Phase 92 output missing")
-    metric_options = [c for c in ["Sharpe", "sharpe", "CAGR", "cagr", "max_drawdown", "Max DD", "Sortino", "sortino", "Calmar", "calmar", "average_exposure"] if c in df.columns]
+    metric_options = [
+        c
+        for c in [
+            "Sharpe",
+            "sharpe",
+            "CAGR",
+            "cagr",
+            "max_drawdown",
+            "Max DD",
+            "Sortino",
+            "sortino",
+            "Calmar",
+            "calmar",
+            "average_exposure",
+        ]
+        if c in df.columns
+    ]
     if not metric_options or not {"target_vol", "exposure_cap"}.issubset(df.columns):
-        return _warn(st, "Parameter Stability Surface", "parameter_stability_map.csv", "required target_vol/exposure_cap/metric columns missing")
+        return _warn(
+            st, "Parameter Stability Surface", "parameter_stability_map.csv", "required target_vol/exposure_cap/metric columns missing"
+        )
     metric = st.selectbox("Metric", metric_options, key="qlab_param_metric")
     work = df.copy()
     for col, value in [("min_exposure", 0.40), ("vol_lookback_days", 60)]:
@@ -264,7 +322,11 @@ def render_parameter_stability_surface(st, data: dict[str, pd.DataFrame]) -> Sur
     try:
         y = pivot.index[np.abs(pivot.index.astype(float) - 0.22).argmin()]
         xval = pivot.columns[np.abs(pivot.columns.astype(float) - 0.60).argmin()]
-        fig.add_trace(go.Scatter3d(x=[xval], y=[y], z=[pivot.loc[y, xval]], mode="markers+text", text=["active 22/60"], marker={"size": 8, "color": RED}))
+        fig.add_trace(
+            go.Scatter3d(
+                x=[xval], y=[y], z=[pivot.loc[y, xval]], mode="markers+text", text=["active 22/60"], marker={"size": 8, "color": RED}
+            )
+        )
     except Exception:
         pass
     fig.update_layout(scene={"xaxis_title": "Exposure cap", "yaxis_title": "Target volatility", "zaxis_title": metric})
@@ -278,8 +340,24 @@ def render_black_litterman_lab(st, data: dict[str, pd.DataFrame]) -> SurfaceResu
     candidates = ["black_litterman_results", "black_litterman_diagnostics"]
     available = [k for k in candidates if not data.get(k, pd.DataFrame()).empty]
     if not available:
-        alert_box(st, "Black–Litterman data not found. Research diagnostic only — not used by Growth official equal-weight allocation.", "warning")
-        st.dataframe(pd.DataFrame({"missing_input": ["equilibrium prior", "view confidence grid", "tau grid", "posterior returns/weights"], "required_for": ["posterior return surface", "posterior return surface", "posterior return surface", "posterior weight surface"]}), width="stretch", hide_index=True)
+        alert_box(
+            st, "Black–Litterman data not found. Research diagnostic only — not used by Growth official equal-weight allocation.", "warning"
+        )
+        st.dataframe(
+            pd.DataFrame(
+                {
+                    "missing_input": ["equilibrium prior", "view confidence grid", "tau grid", "posterior returns/weights"],
+                    "required_for": [
+                        "posterior return surface",
+                        "posterior return surface",
+                        "posterior return surface",
+                        "posterior weight surface",
+                    ],
+                }
+            ),
+            width="stretch",
+            hide_index=True,
+        )
         return SurfaceResult("black_litterman_lab", "warning", "black_litterman_*", "missing BL diagnostic grids")
     return SurfaceResult("black_litterman_lab", "available", ",".join(available), "source detected")
 
@@ -291,7 +369,11 @@ def render_hmm_regime_space(st, data: dict[str, pd.DataFrame]) -> SurfaceResult:
         df = data.get("hmm_model_comparison", pd.DataFrame())
     if df.empty:
         return _warn(st, "HMM Regime Space", "hmm_out_of_sample_results.csv", "HMM diagnostics missing")
-    cols = [c for c in ["test_risk_off_rate", "future_volatility_corr_proxy", "test_state_switch_rate", "log_likelihood", "bic", "aic"] if c in df.columns]
+    cols = [
+        c
+        for c in ["test_risk_off_rate", "future_volatility_corr_proxy", "test_state_switch_rate", "log_likelihood", "bic", "aic"]
+        if c in df.columns
+    ]
     if len(cols) < 3:
         return _warn(st, "HMM Regime Space", "hmm_out_of_sample_results.csv", "not enough numeric HMM columns")
     x, y, z = cols[:3]
@@ -309,19 +391,37 @@ def render_feature_space_3d(st, data: dict[str, pd.DataFrame]) -> SurfaceResult:
     if df.empty:
         return _warn(st, "Feature Space 3D", "current_growth_features.csv", "current feature file missing")
     numeric_cols = [c for c in df.columns if numeric(df[c]).notna().sum() >= 5]
-    preferred = [c for c in ["raw_target_return_exact", "realized_vol_60d", "rank_percentile", "raw_target_rank", "median_60d_dollar_volume", "market_cap", "return_20d"] if c in numeric_cols]
+    preferred = [
+        c
+        for c in [
+            "raw_target_return_exact",
+            "realized_vol_60d",
+            "rank_percentile",
+            "raw_target_rank",
+            "median_60d_dollar_volume",
+            "market_cap",
+            "return_20d",
+        ]
+        if c in numeric_cols
+    ]
     options = preferred + [c for c in numeric_cols if c not in preferred]
     if len(options) < 3:
         return _warn(st, "Feature Space 3D", "current_growth_features.csv", "need at least three numeric features")
     x = st.selectbox("X feature", options, index=0, key="qlab_feat_x")
-    y = st.selectbox("Y feature", options, index=min(1, len(options)-1), key="qlab_feat_y")
-    z = st.selectbox("Z feature", options, index=min(2, len(options)-1), key="qlab_feat_z")
-    color_options = [c for c in ["raw_target_selected", "sector", "holding_quality_classification", "passed_tradability_filter", "quality_pass"] if c in df.columns]
+    y = st.selectbox("Y feature", options, index=min(1, len(options) - 1), key="qlab_feat_y")
+    z = st.selectbox("Z feature", options, index=min(2, len(options) - 1), key="qlab_feat_z")
+    color_options = [
+        c
+        for c in ["raw_target_selected", "sector", "holding_quality_classification", "passed_tradability_filter", "quality_pass"]
+        if c in df.columns
+    ]
     color = st.selectbox("Color by", color_options if color_options else [x], key="qlab_feat_color")
     work = df.dropna(subset=[x, y, z]).copy()
     if work.empty:
         return _warn(st, "Feature Space 3D", "current_growth_features.csv", "selected axes have no rows")
-    fig = px.scatter_3d(work, x=x, y=y, z=z, color=color, hover_name="ticker" if "ticker" in work.columns else None, color_discrete_sequence=COLORWAY)
+    fig = px.scatter_3d(
+        work, x=x, y=y, z=z, color=color, hover_name="ticker" if "ticker" in work.columns else None, color_discrete_sequence=COLORWAY
+    )
     _chart(st, fig, "Feature Space 3D")
     source_caption(st, "current_growth_features.csv", "official diagnostic")
     return SurfaceResult("feature_space_3d", "available", "current_growth_features.csv", f"axes={x},{y},{z}")

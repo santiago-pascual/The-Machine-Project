@@ -55,10 +55,28 @@ def load_canonical_series() -> tuple[pd.DataFrame, str]:
     return exact if not exact.empty else recon, "insufficient_history"
 
 
-def metrics(df: pd.DataFrame, ret_col: str = "strategy_return", turnover_col: str = "turnover", exposure_col: str = "exposure") -> dict[str, float]:
+def metrics(
+    df: pd.DataFrame, ret_col: str = "strategy_return", turnover_col: str = "turnover", exposure_col: str = "exposure"
+) -> dict[str, float]:
     r = pd.to_numeric(df.get(ret_col, pd.Series(dtype=float)), errors="coerce").dropna()
     if r.empty:
-        return {k: np.nan for k in ["total_return", "net_CAGR", "Sharpe", "Sortino", "Calmar", "max_drawdown", "turnover", "average_exposure", "alpha_vs_SPY", "alpha_vs_QQQ", "information_ratio_vs_SPY", "information_ratio_vs_QQQ"]}
+        return {
+            k: np.nan
+            for k in [
+                "total_return",
+                "net_CAGR",
+                "Sharpe",
+                "Sortino",
+                "Calmar",
+                "max_drawdown",
+                "turnover",
+                "average_exposure",
+                "alpha_vs_SPY",
+                "alpha_vs_QQQ",
+                "information_ratio_vs_SPY",
+                "information_ratio_vs_QQQ",
+            ]
+        }
     eq = (1 + r).cumprod()
     dd = eq / eq.cummax() - 1
     years = max(len(r) / TRADING_PERIODS, 1e-9)
@@ -67,15 +85,25 @@ def metrics(df: pd.DataFrame, ret_col: str = "strategy_return", turnover_col: st
     vol = float(r.std(ddof=0) * math.sqrt(TRADING_PERIODS)) if len(r) > 1 else 0.0
     sharpe = float(r.mean() / r.std(ddof=0) * math.sqrt(TRADING_PERIODS)) if r.std(ddof=0) > 0 else np.nan
     downside = r[r < 0]
-    sortino = float(r.mean() / downside.std(ddof=0) * math.sqrt(TRADING_PERIODS)) if len(downside) > 1 and downside.std(ddof=0) > 0 else np.nan
+    sortino = (
+        float(r.mean() / downside.std(ddof=0) * math.sqrt(TRADING_PERIODS)) if len(downside) > 1 and downside.std(ddof=0) > 0 else np.nan
+    )
     max_dd = float(dd.min())
     calmar = float(cagr / abs(max_dd)) if max_dd < 0 and np.isfinite(cagr) else np.nan
     spy = pd.to_numeric(df.get("spy_daily_return", pd.Series(index=df.index, dtype=float)), errors="coerce")
     qqq = pd.to_numeric(df.get("qqq_daily_return", pd.Series(index=df.index, dtype=float)), errors="coerce")
     alpha_spy = float((r - spy.loc[r.index]).mean() * TRADING_PERIODS) if not spy.dropna().empty else np.nan
     alpha_qqq = float((r - qqq.loc[r.index]).mean() * TRADING_PERIODS) if not qqq.dropna().empty else np.nan
-    ir_spy = float((r - spy.loc[r.index]).mean() / (r - spy.loc[r.index]).std(ddof=0) * math.sqrt(TRADING_PERIODS)) if not spy.dropna().empty and (r - spy.loc[r.index]).std(ddof=0) > 0 else np.nan
-    ir_qqq = float((r - qqq.loc[r.index]).mean() / (r - qqq.loc[r.index]).std(ddof=0) * math.sqrt(TRADING_PERIODS)) if not qqq.dropna().empty and (r - qqq.loc[r.index]).std(ddof=0) > 0 else np.nan
+    ir_spy = (
+        float((r - spy.loc[r.index]).mean() / (r - spy.loc[r.index]).std(ddof=0) * math.sqrt(TRADING_PERIODS))
+        if not spy.dropna().empty and (r - spy.loc[r.index]).std(ddof=0) > 0
+        else np.nan
+    )
+    ir_qqq = (
+        float((r - qqq.loc[r.index]).mean() / (r - qqq.loc[r.index]).std(ddof=0) * math.sqrt(TRADING_PERIODS))
+        if not qqq.dropna().empty and (r - qqq.loc[r.index]).std(ddof=0) > 0
+        else np.nan
+    )
     return {
         "total_return": total,
         "net_CAGR": cagr,
@@ -139,7 +167,9 @@ def build_fold_rows(series: pd.DataFrame, feature_df: pd.DataFrame, folds: pd.Da
         labels = label_states(fit, train_feat, mean, std)
         test_scaled = ((test_feat - mean) / std).to_numpy(dtype=float)
         states = decode_states(test_scaled, fit)
-        test_regimes = pd.DataFrame({"date": test_feat.index.normalize(), "hmm_state": states, "hmm_regime_label": [labels[s] for s in states]})
+        test_regimes = pd.DataFrame(
+            {"date": test_feat.index.normalize(), "hmm_state": states, "hmm_regime_label": [labels[s] for s in states]}
+        )
         train_series = series[series["date"] <= train_end].merge(
             pd.DataFrame({"date": train_feat.index.normalize(), "train_dummy": 1}), on="date", how="inner"
         )
@@ -160,14 +190,19 @@ def build_fold_rows(series: pd.DataFrame, feature_df: pd.DataFrame, folds: pd.Da
                 tmp["strategy_turnover"] = tmp["base_turnover"]
                 tmp["hmm_action"] = "no_allocation_change" if variant == "hmm_diagnostic_only" else "canonical_no_hmm"
             elif variant == "hmm_exposure_overlay":
-                factors = tmp.apply(lambda r: regime_overlay_factor(str(r.get("hmm_regime_label", "")), float(r.get("base_exposure", 0.0))), axis=1)
+                factors = tmp.apply(
+                    lambda r: regime_overlay_factor(str(r.get("hmm_regime_label", "")), float(r.get("base_exposure", 0.0))), axis=1
+                )
                 tmp["hmm_factor"] = [x[0] for x in factors]
                 tmp["hmm_action"] = [x[1] for x in factors]
                 tmp["strategy_return"] = tmp["base_return"] * tmp["hmm_factor"]
                 tmp["strategy_exposure"] = tmp["base_exposure"] * tmp["hmm_factor"]
                 tmp["strategy_turnover"] = tmp["base_turnover"] + tmp["strategy_exposure"].diff().abs().fillna(0.0) * 0.5
             else:
-                factors = tmp.apply(lambda r: ranking_proxy_factor(str(r.get("hmm_regime_label", "")), train_means, float(r.get("base_exposure", 0.0))), axis=1)
+                factors = tmp.apply(
+                    lambda r: ranking_proxy_factor(str(r.get("hmm_regime_label", "")), train_means, float(r.get("base_exposure", 0.0))),
+                    axis=1,
+                )
                 tmp["hmm_factor"] = [x[0] for x in factors]
                 tmp["hmm_action"] = [x[1] for x in factors]
                 tmp["strategy_return"] = tmp["base_return"] * tmp["hmm_factor"]
@@ -180,7 +215,17 @@ def build_fold_rows(series: pd.DataFrame, feature_df: pd.DataFrame, folds: pd.Da
             tmp["test_end"] = test_end
             variants.append(tmp)
             m = metrics(tmp, "strategy_return", "strategy_turnover", "strategy_exposure")
-            fold_rows.append({"fold_id": fold_id, "variant": variant, "train_end_after_purge": train_end.date().isoformat(), "test_start": test_start.date().isoformat(), "test_end": test_end.date().isoformat(), "observations": len(tmp), **m})
+            fold_rows.append(
+                {
+                    "fold_id": fold_id,
+                    "variant": variant,
+                    "train_end_after_purge": train_end.date().isoformat(),
+                    "test_start": test_start.date().isoformat(),
+                    "test_end": test_end.date().isoformat(),
+                    "observations": len(tmp),
+                    **m,
+                }
+            )
         daily_rows.extend(pd.concat(variants, ignore_index=True, sort=False).to_dict("records"))
     return pd.DataFrame(daily_rows), pd.DataFrame(fold_rows)
 
@@ -189,19 +234,38 @@ def summarize(daily: pd.DataFrame, folds: pd.DataFrame, data_mode: str) -> tuple
     results = []
     regime_rows = []
     for variant, group in daily.groupby("variant"):
-        results.append({"variant": variant, "data_mode": data_mode, "folds": int(group["fold_id"].nunique()), "observations": len(group), **metrics(group, "strategy_return", "strategy_turnover", "strategy_exposure")})
+        results.append(
+            {
+                "variant": variant,
+                "data_mode": data_mode,
+                "folds": int(group["fold_id"].nunique()),
+                "observations": len(group),
+                **metrics(group, "strategy_return", "strategy_turnover", "strategy_exposure"),
+            }
+        )
         for regime, rg in group.groupby("hmm_regime_label", dropna=False):
-            regime_rows.append({"variant": variant, "hmm_regime_label": regime, "observations": len(rg), **metrics(rg, "strategy_return", "strategy_turnover", "strategy_exposure")})
+            regime_rows.append(
+                {
+                    "variant": variant,
+                    "hmm_regime_label": regime,
+                    "observations": len(rg),
+                    **metrics(rg, "strategy_return", "strategy_turnover", "strategy_exposure"),
+                }
+            )
     results_df = pd.DataFrame(results)
-    stability = folds.groupby("variant").agg(
-        folds=("fold_id", "nunique"),
-        median_oos_Sharpe=("Sharpe", "median"),
-        mean_oos_Sharpe=("Sharpe", "mean"),
-        positive_sharpe_folds=("Sharpe", lambda s: int((pd.to_numeric(s, errors="coerce") > 0).sum())),
-        median_max_drawdown=("max_drawdown", "median"),
-        median_turnover=("turnover", "median"),
-        median_CAGR=("net_CAGR", "median"),
-    ).reset_index()
+    stability = (
+        folds.groupby("variant")
+        .agg(
+            folds=("fold_id", "nunique"),
+            median_oos_Sharpe=("Sharpe", "median"),
+            mean_oos_Sharpe=("Sharpe", "mean"),
+            positive_sharpe_folds=("Sharpe", lambda s: int((pd.to_numeric(s, errors="coerce") > 0).sum())),
+            median_max_drawdown=("max_drawdown", "median"),
+            median_turnover=("turnover", "median"),
+            median_CAGR=("net_CAGR", "median"),
+        )
+        .reset_index()
+    )
     return results_df, stability, pd.DataFrame(regime_rows)
 
 
@@ -228,7 +292,9 @@ def governance(results: pd.DataFrame, stability: pd.DataFrame, data_mode: str, e
                 best_variant = v
                 best_delta = delta
                 best_dd_delta = float((joined["max_drawdown"] - joined["max_drawdown_base"]).median())
-                best_turnover_increase = float(((joined["turnover"] - joined["turnover_base"]) / joined["turnover_base"].abs().clip(lower=1e-9)).median())
+                best_turnover_increase = float(
+                    ((joined["turnover"] - joined["turnover_base"]) / joined["turnover_base"].abs().clip(lower=1e-9)).median()
+                )
                 improved_folds = int((joined["Sharpe"] > joined["Sharpe_base"]).sum())
                 comparable_folds = len(joined)
         if not best_variant:
@@ -250,26 +316,32 @@ def governance(results: pd.DataFrame, stability: pd.DataFrame, data_mode: str, e
                 reason = f"{best_variant} improvement not stable across most folds; improved {improved_folds}/{comparable_folds}"
             else:
                 cls = "incremental_candidate"
-                reason = f"{best_variant} passes paired median Sharpe/DD/turnover gates on reconstructed OOS folds; shadow-only review required"
+                reason = (
+                    f"{best_variant} passes paired median Sharpe/DD/turnover gates on reconstructed OOS folds; shadow-only review required"
+                )
     if data_mode != "canonical_exact" or exact_rows < 250:
         if cls in {"incremental_candidate", "eligible_for_shadow"}:
             cls = "incremental_candidate"
             reason += "; exact canonical live history is too short, so no paper/production promotion"
-    return pd.DataFrame([{
-        "governance": cls,
-        "data_mode": data_mode,
-        "exact_canonical_rows": exact_rows,
-        "best_variant": best_variant,
-        "paired_median_sharpe_delta": best_delta,
-        "paired_median_max_dd_delta": best_dd_delta,
-        "paired_median_turnover_increase": best_turnover_increase,
-        "improved_folds": improved_folds,
-        "comparable_folds": comparable_folds,
-        "production_changed": False,
-        "paper_changed": False,
-        "automatic_promotion": False,
-        "reason": reason,
-    }])
+    return pd.DataFrame(
+        [
+            {
+                "governance": cls,
+                "data_mode": data_mode,
+                "exact_canonical_rows": exact_rows,
+                "best_variant": best_variant,
+                "paired_median_sharpe_delta": best_delta,
+                "paired_median_max_dd_delta": best_dd_delta,
+                "paired_median_turnover_increase": best_turnover_increase,
+                "improved_folds": improved_folds,
+                "comparable_folds": comparable_folds,
+                "production_changed": False,
+                "paper_changed": False,
+                "automatic_promotion": False,
+                "reason": reason,
+            }
+        ]
+    )
 
 
 def main() -> None:
@@ -280,7 +352,7 @@ def main() -> None:
         raise SystemExit("Missing purged_walk_forward_folds.csv")
     feature_df = build_feature_data("2008-01-01")
     if feature_df.empty or series.empty:
-        empty = pd.DataFrame([{ "governance": "diagnostic_only", "reason": "missing HMM features or canonical series" }])
+        empty = pd.DataFrame([{"governance": "diagnostic_only", "reason": "missing HMM features or canonical series"}])
         empty.to_csv(OUT_GOV, index=False)
         print("===== HMM INCREMENTAL PORTFOLIO TEST =====")
         print("status: missing inputs")
@@ -308,7 +380,9 @@ def main() -> None:
     ]
     Path(OUT_REPORT).write_text("\n".join(report) + "\n", encoding="utf-8")
     print("\n".join(report))
-    print("outputs: hmm_incremental_portfolio_results.csv, hmm_incremental_portfolio_folds.csv, hmm_incremental_portfolio_daily_returns.csv, hmm_incremental_performance_by_regime.csv, hmm_incremental_governance.csv")
+    print(
+        "outputs: hmm_incremental_portfolio_results.csv, hmm_incremental_portfolio_folds.csv, hmm_incremental_portfolio_daily_returns.csv, hmm_incremental_performance_by_regime.csv, hmm_incremental_governance.csv"
+    )
 
 
 if __name__ == "__main__":

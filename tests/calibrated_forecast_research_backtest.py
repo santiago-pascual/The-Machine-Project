@@ -183,7 +183,11 @@ def _build_calibrated_mode(calibrated: pd.DataFrame) -> tuple[pd.DataFrame, pd.D
         picks = candidates.sort_values("calibrated_expected_daily_return", ascending=False).head(selected_count).copy()
         weights = pd.to_numeric(picks.get("weight"), errors="coerce").fillna(0.0).clip(lower=0.0)
         if float(weights.sum()) <= 0:
-            cash = float(pd.to_numeric(group.get("cash_weight"), errors="coerce").dropna().iloc[0]) if "cash_weight" in group.columns and pd.to_numeric(group.get("cash_weight"), errors="coerce").notna().any() else 0.5
+            cash = (
+                float(pd.to_numeric(group.get("cash_weight"), errors="coerce").dropna().iloc[0])
+                if "cash_weight" in group.columns and pd.to_numeric(group.get("cash_weight"), errors="coerce").notna().any()
+                else 0.5
+            )
             active_weight = max(0.0, 1.0 - cash)
             weights = pd.Series(active_weight / len(picks), index=picks.index)
         else:
@@ -194,7 +198,11 @@ def _build_calibrated_mode(calibrated: pd.DataFrame) -> tuple[pd.DataFrame, pd.D
         picks["expected_daily_return"] = picks["calibrated_expected_daily_return"]
         selected_rows.append(picks)
         calibrated_selected = set(picks["ticker"].astype(str))
-        overlaps.append(len(original_selected & calibrated_selected) / len(original_selected | calibrated_selected) if (original_selected | calibrated_selected) else 1.0)
+        overlaps.append(
+            len(original_selected & calibrated_selected) / len(original_selected | calibrated_selected)
+            if (original_selected | calibrated_selected)
+            else 1.0
+        )
 
     metadata["selection_overlap_avg"] = float(np.nanmean(overlaps)) if overlaps else np.nan
     selected = pd.concat(selected_rows, ignore_index=True) if selected_rows else pd.DataFrame()
@@ -206,9 +214,7 @@ def _label_metrics(labels: pd.DataFrame, mode: str) -> dict[str, float]:
     if labels.empty or "model_mode" not in labels.columns:
         return {"TP_rate": np.nan, "SL_rate": np.nan, "TP_minus_SL": np.nan, "hit_rate": np.nan}
     subset = labels[
-        labels["model_mode"].astype(str).eq(mode)
-        & labels["horizon"].astype(str).eq("20")
-        & _as_bool(labels["selected"])
+        labels["model_mode"].astype(str).eq(mode) & labels["horizon"].astype(str).eq("20") & _as_bool(labels["selected"])
     ].copy()
     if subset.empty:
         return {"TP_rate": np.nan, "SL_rate": np.nan, "TP_minus_SL": np.nan, "hit_rate": np.nan}
@@ -247,8 +253,12 @@ def _metrics(portfolio: pd.DataFrame, trades: pd.DataFrame, labels: pd.DataFrame
             "Sortino": _sortino(returns),
             "Calmar": _calmar(returns),
             "max_drawdown": _max_drawdown(returns),
-            "average_cash": float(pd.to_numeric(portfolio["cash_weight"], errors="coerce").mean()) if "cash_weight" in portfolio else np.nan,
-            "average_selected_count": float(pd.to_numeric(portfolio["selected_count"], errors="coerce").mean()) if "selected_count" in portfolio else np.nan,
+            "average_cash": float(pd.to_numeric(portfolio["cash_weight"], errors="coerce").mean())
+            if "cash_weight" in portfolio
+            else np.nan,
+            "average_selected_count": float(pd.to_numeric(portfolio["selected_count"], errors="coerce").mean())
+            if "selected_count" in portfolio
+            else np.nan,
             "turnover": float(pd.to_numeric(portfolio["turnover"], errors="coerce").mean()) if "turnover" in portfolio else np.nan,
             "direction_accuracy": float((returns > 0).mean()),
             "sample_size": len(trades),
@@ -265,8 +275,12 @@ def _governance(results: pd.DataFrame, metadata: dict[str, object]) -> pd.DataFr
     baseline = row.loc["baseline"] if "baseline" in row.index else pd.Series(dtype=float)
     gated = row.loc["regime_gated_full_quant"] if "regime_gated_full_quant" in row.index else pd.Series(dtype=float)
     sample = _safe_float(candidate.get("sample_size"), 0.0)
-    sharpe_improves = _safe_float(candidate.get("Sharpe"), -999.0) > max(_safe_float(baseline.get("Sharpe"), -999.0), _safe_float(gated.get("Sharpe"), -999.0))
-    drawdown_ok = _safe_float(candidate.get("max_drawdown"), -1.0) >= min(_safe_float(baseline.get("max_drawdown"), -1.0), _safe_float(gated.get("max_drawdown"), -1.0))
+    sharpe_improves = _safe_float(candidate.get("Sharpe"), -999.0) > max(
+        _safe_float(baseline.get("Sharpe"), -999.0), _safe_float(gated.get("Sharpe"), -999.0)
+    )
+    drawdown_ok = _safe_float(candidate.get("max_drawdown"), -1.0) >= min(
+        _safe_float(baseline.get("max_drawdown"), -1.0), _safe_float(gated.get("max_drawdown"), -1.0)
+    )
     overlap = _safe_float(metadata.get("selection_overlap_avg"), np.nan)
     if sample < 150:
         classification = "research only"

@@ -2,9 +2,23 @@
 
 Original module moved to src/phase100_market_data_integrity.py — this shim re-exports public API.
 """
-from importlib import import_module
 
-_mod = import_module("src.phase100_market_data_integrity")
+from importlib import import_module
+import importlib.util
+import os
+
+_mod = None
+try:
+    _mod = import_module("src.phase100_market_data_integrity")
+except Exception:
+    _path = os.path.join(os.path.dirname(__file__), "src", "phase100_market_data_integrity.py")
+    if os.path.isfile(_path):
+        spec = importlib.util.spec_from_file_location("src.phase100_market_data_integrity", _path)
+        _mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(_mod)
+    else:
+        raise
+
 
 for _attr in dir(_mod):
     if not _attr.startswith("__"):

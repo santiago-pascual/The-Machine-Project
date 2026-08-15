@@ -1,4 +1,3 @@
-
 from __future__ import annotations
 
 import time
@@ -10,7 +9,19 @@ import pandas as pd
 
 from dashboard_data_layer import CSV_FILES, latest
 
-STATUS_ORDER = {"PASS": 1, "GREEN": 1, "HEALTHY": 1, "WARNING": 2, "AMBER": 2, "WARMUP": 2, "RUNNING": 2, "BLOCKED": 3, "FAIL": 4, "FAILED": 4, "RED": 4}
+STATUS_ORDER = {
+    "PASS": 1,
+    "GREEN": 1,
+    "HEALTHY": 1,
+    "WARNING": 2,
+    "AMBER": 2,
+    "WARMUP": 2,
+    "RUNNING": 2,
+    "BLOCKED": 3,
+    "FAIL": 4,
+    "FAILED": 4,
+    "RED": 4,
+}
 
 MODULE_SOURCES = {
     "Market Data": ["official_market_data_integrity", "official_market_data_governance", "market_data_governance"],
@@ -82,7 +93,11 @@ def _file_meta(path: str) -> dict[str, Any]:
 def module_status_grid(data: dict[str, pd.DataFrame]) -> pd.DataFrame:
     rows = []
     for module, keys in MODULE_SOURCES.items():
-        present = [(k, data.get(k, pd.DataFrame())) for k in keys if data.get(k, pd.DataFrame()) is not None and not data.get(k, pd.DataFrame()).empty]
+        present = [
+            (k, data.get(k, pd.DataFrame()))
+            for k in keys
+            if data.get(k, pd.DataFrame()) is not None and not data.get(k, pd.DataFrame()).empty
+        ]
         if not present:
             status, source_key, latest_date, rows_count = "WARNING", keys[0], "", 0
         else:
@@ -91,7 +106,17 @@ def module_status_grid(data: dict[str, pd.DataFrame]) -> pd.DataFrame:
             latest_date = max([_date_from(df) for _, df in present] or [""])
             rows_count = sum(len(df) for _, df in present)
         meta = _file_meta(_source_file(source_key))
-        rows.append({"module": module, "status": status, "last_execution": meta.get("modified", ""), "duration": "n/a", "latest_date": latest_date, "source_file": _source_file(source_key), "rows": rows_count})
+        rows.append(
+            {
+                "module": module,
+                "status": status,
+                "last_execution": meta.get("modified", ""),
+                "duration": "n/a",
+                "latest_date": latest_date,
+                "source_file": _source_file(source_key),
+                "rows": rows_count,
+            }
+        )
     return pd.DataFrame(rows)
 
 
@@ -100,7 +125,18 @@ def pipeline_timeline(data: dict[str, pd.DataFrame]) -> pd.DataFrame:
     for step, key in PIPELINE_STEPS:
         df = data.get(key, pd.DataFrame())
         meta = _file_meta(_source_file(key))
-        rows.append({"step": step, "status": _status_from_frame(df) if not df.empty else "WARNING", "start_time": "n/a", "finish_time": meta.get("modified", ""), "duration_seconds": np.nan, "latest_date": _date_from(df), "source_file": _source_file(key), "rows": len(df) if df is not None else 0})
+        rows.append(
+            {
+                "step": step,
+                "status": _status_from_frame(df) if not df.empty else "WARNING",
+                "start_time": "n/a",
+                "finish_time": meta.get("modified", ""),
+                "duration_seconds": np.nan,
+                "latest_date": _date_from(df),
+                "source_file": _source_file(key),
+                "rows": len(df) if df is not None else 0,
+            }
+        )
     return pd.DataFrame(rows)
 
 
@@ -109,18 +145,49 @@ def alert_center(data: dict[str, pd.DataFrame], grid: pd.DataFrame) -> pd.DataFr
     for _, row in grid.iterrows():
         status = str(row.get("status", "WARNING"))
         if status != "PASS":
-            alerts.append({"severity": "critical" if status == "FAIL" else "warning", "blocking": status in {"FAIL", "BLOCKED"}, "alert": f"{row.get('module')} status {status}", "first_detected": row.get("last_execution", ""), "current_state": status, "source_file": row.get("source_file", "")})
+            alerts.append(
+                {
+                    "severity": "critical" if status == "FAIL" else "warning",
+                    "blocking": status in {"FAIL", "BLOCKED"},
+                    "alert": f"{row.get('module')} status {status}",
+                    "first_detected": row.get("last_execution", ""),
+                    "current_state": status,
+                    "source_file": row.get("source_file", ""),
+                }
+            )
     monitor = latest(data.get("official_monitor", pd.DataFrame()))
     if not monitor.empty:
         m = monitor.iloc[-1]
         for col in ["risk_flags", "warnings", "promotion_status", "governance_status"]:
             val = str(m.get(col, "")).strip()
             if val and val.lower() not in {"nan", "none", "pass", "healthy"}:
-                alerts.append({"severity": "warning", "blocking": "blocked" in val.lower(), "alert": f"{col}: {val}", "first_detected": _date_from(monitor), "current_state": val, "source_file": "growth_official_paper_monitor.csv"})
+                alerts.append(
+                    {
+                        "severity": "warning",
+                        "blocking": "blocked" in val.lower(),
+                        "alert": f"{col}: {val}",
+                        "first_detected": _date_from(monitor),
+                        "current_state": val,
+                        "source_file": "growth_official_paper_monitor.csv",
+                    }
+                )
     md = latest(data.get("official_market_data_governance", pd.DataFrame()))
     if not md.empty and "single_source" in " ".join(md.iloc[-1].astype(str).tolist()).lower():
-        alerts.append({"severity": "warning", "blocking": False, "alert": "Secondary provider absent; real capital remains blocked", "first_detected": _date_from(md), "current_state": "single_source_warning", "source_file": "official_market_data_governance.csv"})
-    return pd.DataFrame(alerts).drop_duplicates() if alerts else pd.DataFrame(columns=["severity", "blocking", "alert", "first_detected", "current_state", "source_file"])
+        alerts.append(
+            {
+                "severity": "warning",
+                "blocking": False,
+                "alert": "Secondary provider absent; real capital remains blocked",
+                "first_detected": _date_from(md),
+                "current_state": "single_source_warning",
+                "source_file": "official_market_data_governance.csv",
+            }
+        )
+    return (
+        pd.DataFrame(alerts).drop_duplicates()
+        if alerts
+        else pd.DataFrame(columns=["severity", "blocking", "alert", "first_detected", "current_state", "source_file"])
+    )
 
 
 def incident_center(data: dict[str, pd.DataFrame]) -> pd.DataFrame:
@@ -128,9 +195,21 @@ def incident_center(data: dict[str, pd.DataFrame]) -> pd.DataFrame:
     incident = data.get("governance_incident_registry", pd.DataFrame())
     if not incident.empty:
         for _, r in incident.tail(20).iterrows():
-            rows.append({"date": r.get("date", r.get("timestamp", "")), "severity": r.get("severity", "info"), "event": r.get("incident", r.get("event", "incident")), "source": "governance_incident_registry.csv"})
-    for key, label in [("phase102_report", "accounting audit"), ("phase115_report", "historical replay"), ("growth_system_integrity_report", "integrity report")]:
-        path = _source_file(key); meta = _file_meta(path)
+            rows.append(
+                {
+                    "date": r.get("date", r.get("timestamp", "")),
+                    "severity": r.get("severity", "info"),
+                    "event": r.get("incident", r.get("event", "incident")),
+                    "source": "governance_incident_registry.csv",
+                }
+            )
+    for key, label in [
+        ("phase102_report", "accounting audit"),
+        ("phase115_report", "historical replay"),
+        ("growth_system_integrity_report", "integrity report"),
+    ]:
+        path = _source_file(key)
+        meta = _file_meta(path)
         if meta["exists"]:
             rows.append({"date": meta["modified"], "severity": "info", "event": label, "source": path})
     if not rows:
@@ -145,12 +224,14 @@ def resource_snapshot() -> pd.DataFrame:
     csv_files = list(Path(".").glob("*.csv"))
     total_size = sum(p.stat().st_size for p in csv_files if p.exists())
     backups = sorted([p for p in Path(".").glob("*backup*") if p.exists()], key=lambda p: p.stat().st_mtime, reverse=True)
-    return pd.DataFrame([
-        {"metric": "csv_count", "value": len(csv_files)},
-        {"metric": "csv_total_size_mb", "value": round(total_size / (1024 * 1024), 3)},
-        {"metric": "latest_backup", "value": backups[0].name if backups else "none"},
-        {"metric": "workspace_files", "value": len(list(Path(".").glob("*")))},
-    ])
+    return pd.DataFrame(
+        [
+            {"metric": "csv_count", "value": len(csv_files)},
+            {"metric": "csv_total_size_mb", "value": round(total_size / (1024 * 1024), 3)},
+            {"metric": "latest_backup", "value": backups[0].name if backups else "none"},
+            {"metric": "workspace_files", "value": len(list(Path(".").glob("*")))},
+        ]
+    )
 
 
 def overall_health(grid: pd.DataFrame) -> tuple[str, float, str]:
@@ -189,16 +270,47 @@ def build_mission_control(data: dict[str, pd.DataFrame]) -> dict[str, Any]:
     state = latest(data.get("official_state", pd.DataFrame()))
     daily = latest(data.get("official_daily_status", pd.DataFrame()))
     monitor = latest(data.get("official_monitor", pd.DataFrame()))
-    runtime = pd.DataFrame([
-        {"metric": "total_pipeline_duration", "value": "n/a"},
-        {"metric": "slowest_module", "value": timeline.sort_values("rows", ascending=False).iloc[0]["step"] if not timeline.empty else "n/a"},
-        {"metric": "fastest_module", "value": timeline.sort_values("rows", ascending=True).iloc[0]["step"] if not timeline.empty else "n/a"},
-        {"metric": "csv_files_generated", "value": int(resources.loc[resources["metric"].eq("csv_count"), "value"].iloc[0]) if not resources.empty else 0},
-        {"metric": "rows_processed", "value": int(grid["rows"].sum()) if not grid.empty else 0},
-        {"metric": "holdings", "value": int((~state.get("ticker", pd.Series(dtype=str)).astype(str).str.upper().eq("CASH")).sum()) if not state.empty and "ticker" in state.columns else 0},
-        {"metric": "trades", "value": len(data.get("official_actions", pd.DataFrame()))},
-    ])
-    return {"grid": grid, "timeline": timeline, "alerts": alerts, "incidents": incidents, "resources": resources, "overall_status": overall, "health_pct": health_pct, "final_status": final_status, "performance": perf, "state": state, "daily": daily, "monitor": monitor, "runtime": runtime, "summary": executive_summary(data, grid, overall)}
+    runtime = pd.DataFrame(
+        [
+            {"metric": "total_pipeline_duration", "value": "n/a"},
+            {
+                "metric": "slowest_module",
+                "value": timeline.sort_values("rows", ascending=False).iloc[0]["step"] if not timeline.empty else "n/a",
+            },
+            {
+                "metric": "fastest_module",
+                "value": timeline.sort_values("rows", ascending=True).iloc[0]["step"] if not timeline.empty else "n/a",
+            },
+            {
+                "metric": "csv_files_generated",
+                "value": int(resources.loc[resources["metric"].eq("csv_count"), "value"].iloc[0]) if not resources.empty else 0,
+            },
+            {"metric": "rows_processed", "value": int(grid["rows"].sum()) if not grid.empty else 0},
+            {
+                "metric": "holdings",
+                "value": int((~state.get("ticker", pd.Series(dtype=str)).astype(str).str.upper().eq("CASH")).sum())
+                if not state.empty and "ticker" in state.columns
+                else 0,
+            },
+            {"metric": "trades", "value": len(data.get("official_actions", pd.DataFrame()))},
+        ]
+    )
+    return {
+        "grid": grid,
+        "timeline": timeline,
+        "alerts": alerts,
+        "incidents": incidents,
+        "resources": resources,
+        "overall_status": overall,
+        "health_pct": health_pct,
+        "final_status": final_status,
+        "performance": perf,
+        "state": state,
+        "daily": daily,
+        "monitor": monitor,
+        "runtime": runtime,
+        "summary": executive_summary(data, grid, overall),
+    }
 
 
 def write_mission_outputs(data: dict[str, pd.DataFrame]) -> dict[str, Any]:
@@ -207,46 +319,60 @@ def write_mission_outputs(data: dict[str, pd.DataFrame]) -> dict[str, Any]:
     audit_rows = []
     for key, path in CSV_FILES.items():
         if key in used_keys:
-            df = data.get(key, pd.DataFrame()); meta = _file_meta(path)
-            audit_rows.append({"data_key": key, "source_file": path, "exists": meta["exists"], "rows": len(df), "latest_date": _date_from(df), "modified": meta["modified"]})
+            df = data.get(key, pd.DataFrame())
+            meta = _file_meta(path)
+            audit_rows.append(
+                {
+                    "data_key": key,
+                    "source_file": path,
+                    "exists": meta["exists"],
+                    "rows": len(df),
+                    "latest_date": _date_from(df),
+                    "modified": meta["modified"],
+                }
+            )
     source_audit = pd.DataFrame(audit_rows)
-    integrity = pd.DataFrame([
-        {"check": "read_only", "status": "PASS", "detail": "dashboard monitoring only"},
-        {"check": "no_model_changes", "status": "PASS", "detail": "no strategy modules edited by Mission Control"},
-        {"check": "no_namespace_mixing", "status": "PASS", "detail": "official widgets use official namespace files"},
-        {"check": "module_status_available", "status": "PASS" if not bundle["grid"].empty else "FAIL", "detail": len(bundle["grid"])},
-        {"check": "alerts_available", "status": "PASS", "detail": len(bundle["alerts"])},
-    ])
+    integrity = pd.DataFrame(
+        [
+            {"check": "read_only", "status": "PASS", "detail": "dashboard monitoring only"},
+            {"check": "no_model_changes", "status": "PASS", "detail": "no strategy modules edited by Mission Control"},
+            {"check": "no_namespace_mixing", "status": "PASS", "detail": "official widgets use official namespace files"},
+            {"check": "module_status_available", "status": "PASS" if not bundle["grid"].empty else "FAIL", "detail": len(bundle["grid"])},
+            {"check": "alerts_available", "status": "PASS", "detail": len(bundle["alerts"])},
+        ]
+    )
     source_audit.to_csv("mission_control_source_audit.csv", index=False)
     integrity.to_csv("mission_control_integrity.csv", index=False)
     bundle["runtime"].to_csv("mission_control_runtime.csv", index=False)
     gov_status = bundle["monitor"].iloc[-1].get("governance_status", "unavailable") if not bundle["monitor"].empty else "unavailable"
-    report = chr(10).join([
-        "===== PHASE 116 MISSION CONTROL REPORT =====",
-        "",
-        f"Final status: {bundle['final_status']}",
-        f"Overall system status: {bundle['overall_status']}",
-        f"Overall health: {bundle['health_pct']:.2f}%",
-        "",
-        "Pipeline status:",
-        bundle["timeline"][["step", "status", "latest_date", "source_file"]].to_string(index=False),
-        "",
-        f"Accounting status: {_status_from_frame(data.get('official_accounting_audit', pd.DataFrame()))}",
-        f"Governance status: {gov_status}",
-        f"Research status: {_status_from_frame(data.get('anti_overfitting_governance', pd.DataFrame()))}",
-        "",
-        "Current alerts:",
-        bundle["alerts"].to_string(index=False) if not bundle["alerts"].empty else "none",
-        "",
-        "Pipeline runtime:",
-        bundle["runtime"].to_string(index=False),
-        "",
-        "Render performance: lazy-loaded Streamlit tables/charts; no pipeline execution.",
-        "",
-        "Validation results:",
-        integrity.to_string(index=False),
-        "",
-        "Rules: Read-only dashboard monitoring only. No model, optimizer, ranking, paper, scheduler, accounting, governance logic, parameters or orders changed.",
-    ])
+    report = chr(10).join(
+        [
+            "===== PHASE 116 MISSION CONTROL REPORT =====",
+            "",
+            f"Final status: {bundle['final_status']}",
+            f"Overall system status: {bundle['overall_status']}",
+            f"Overall health: {bundle['health_pct']:.2f}%",
+            "",
+            "Pipeline status:",
+            bundle["timeline"][["step", "status", "latest_date", "source_file"]].to_string(index=False),
+            "",
+            f"Accounting status: {_status_from_frame(data.get('official_accounting_audit', pd.DataFrame()))}",
+            f"Governance status: {gov_status}",
+            f"Research status: {_status_from_frame(data.get('anti_overfitting_governance', pd.DataFrame()))}",
+            "",
+            "Current alerts:",
+            bundle["alerts"].to_string(index=False) if not bundle["alerts"].empty else "none",
+            "",
+            "Pipeline runtime:",
+            bundle["runtime"].to_string(index=False),
+            "",
+            "Render performance: lazy-loaded Streamlit tables/charts; no pipeline execution.",
+            "",
+            "Validation results:",
+            integrity.to_string(index=False),
+            "",
+            "Rules: Read-only dashboard monitoring only. No model, optimizer, ranking, paper, scheduler, accounting, governance logic, parameters or orders changed.",
+        ]
+    )
     Path("phase116_mission_control_report.txt").write_text(report, encoding="utf-8")
     return bundle

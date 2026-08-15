@@ -161,7 +161,11 @@ def run_regime_performance_attribution(
         return result
 
     regime_series, regime_source = _regime_column(predictions) if not predictions.empty else (pd.Series(dtype=str), "missing")
-    regime_by_date = pd.Series(regime_series.values, index=predictions["date"]).groupby(level=0).first() if not predictions.empty else pd.Series(dtype=str)
+    regime_by_date = (
+        pd.Series(regime_series.values, index=predictions["date"]).groupby(level=0).first()
+        if not predictions.empty
+        else pd.Series(dtype=str)
+    )
     portfolio_metrics = _portfolio_metrics_by_regime(portfolio, regime_by_date)
     signal_metrics = _signal_metrics_by_regime(predictions, labels)
 

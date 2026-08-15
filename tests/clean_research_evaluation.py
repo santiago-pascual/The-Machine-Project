@@ -228,9 +228,9 @@ def build_clean_research_evaluation() -> pd.DataFrame:
         config=config,
     )
     result = pd.DataFrame([exploratory, governed])
-    result["governed_has_lower_overfitting_risk"] = (
-        result["trial_group"].eq("governed_trials")
-        & (pd.to_numeric(result["PBO_proxy"], errors="coerce") < pd.to_numeric(result.loc[result["trial_group"].eq("exploratory_trials"), "PBO_proxy"].iloc[0], errors="coerce"))
+    result["governed_has_lower_overfitting_risk"] = result["trial_group"].eq("governed_trials") & (
+        pd.to_numeric(result["PBO_proxy"], errors="coerce")
+        < pd.to_numeric(result.loc[result["trial_group"].eq("exploratory_trials"), "PBO_proxy"].iloc[0], errors="coerce")
     )
     result["registry_rows"] = len(registry)
     return result
@@ -248,8 +248,16 @@ def _update_dashboard_with_clean_risk(evaluation: pd.DataFrame) -> None:
             [
                 {"section": "Clean Research Evaluation", "metric": f"{prefix}_total_trials", "value": row.get("total_trials", np.nan)},
                 {"section": "Clean Research Evaluation", "metric": f"{prefix}_PBO_proxy", "value": row.get("PBO_proxy", np.nan)},
-                {"section": "Clean Research Evaluation", "metric": f"{prefix}_deflated_sharpe", "value": row.get("deflated_sharpe", np.nan)},
-                {"section": "Clean Research Evaluation", "metric": f"{prefix}_promotion_classification", "value": row.get("promotion_classification", "")},
+                {
+                    "section": "Clean Research Evaluation",
+                    "metric": f"{prefix}_deflated_sharpe",
+                    "value": row.get("deflated_sharpe", np.nan),
+                },
+                {
+                    "section": "Clean Research Evaluation",
+                    "metric": f"{prefix}_promotion_classification",
+                    "value": row.get("promotion_classification", ""),
+                },
             ]
         )
     clean = dashboard[dashboard["section"].astype(str).ne("Clean Research Evaluation")]

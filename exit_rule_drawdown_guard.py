@@ -2,9 +2,23 @@
 
 Original module moved to src/exit_rule_drawdown_guard.py — this shim re-exports public API.
 """
-from importlib import import_module
 
-_mod = import_module("src.exit_rule_drawdown_guard")
+from importlib import import_module
+import importlib.util
+import os
+
+_mod = None
+try:
+    _mod = import_module("src.exit_rule_drawdown_guard")
+except Exception:
+    _path = os.path.join(os.path.dirname(__file__), "src", "exit_rule_drawdown_guard.py")
+    if os.path.isfile(_path):
+        spec = importlib.util.spec_from_file_location("src.exit_rule_drawdown_guard", _path)
+        _mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(_mod)
+    else:
+        raise
+
 
 for _attr in dir(_mod):
     if not _attr.startswith("__"):

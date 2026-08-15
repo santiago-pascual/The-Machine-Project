@@ -116,7 +116,9 @@ def _metrics(name: str, daily: pd.DataFrame, return_col: str = "return") -> dict
         "volatility": vol,
         "Sharpe": sharpe,
         "Sortino": _sortino(r, ppy),
-        "Calmar": np.nan if not np.isfinite(dd_stats["max_drawdown"]) or dd_stats["max_drawdown"] >= 0 else cagr / abs(float(dd_stats["max_drawdown"])),
+        "Calmar": np.nan
+        if not np.isfinite(dd_stats["max_drawdown"]) or dd_stats["max_drawdown"] >= 0
+        else cagr / abs(float(dd_stats["max_drawdown"])),
         "max_drawdown": dd_stats["max_drawdown"],
         "recovery_time": dd_stats["recovery_time"],
         "underwater_duration": dd_stats["underwater_duration"],
@@ -204,10 +206,7 @@ def _replay_growth_pipeline(tape: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFr
             ascending=False,
         )
         base_tickers = positive.head(BASE_POSITIONS)["ticker"].astype(str).tolist()
-        soft_keep = day[
-            day["ticker"].astype(str).isin(prior_tickers)
-            & (day["raw_target_return_exact"] > 0)
-        ]["ticker"].astype(str).tolist()
+        soft_keep = day[day["ticker"].astype(str).isin(prior_tickers) & (day["raw_target_return_exact"] > 0)]["ticker"].astype(str).tolist()
         selected = list(dict.fromkeys(base_tickers + soft_keep))[:MAX_POSITIONS]
         exposure, raw_exposure, rolling_vol = _target_exposure(strategy_returns, previous_exposure)
         weight = exposure / len(selected) if selected else 0.0
@@ -382,7 +381,13 @@ def _robustness(daily: pd.DataFrame, trades: pd.DataFrame) -> pd.DataFrame:
     equity = (1.0 + data["return"]).cumprod()
     dd = equity / equity.cummax() - 1.0
     rows.append({"test": "bear_market_proxy_drawdown_periods", **_metrics("bear_market_proxy", data[dd < -0.05]), "removed": ""})
-    rows.append({"test": "sideways_proxy_low_abs_return", **_metrics("sideways_proxy", data[data["return"].abs() <= data["return"].abs().quantile(0.50)]), "removed": ""})
+    rows.append(
+        {
+            "test": "sideways_proxy_low_abs_return",
+            **_metrics("sideways_proxy", data[data["return"].abs() <= data["return"].abs().quantile(0.50)]),
+            "removed": "",
+        }
+    )
     out = pd.DataFrame(rows)
     out["base_total_return"] = base.get("total_return", np.nan)
     out["base_Sharpe"] = base.get("Sharpe", np.nan)
@@ -402,8 +407,12 @@ def _portfolio_stats(daily: pd.DataFrame, trades: pd.DataFrame) -> dict[str, flo
         ticker_contrib = trades.groupby("ticker")["trade_contribution"].sum().sort_values(ascending=False)
         total_positive = float(trades["trade_contribution"].sum())
         out["top_ticker_contribution"] = float(ticker_contrib.iloc[0]) if not ticker_contrib.empty else np.nan
-        out["top_10_trade_contribution"] = float(trades.sort_values("trade_contribution", ascending=False).head(10)["trade_contribution"].sum())
-        out["top_10_trade_contribution_share"] = out["top_10_trade_contribution"] / total_positive if abs(total_positive) > 1e-12 else np.nan
+        out["top_10_trade_contribution"] = float(
+            trades.sort_values("trade_contribution", ascending=False).head(10)["trade_contribution"].sum()
+        )
+        out["top_10_trade_contribution_share"] = (
+            out["top_10_trade_contribution"] / total_positive if abs(total_positive) > 1e-12 else np.nan
+        )
         out["average_holding_period_proxy"] = float(trades.groupby("ticker").size().mean())
     return out
 
@@ -470,7 +479,18 @@ def run_full_production_parity_growth_backtest() -> tuple[pd.DataFrame, pd.DataF
     print("\n===== GROWTH ROBUSTNESS =====")
     print(robustness[["test", "total_return", "CAGR", "Sharpe", "max_drawdown", "observations", "removed"]].to_string(index=False))
     print("\n===== GROWTH RISK =====")
-    risk_cols = ["volatility", "Sortino", "Calmar", "max_drawdown", "recovery_time", "underwater_duration", "average_exposure", "average_cash", "average_turnover", "top_10_trade_contribution_share"]
+    risk_cols = [
+        "volatility",
+        "Sortino",
+        "Calmar",
+        "max_drawdown",
+        "recovery_time",
+        "underwater_duration",
+        "average_exposure",
+        "average_cash",
+        "average_turnover",
+        "top_10_trade_contribution_share",
+    ]
     print(results[[c for c in risk_cols if c in results.columns]].to_string(index=False))
     print("\n===== GROWTH GOVERNANCE =====")
     print(governance.to_string(index=False))

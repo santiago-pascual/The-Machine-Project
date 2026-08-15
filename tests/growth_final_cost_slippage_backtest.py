@@ -172,7 +172,11 @@ def _cost_drag(rows: list[dict[str, object]], scenario_daily: pd.DataFrame) -> p
         ]
         ppy = _periods_per_year(subset["date"]) if not subset.empty else np.nan
         annual_cost_drag = float(_num(subset["period_cost"]).mean() * ppy) if not subset.empty and pd.notna(ppy) else np.nan
-        total_cost_drag = float((1.0 + _num(subset["gross_return"]).fillna(0.0)).prod() - (1.0 + _num(subset["net_return"]).fillna(0.0)).prod()) if not subset.empty else np.nan
+        total_cost_drag = (
+            float((1.0 + _num(subset["gross_return"]).fillna(0.0)).prod() - (1.0 + _num(subset["net_return"]).fillna(0.0)).prod())
+            if not subset.empty
+            else np.nan
+        )
         out_rows.append(
             {
                 "window_start": row["window_start"],
@@ -227,11 +231,15 @@ def _governance(results: pd.DataFrame) -> pd.DataFrame:
                 (conservative["CAGR"] > conservative["CAGR_SPY"]).mean() >= 0.75
                 and (conservative["Sharpe"] > conservative["Sharpe_SPY"]).mean() >= 0.75
             )
-        institutional = bool(
-            conservative_ok
-            and (conservative["CAGR"] > conservative["CAGR_QQQ"]).mean() >= 0.50
-            and (conservative["Sharpe"] > conservative["Sharpe_QQQ"]).mean() >= 0.50
-        ) if not conservative.empty else False
+        institutional = (
+            bool(
+                conservative_ok
+                and (conservative["CAGR"] > conservative["CAGR_QQQ"]).mean() >= 0.50
+                and (conservative["Sharpe"] > conservative["Sharpe_QQQ"]).mean() >= 0.50
+            )
+            if not conservative.empty
+            else False
+        )
         if institutional:
             classification = "institutional_quality_after_costs"
             reason = "Conservative costs still beat SPY broadly and remain competitive versus QQQ."
@@ -275,9 +283,15 @@ def run_cost_backtest() -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
             metrics["commission_bps"] = commission_bps
             metrics["slippage_bps"] = slippage_bps
             metrics["all_in_cost_bps"] = commission_bps + slippage_bps
-            metrics["average_exposure"] = float(_num(subset.get("candidate_exposure", pd.Series(dtype=float))).mean()) if not subset.empty else np.nan
-            metrics["average_cash"] = float(_num(subset.get("candidate_cash", pd.Series(dtype=float))).mean()) if not subset.empty else np.nan
-            metrics["average_turnover"] = float(_num(subset.get("candidate_turnover", pd.Series(dtype=float))).mean()) if not subset.empty else np.nan
+            metrics["average_exposure"] = (
+                float(_num(subset.get("candidate_exposure", pd.Series(dtype=float))).mean()) if not subset.empty else np.nan
+            )
+            metrics["average_cash"] = (
+                float(_num(subset.get("candidate_cash", pd.Series(dtype=float))).mean()) if not subset.empty else np.nan
+            )
+            metrics["average_turnover"] = (
+                float(_num(subset.get("candidate_turnover", pd.Series(dtype=float))).mean()) if not subset.empty else np.nan
+            )
             rows.append(metrics)
     all_daily = pd.concat(daily_frames, ignore_index=True) if daily_frames else pd.DataFrame()
     results = pd.DataFrame(rows)
@@ -285,7 +299,9 @@ def run_cost_backtest() -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     drag = _cost_drag(rows, all_daily)
     breakeven = _breakeven_cost(results)
     if not drag.empty and not breakeven.empty:
-        breakeven_pivot = breakeven.pivot_table(index="window_start", columns="benchmark", values="breakeven_all_in_cost_bps", aggfunc="first").reset_index()
+        breakeven_pivot = breakeven.pivot_table(
+            index="window_start", columns="benchmark", values="breakeven_all_in_cost_bps", aggfunc="first"
+        ).reset_index()
         breakeven_pivot.columns = ["window_start" if c == "window_start" else f"breakeven_cost_vs_{c}" for c in breakeven_pivot.columns]
         drag = drag.merge(breakeven_pivot, on="window_start", how="left")
     governance = _governance(results)
@@ -356,7 +372,15 @@ def _print_report(results: pd.DataFrame, drag: pd.DataFrame, governance: pd.Data
 
     print("\n===== COST DRAG ANALYSIS =====")
     dview = drag[drag["cost_scenario"].isin(["realistic_us_liquid", "conservative", "stress", "extreme"])].copy()
-    cols = ["window_start", "cost_scenario", "all_in_cost_bps", "average_annual_cost_drag", "total_cost_drag", "CAGR_drag_vs_zero_cost", "breakeven_all_in_cost_bps"]
+    cols = [
+        "window_start",
+        "cost_scenario",
+        "all_in_cost_bps",
+        "average_annual_cost_drag",
+        "total_cost_drag",
+        "CAGR_drag_vs_zero_cost",
+        "breakeven_all_in_cost_bps",
+    ]
     dview = dview[[c for c in cols if c in dview.columns]]
     for col in ["average_annual_cost_drag", "total_cost_drag", "CAGR_drag_vs_zero_cost"]:
         if col in dview.columns:
@@ -365,7 +389,17 @@ def _print_report(results: pd.DataFrame, drag: pd.DataFrame, governance: pd.Data
 
     print("\n===== BENCHMARK AFTER COSTS =====")
     bview = results[results["cost_scenario"].isin(["realistic_us_liquid", "conservative", "stress"])][
-        ["window_start", "cost_scenario", "CAGR", "Sharpe", "max_drawdown", "return_vs_SPY", "Sharpe_vs_SPY", "return_vs_QQQ", "Sharpe_vs_QQQ"]
+        [
+            "window_start",
+            "cost_scenario",
+            "CAGR",
+            "Sharpe",
+            "max_drawdown",
+            "return_vs_SPY",
+            "Sharpe_vs_SPY",
+            "return_vs_QQQ",
+            "Sharpe_vs_QQQ",
+        ]
     ].copy()
     for col in ["CAGR", "max_drawdown", "return_vs_SPY", "return_vs_QQQ"]:
         bview[col] = bview[col].map(_pct)

@@ -1,4 +1,3 @@
-
 from __future__ import annotations
 
 from pathlib import Path
@@ -100,7 +99,9 @@ def _risk_flags(ticker: str, meta: dict[str, object], row: pd.Series, ohlcv: pd.
     flags: list[str] = []
     if any(k in text for k in CRYPTO_KEYWORDS):
         flags.append("crypto-linked")
-    if any(k in text for k in SPAC_KEYWORDS) or any(marker in str(ticker).upper() for marker in [".WS", "-WS", "/WS", ".WT", "-WT", "/WT", ".U", "-U", "/U", ".R", "-R", "/R"]):
+    if any(k in text for k in SPAC_KEYWORDS) or any(
+        marker in str(ticker).upper() for marker in [".WS", "-WS", "/WS", ".WT", "-WT", "/WT", ".U", "-U", "/U", ".R", "-R", "/R"]
+    ):
         flags.append("SPAC/warrant/shell-linked")
     if any(k in text for k in BIOTECH_KEYWORDS):
         flags.append("biotech/binary-risk")
@@ -136,7 +137,11 @@ def _risk_flags(ticker: str, meta: dict[str, object], row: pd.Series, ohlcv: pd.
 def _holding_metrics(ticker: str, as_of_date: pd.Timestamp, source_row: pd.Series) -> dict[str, object]:
     ohlcv = _read_ohlcv(ticker, as_of_date)
     price_col = "Adj Close" if not ohlcv.empty and "Adj Close" in ohlcv.columns else "Close"
-    prices = pd.to_numeric(ohlcv[price_col], errors="coerce").dropna() if not ohlcv.empty and price_col in ohlcv.columns else pd.Series(dtype=float)
+    prices = (
+        pd.to_numeric(ohlcv[price_col], errors="coerce").dropna()
+        if not ohlcv.empty and price_col in ohlcv.columns
+        else pd.Series(dtype=float)
+    )
     volumes = pd.to_numeric(ohlcv.get("Volume", pd.Series(dtype=float)), errors="coerce") if not ohlcv.empty else pd.Series(dtype=float)
     returns = prices.pct_change().replace([np.inf, -np.inf], np.nan) if not prices.empty else pd.Series(dtype=float)
     current_price = _num(source_row.get("current_price", np.nan))
@@ -156,10 +161,12 @@ def _holding_metrics(ticker: str, as_of_date: pd.Timestamp, source_row: pd.Serie
     history_days = _num(source_row.get("trading_history_days", np.nan))
     if not np.isfinite(history_days):
         history_days = float(len(ohlcv))
+
     def ret_n(n: int) -> float:
         if len(prices) <= n:
             return np.nan
-        return float(prices.iloc[-1] / prices.iloc[-n-1] - 1.0)
+        return float(prices.iloc[-1] / prices.iloc[-n - 1] - 1.0)
+
     return {
         "current_price": current_price,
         "median_60d_dollar_volume": med_60_dv,
@@ -187,7 +194,9 @@ def _classify(flags: list[str], source_row: pd.Series, blacklist: dict[str, str]
     return "institutional_quality", "no major holding-level risk flags detected"
 
 
-def audit_and_filter_selected_holdings(features_df: pd.DataFrame, selected_tickers: list[str], as_of_date: pd.Timestamp, max_positions: int) -> tuple[list[str], pd.DataFrame, pd.DataFrame]:
+def audit_and_filter_selected_holdings(
+    features_df: pd.DataFrame, selected_tickers: list[str], as_of_date: pd.Timestamp, max_positions: int
+) -> tuple[list[str], pd.DataFrame, pd.DataFrame]:
     if features_df.empty or "ticker" not in features_df.columns:
         return selected_tickers, pd.DataFrame(), pd.DataFrame()
     df = features_df.copy()
@@ -204,43 +213,8 @@ def audit_and_filter_selected_holdings(features_df: pd.DataFrame, selected_ticke
         ohlcv = _read_ohlcv(ticker, as_of_date)
         flags = _risk_flags(ticker, meta, row_for_flags, ohlcv)
         classification, notes = _classify(flags, source, blacklist, ticker)
-        audit_rows.append({
-            "date": as_of_date.date().isoformat(),
-            "ticker": ticker,
-            **meta,
-            **metrics,
-            "is_crypto_linked": "crypto-linked" in flags,
-            "is_spac_linked": "SPAC/warrant/shell-linked" in flags,
-            "is_biotech_binary_risk": "biotech/binary-risk" in flags,
-            "is_adr": "ADR" in flags,
-            "is_microcap_or_low_float": "micro/small-cap" in flags or "low-price" in flags,
-            "is_distressed": "distressed" in flags,
-            "holding_quality_classification": classification,
-            "holding_risk_notes": notes,
-        })
-
-    audit = pd.DataFrame(audit_rows)
-    rejected = set(audit.loc[audit["holding_quality_classification"].eq("reject_from_growth_universe"), "ticker"].astype(str)) if not audit.empty else set()
-    final = [t for t in selected if t not in rejected]
-    replacements: list[dict[str, object]] = []
-
-    if rejected:
-        candidates = df.copy()
-        if "quality_pass" in candidates.columns:
-            candidates = candidates[candidates["quality_pass"].astype(str).str.lower().isin(["true", "1", "yes"])]
-        if "raw_target_return" in candidates.columns:
-            candidates = candidates[pd.to_numeric(candidates["raw_target_return"], errors="coerce") > 0]
-            candidates = candidates.sort_values(["raw_target_return", "signal_strength" if "signal_strength" in candidates.columns else "raw_target_return"], ascending=False)
-        for _, cand in candidates.iterrows():
-            ticker = str(cand.get("ticker", "")).upper().strip()
-            if not ticker or ticker in final or ticker in rejected:
-                continue
-            meta = _metadata(ticker)
-            metrics = _holding_metrics(ticker, as_of_date, cand)
-            row_for_flags = pd.concat([cand, pd.Series(metrics)])
-            flags = _risk_flags(ticker, meta, row_for_flags, _read_ohlcv(ticker, as_of_date))
-            classification, notes = _classify(flags, cand, blacklist, ticker)
-            audit_rows.append({
+        audit_rows.append(
+            {
                 "date": as_of_date.date().isoformat(),
                 "ticker": ticker,
                 **meta,
@@ -253,22 +227,72 @@ def audit_and_filter_selected_holdings(features_df: pd.DataFrame, selected_ticke
                 "is_distressed": "distressed" in flags,
                 "holding_quality_classification": classification,
                 "holding_risk_notes": notes,
-            })
+            }
+        )
+
+    audit = pd.DataFrame(audit_rows)
+    rejected = (
+        set(audit.loc[audit["holding_quality_classification"].eq("reject_from_growth_universe"), "ticker"].astype(str))
+        if not audit.empty
+        else set()
+    )
+    final = [t for t in selected if t not in rejected]
+    replacements: list[dict[str, object]] = []
+
+    if rejected:
+        candidates = df.copy()
+        if "quality_pass" in candidates.columns:
+            candidates = candidates[candidates["quality_pass"].astype(str).str.lower().isin(["true", "1", "yes"])]
+        if "raw_target_return" in candidates.columns:
+            candidates = candidates[pd.to_numeric(candidates["raw_target_return"], errors="coerce") > 0]
+            candidates = candidates.sort_values(
+                ["raw_target_return", "signal_strength" if "signal_strength" in candidates.columns else "raw_target_return"],
+                ascending=False,
+            )
+        for _, cand in candidates.iterrows():
+            ticker = str(cand.get("ticker", "")).upper().strip()
+            if not ticker or ticker in final or ticker in rejected:
+                continue
+            meta = _metadata(ticker)
+            metrics = _holding_metrics(ticker, as_of_date, cand)
+            row_for_flags = pd.concat([cand, pd.Series(metrics)])
+            flags = _risk_flags(ticker, meta, row_for_flags, _read_ohlcv(ticker, as_of_date))
+            classification, notes = _classify(flags, cand, blacklist, ticker)
+            audit_rows.append(
+                {
+                    "date": as_of_date.date().isoformat(),
+                    "ticker": ticker,
+                    **meta,
+                    **metrics,
+                    "is_crypto_linked": "crypto-linked" in flags,
+                    "is_spac_linked": "SPAC/warrant/shell-linked" in flags,
+                    "is_biotech_binary_risk": "biotech/binary-risk" in flags,
+                    "is_adr": "ADR" in flags,
+                    "is_microcap_or_low_float": "micro/small-cap" in flags or "low-price" in flags,
+                    "is_distressed": "distressed" in flags,
+                    "holding_quality_classification": classification,
+                    "holding_risk_notes": notes,
+                }
+            )
             if classification != "reject_from_growth_universe":
                 replaced = sorted(rejected)[len(replacements)] if len(replacements) < len(rejected) else ""
                 final.append(ticker)
-                replacements.append({
-                    "date": as_of_date.date().isoformat(),
-                    "rejected_ticker": replaced,
-                    "replacement_ticker": ticker,
-                    "replacement_classification": classification,
-                    "replacement_reason": notes,
-                })
+                replacements.append(
+                    {
+                        "date": as_of_date.date().isoformat(),
+                        "rejected_ticker": replaced,
+                        "replacement_ticker": ticker,
+                        "replacement_classification": classification,
+                        "replacement_reason": notes,
+                    }
+                )
             if len(final) >= min(max_positions, len(selected)):
                 break
 
     audit = pd.DataFrame(audit_rows).drop_duplicates(["date", "ticker"], keep="first") if audit_rows else audit
-    replacements_df = pd.DataFrame(replacements, columns=["date", "rejected_ticker", "replacement_ticker", "replacement_classification", "replacement_reason"])
+    replacements_df = pd.DataFrame(
+        replacements, columns=["date", "rejected_ticker", "replacement_ticker", "replacement_classification", "replacement_reason"]
+    )
     audit.to_csv(AUDIT_FILE, index=False)
     replacements_df.to_csv(REPLACEMENTS_FILE, index=False)
     return final[:max_positions], audit, replacements_df
@@ -288,7 +312,20 @@ def main() -> None:
     print(f"original selected holdings: {', '.join(selected)}")
     print(f"final selected holdings: {', '.join(final)}")
     if not audit.empty:
-        cols = [c for c in ["ticker", "holding_quality_classification", "holding_risk_notes", "current_price", "median_60d_dollar_volume", "avg_volume_20d", "realized_vol_60d", "trading_history_days"] if c in audit.columns]
+        cols = [
+            c
+            for c in [
+                "ticker",
+                "holding_quality_classification",
+                "holding_risk_notes",
+                "current_price",
+                "median_60d_dollar_volume",
+                "avg_volume_20d",
+                "realized_vol_60d",
+                "trading_history_days",
+            ]
+            if c in audit.columns
+        ]
         print(audit[cols].to_string(index=False))
     if not replacements.empty:
         print("replacements:")

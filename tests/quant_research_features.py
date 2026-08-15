@@ -274,10 +274,7 @@ def gaussian_hmm_two_state(returns: pd.Series, n_iter: int = 25) -> dict[str, fl
     pi = np.array([0.5, 0.5], dtype=float)
 
     for _ in range(n_iter):
-        emission = np.vstack([
-            np.exp(-0.5 * (x - means[s]) ** 2 / vars_[s]) / np.sqrt(2.0 * np.pi * vars_[s])
-            for s in range(2)
-        ]).T + EPS
+        emission = np.vstack([np.exp(-0.5 * (x - means[s]) ** 2 / vars_[s]) / np.sqrt(2.0 * np.pi * vars_[s]) for s in range(2)]).T + EPS
         alpha = np.zeros((len(x), 2), dtype=float)
         scale = np.zeros(len(x), dtype=float)
         alpha[0] = pi * emission[0]

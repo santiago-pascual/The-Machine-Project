@@ -107,8 +107,23 @@ def _official_holdings(data: dict[str, pd.DataFrame]) -> pd.DataFrame:
             "tradability_exclusion_reason",
         ]
         feature_cols = [c for c in feature_cols if c in features.columns]
-        state = state.merge(features[feature_cols].drop_duplicates("ticker", keep="last"), on="ticker", how="left", suffixes=("", "_feature"))
-        for col in ["raw_target_rank", "raw_target_return_exact", "raw_target_feature_source", "raw_target_current_features_available", "median_60d_dollar_volume", "avg_volume_20d", "realized_vol_60d", "holding_quality_classification", "holding_risk_notes", "soft_exit_status", "passed_tradability_filter", "tradability_exclusion_reason"]:
+        state = state.merge(
+            features[feature_cols].drop_duplicates("ticker", keep="last"), on="ticker", how="left", suffixes=("", "_feature")
+        )
+        for col in [
+            "raw_target_rank",
+            "raw_target_return_exact",
+            "raw_target_feature_source",
+            "raw_target_current_features_available",
+            "median_60d_dollar_volume",
+            "avg_volume_20d",
+            "realized_vol_60d",
+            "holding_quality_classification",
+            "holding_risk_notes",
+            "soft_exit_status",
+            "passed_tradability_filter",
+            "tradability_exclusion_reason",
+        ]:
             feature_col = f"{col}_feature"
             if feature_col in state.columns:
                 if col in state.columns:
@@ -119,7 +134,9 @@ def _official_holdings(data: dict[str, pd.DataFrame]) -> pd.DataFrame:
 
     costs = data.get("official_cost_ledger", pd.DataFrame())
     if not costs.empty and "ticker" in costs.columns:
-        cost_col = "estimated_total_cost" if "estimated_total_cost" in costs.columns else "total_cost" if "total_cost" in costs.columns else None
+        cost_col = (
+            "estimated_total_cost" if "estimated_total_cost" in costs.columns else "total_cost" if "total_cost" in costs.columns else None
+        )
         if cost_col:
             cost_by_ticker = costs.groupby("ticker", dropna=False)[cost_col].sum().reset_index(name="estimated_costs_total")
             state = state.merge(cost_by_ticker, on="ticker", how="left")
@@ -138,20 +155,27 @@ def _holding_health(row: pd.Series) -> tuple[int, str, str]:
     notes = []
     quality = str(row.get("holding_quality_classification", "")).lower()
     if any(x in quality for x in ["reject", "weak", "critical"]):
-        score -= 35; notes.append("quality weak")
+        score -= 35
+        notes.append("quality weak")
     elif "speculative" in quality or "moderate" in quality:
-        score -= 15; notes.append("quality moderate")
+        score -= 15
+        notes.append("quality moderate")
     if bool(row.get("raw_target_current_features_available", True)) is False:
-        score -= 20; notes.append("raw target unavailable")
+        score -= 20
+        notes.append("raw target unavailable")
     if str(row.get("raw_target_feature_source", "")).lower() not in {"raw_target_return_exact", "nan", ""}:
-        score -= 20; notes.append("non-exact raw target")
+        score -= 20
+        notes.append("non-exact raw target")
     vol = row.get("realized_vol_60d", np.nan)
     if pd.notna(vol) and float(vol) > 1.2:
-        score -= 20; notes.append("high volatility")
+        score -= 20
+        notes.append("high volatility")
     if str(row.get("action", "")).upper() == "SELL":
-        score -= 30; notes.append("sell action")
+        score -= 30
+        notes.append("sell action")
     if pd.isna(row.get("paper_position_weight", np.nan)) or float(row.get("paper_position_weight", 0) or 0) <= 0:
-        score -= 10; notes.append("zero weight")
+        score -= 10
+        notes.append("zero weight")
     score = int(max(0, min(100, score)))
     if score >= 85:
         label, css = "Excellent", "pass"
@@ -187,7 +211,9 @@ def _enrich_holdings(holdings: pd.DataFrame) -> pd.DataFrame:
     out["daily_pnl_value"] = out["prev_official_position_value"] * out["asset_daily_return"]
     out.loc[out["is_cash"], "daily_pnl_value"] = 0.0
     out["asset_price_based_position_value"] = out["prev_official_position_value"] * (1.0 + out["asset_daily_return"].fillna(0.0))
-    out["asset_price_based_position_value"] = out["asset_price_based_position_value"].where(out["asset_price_based_position_value"].notna(), out["position_value"])
+    out["asset_price_based_position_value"] = out["asset_price_based_position_value"].where(
+        out["asset_price_based_position_value"].notna(), out["position_value"]
+    )
 
     out["return_since_entry"] = out["current_price"] / out["entry_price"] - 1.0
     out.loc[out["is_cash"], "return_since_entry"] = 0.0
@@ -221,9 +247,9 @@ def _enrich_holdings(holdings: pd.DataFrame) -> pd.DataFrame:
                     out.loc[out["ticker"].astype(str).eq(ticker), "correlation_with_portfolio"] = corr
                     out.loc[out["ticker"].astype(str).eq(ticker), "beta"] = beta
         else:
-            risk_ok = float((weights ** 2).sum()) > 0 if not weights.empty else False
+            risk_ok = float((weights**2).sum()) > 0 if not weights.empty else False
             if risk_ok:
-                denom = float((weights ** 2).sum())
+                denom = float((weights**2).sum())
                 out["risk_contribution"] = np.where(~out["is_cash"], out["weight"].fillna(0.0) ** 2 / denom, 0.0)
     out["drawdown_contribution"] = np.where(out["daily_pnl_value"] < 0, out["daily_pnl_value"], 0.0)
     out["turnover_contribution"] = numeric(out.get("weight_change", pd.Series(0.0, index=out.index))).abs().fillna(0.0)
@@ -233,7 +259,20 @@ def _enrich_holdings(holdings: pd.DataFrame) -> pd.DataFrame:
     out["health_label"] = scores[1]
     out["health_detail"] = scores[2].astype(str).str.split("|", n=1).str[1]
     out["health_status"] = scores[2].astype(str).str.split("|", n=1).str[0]
-    for col in ["company_name", "sector", "industry", "country", "market_cap", "tradability_status", "soft_exit_status", "institutional_filters_passed", "liquidity_score", "adv_participation", "beta", "correlation_with_portfolio"]:
+    for col in [
+        "company_name",
+        "sector",
+        "industry",
+        "country",
+        "market_cap",
+        "tradability_status",
+        "soft_exit_status",
+        "institutional_filters_passed",
+        "liquidity_score",
+        "adv_participation",
+        "beta",
+        "correlation_with_portfolio",
+    ]:
         if col not in out.columns:
             out[col] = np.nan
     return out
@@ -275,17 +314,19 @@ def _sparkline_fig(ticker: str) -> go.Figure | None:
         return None
     work["normalized"] = work[ticker] / first * 100.0
     work["daily_return"] = work[ticker].pct_change()
-    fig = go.Figure(go.Scatter(
-        x=work["date"],
-        y=work["normalized"],
-        mode="lines",
-        name=f"{ticker} 30D",
-        line={"color": ORANGE, "width": 2.4},
-        fill="tozeroy",
-        fillcolor="rgba(255,122,0,0.10)",
-        customdata=np.stack([work[ticker], work["daily_return"]], axis=-1),
-        hovertemplate="%{x|%Y-%m-%d}<br>price=%{customdata[0]:.2f}<br>daily return=%{customdata[1]:.2%}<extra></extra>",
-    ))
+    fig = go.Figure(
+        go.Scatter(
+            x=work["date"],
+            y=work["normalized"],
+            mode="lines",
+            name=f"{ticker} 30D",
+            line={"color": ORANGE, "width": 2.4},
+            fill="tozeroy",
+            fillcolor="rgba(255,122,0,0.10)",
+            customdata=np.stack([work[ticker], work["daily_return"]], axis=-1),
+            hovertemplate="%{x|%Y-%m-%d}<br>price=%{customdata[0]:.2f}<br>daily return=%{customdata[1]:.2%}<extra></extra>",
+        )
+    )
     fig = apply_plotly_layout(fig, f"{ticker} 30D Price History")
     fig.update_layout(height=180, margin={"l": 18, "r": 18, "t": 42, "b": 22}, showlegend=False)
     fig.update_yaxes(title="Normalized price", ticksuffix="")
@@ -302,7 +343,7 @@ def _render_header(st, holdings: pd.DataFrame, data: dict[str, pd.DataFrame]) ->
         f"""
         <div class='page-head'>
           <div>
-            <h2 class='page-title'>Portfolio Terminal {status_badge('OFFICIAL', 'official')}</h2>
+            <h2 class='page-title'>Portfolio Terminal {status_badge("OFFICIAL", "official")}</h2>
             <div class='page-subtitle'>Official Forward Paper | {MODEL_VERSION} | Latest date {latest_market_date(data)}</div>
           </div>
           <div class='small-muted'>Exposure {fmt_pct(exposure)} · Cash {fmt_pct(cash)} · Next rebalance {_safe(next_rebalance)}</div>
@@ -318,8 +359,18 @@ def _render_summary(st, holdings: pd.DataFrame) -> None:
         st.info("No official non-cash holdings available.")
         return
     rows = [
-        [("Current Holdings", str(metrics["current_holdings"])), ("Largest Position", metrics["largest_position"]), ("Best Performer", metrics["best_performer"]), ("Worst Performer", metrics["worst_performer"])],
-        [("Largest Risk Contributor", metrics["largest_risk"]), ("Average Expected Return", fmt_pct(metrics["avg_expected_return"])), ("Average Quality Score", fmt_num(metrics["avg_quality"], 1)), ("Average Holding Age", fmt_num(metrics["avg_holding_age"], 1) + " days")],
+        [
+            ("Current Holdings", str(metrics["current_holdings"])),
+            ("Largest Position", metrics["largest_position"]),
+            ("Best Performer", metrics["best_performer"]),
+            ("Worst Performer", metrics["worst_performer"]),
+        ],
+        [
+            ("Largest Risk Contributor", metrics["largest_risk"]),
+            ("Average Expected Return", fmt_pct(metrics["avg_expected_return"])),
+            ("Average Quality Score", fmt_num(metrics["avg_quality"], 1)),
+            ("Average Holding Age", fmt_num(metrics["avg_holding_age"], 1) + " days"),
+        ],
     ]
     for row in rows:
         cols = st.columns(4)
@@ -331,7 +382,10 @@ def _render_summary(st, holdings: pd.DataFrame) -> None:
 def _render_holding_cards(st, holdings: pd.DataFrame) -> None:
     non_cash = _non_cash(holdings)
     if non_cash.empty:
-        st.markdown("<div class='alert-box info'>No active official holdings. Portfolio is currently cash or official state is unavailable.</div>", unsafe_allow_html=True)
+        st.markdown(
+            "<div class='alert-box info'>No active official holdings. Portfolio is currently cash or official state is unavailable.</div>",
+            unsafe_allow_html=True,
+        )
         return
     for _, row in non_cash.sort_values("weight", ascending=False).iterrows():
         ticker = str(row.get("ticker", "n/a"))
@@ -339,31 +393,69 @@ def _render_holding_cards(st, holdings: pd.DataFrame) -> None:
             f"""
             <div class='holding-card'>
               <div style='display:flex;justify-content:space-between;gap:18px;align-items:flex-start'>
-                <div><div class='holding-ticker'>{ticker}</div><div class='small-muted'>{_safe(row.get('company_name'))} · {_safe(row.get('sector'))} · {_safe(row.get('industry'))} · {_safe(row.get('country'))}</div></div>
-                <div>{status_badge(str(row.get('health_label', 'n/a')), str(row.get('health_status', 'neutral')))} {status_badge('OFFICIAL', 'official')}</div>
+                <div><div class='holding-ticker'>{ticker}</div><div class='small-muted'>{_safe(row.get("company_name"))} · {_safe(row.get("sector"))} · {_safe(row.get("industry"))} · {_safe(row.get("country"))}</div></div>
+                <div>{status_badge(str(row.get("health_label", "n/a")), str(row.get("health_status", "neutral")))} {status_badge("OFFICIAL", "official")}</div>
               </div>
-              <div class='small-muted'>Health score: {row.get('health_score', 'n/a')}/100 · {row.get('health_detail', '')}</div>
+              <div class='small-muted'>Health score: {row.get("health_score", "n/a")}/100 · {row.get("health_detail", "")}</div>
             </div>
             """,
             unsafe_allow_html=True,
         )
         a, b, c, d = st.columns(4)
         with a:
-            metric_card(st, "Weight", fmt_pct(row.get("weight")), f"Official alloc {fmt_money(row.get('position_value'))} · price mark {fmt_money(row.get('asset_price_based_position_value'))}")
-            metric_card(st, "Current / Entry", f"{fmt_money(row.get('current_price'))}", f"entry {fmt_money(row.get('entry_price'))} · prev official {fmt_money(row.get('prev_official_price'))}")
+            metric_card(
+                st,
+                "Weight",
+                fmt_pct(row.get("weight")),
+                f"Official alloc {fmt_money(row.get('position_value'))} · price mark {fmt_money(row.get('asset_price_based_position_value'))}",
+            )
+            metric_card(
+                st,
+                "Current / Entry",
+                f"{fmt_money(row.get('current_price'))}",
+                f"entry {fmt_money(row.get('entry_price'))} · prev official {fmt_money(row.get('prev_official_price'))}",
+            )
         with b:
-            metric_card(st, "Daily Return", fmt_pct(row.get("daily_return")), f"Daily PnL {fmt_money(row.get('daily_pnl_value'))}", state="positive" if (row.get("daily_return", 0) or 0) >= 0 else "negative")
-            metric_card(st, "Since Entry", fmt_pct(row.get("return_since_entry")), f"Unrealized {fmt_money(row.get('unrealized_pnl_value'))}")
+            metric_card(
+                st,
+                "Daily Return",
+                fmt_pct(row.get("daily_return")),
+                f"Daily PnL {fmt_money(row.get('daily_pnl_value'))}",
+                state="positive" if (row.get("daily_return", 0) or 0) >= 0 else "negative",
+            )
+            metric_card(
+                st, "Since Entry", fmt_pct(row.get("return_since_entry")), f"Unrealized {fmt_money(row.get('unrealized_pnl_value'))}"
+            )
         with c:
-            metric_card(st, "Expected Return", fmt_pct(row.get("expected_return_display")), f"Raw target rank {_safe(row.get('raw_target_rank'))}")
-            metric_card(st, "Raw Target Source", _safe(row.get("raw_target_feature_source"), "raw_target_return_exact"), f"exact available {_safe(row.get('raw_target_current_features_available'))}")
+            metric_card(
+                st, "Expected Return", fmt_pct(row.get("expected_return_display")), f"Raw target rank {_safe(row.get('raw_target_rank'))}"
+            )
+            metric_card(
+                st,
+                "Raw Target Source",
+                _safe(row.get("raw_target_feature_source"), "raw_target_return_exact"),
+                f"exact available {_safe(row.get('raw_target_current_features_available'))}",
+            )
         with d:
             beta_val = fmt_num(row.get("beta"), 2) if pd.notna(row.get("beta", np.nan)) else "n/a"
-            corr_val = fmt_num(row.get("correlation_with_portfolio"), 2) if pd.notna(row.get("correlation_with_portfolio", np.nan)) else "n/a"
+            corr_val = (
+                fmt_num(row.get("correlation_with_portfolio"), 2) if pd.notna(row.get("correlation_with_portfolio", np.nan)) else "n/a"
+            )
             vol_text = fmt_pct(row.get("realized_vol_60d")) if pd.notna(row.get("realized_vol_60d", np.nan)) else "n/a"
-            metric_card(st, "Risk Contribution", fmt_pct(row.get("risk_contribution")), f"60D vol {vol_text} · beta {beta_val} · corr {corr_val}")
-            liq_main = fmt_money(row.get("median_60d_dollar_volume")) if pd.notna(row.get("median_60d_dollar_volume", np.nan)) else fmt_money(row.get("market_cap"))
-            metric_card(st, "Liquidity / Size", liq_main, f"market cap {fmt_money(row.get('market_cap'))} · 20D vol {_safe(row.get('avg_volume_20d'))}")
+            metric_card(
+                st, "Risk Contribution", fmt_pct(row.get("risk_contribution")), f"60D vol {vol_text} · beta {beta_val} · corr {corr_val}"
+            )
+            liq_main = (
+                fmt_money(row.get("median_60d_dollar_volume"))
+                if pd.notna(row.get("median_60d_dollar_volume", np.nan))
+                else fmt_money(row.get("market_cap"))
+            )
+            metric_card(
+                st,
+                "Liquidity / Size",
+                liq_main,
+                f"market cap {fmt_money(row.get('market_cap'))} · 20D vol {_safe(row.get('avg_volume_20d'))}",
+            )
         st.caption(
             "Why this position? "
             f"Raw Target Rank: {_safe(row.get('raw_target_rank'))}; Expected Return: {fmt_pct(row.get('expected_return_display'))}; "
@@ -387,12 +479,20 @@ def _allocation_charts(st, holdings: pd.DataFrame) -> None:
     work["display_weight"] = work["weight"].fillna(0.0)
     left, right = st.columns(2)
     with left:
-        fig = px.treemap(work, path=[px.Constant("Portfolio"), "sector", "industry", "ticker"], values="display_weight", color="ticker", color_discrete_sequence=ORANGE_SEQUENCE)
+        fig = px.treemap(
+            work,
+            path=[px.Constant("Portfolio"), "sector", "industry", "ticker"],
+            values="display_weight",
+            color="ticker",
+            color_discrete_sequence=ORANGE_SEQUENCE,
+        )
         fig.update_traces(marker={"line": {"color": "#05070A", "width": 1.5}}, textinfo="label+percent parent")
         fig = apply_plotly_layout(fig, "Allocation Treemap")
         st.plotly_chart(fig, width="stretch")
     with right:
-        fig = px.sunburst(work, path=["sector", "industry", "ticker"], values="display_weight", color="ticker", color_discrete_sequence=ORANGE_SEQUENCE)
+        fig = px.sunburst(
+            work, path=["sector", "industry", "ticker"], values="display_weight", color="ticker", color_discrete_sequence=ORANGE_SEQUENCE
+        )
         fig.update_traces(marker={"line": {"color": "#05070A", "width": 1.5}}, textinfo="label+percent parent")
         fig = apply_plotly_layout(fig, "Allocation Sunburst")
         st.plotly_chart(fig, width="stretch")
@@ -404,7 +504,9 @@ def _allocation_charts(st, holdings: pd.DataFrame) -> None:
         fig = apply_plotly_layout(fig, "Allocation Donut")
         st.plotly_chart(fig, width="stretch")
     with right:
-        fig = px.bar(work.sort_values("display_weight"), x="ticker", y="display_weight", color="ticker", color_discrete_sequence=ORANGE_SEQUENCE)
+        fig = px.bar(
+            work.sort_values("display_weight"), x="ticker", y="display_weight", color="ticker", color_discrete_sequence=ORANGE_SEQUENCE
+        )
         fig.update_yaxes(tickformat=".0%")
         fig = apply_plotly_layout(fig, "Position Weights")
         st.plotly_chart(fig, width="stretch")
@@ -414,7 +516,15 @@ def _contribution_tables(st, holdings: pd.DataFrame) -> None:
     non_cash = _non_cash(holdings)
     if non_cash.empty:
         return
-    cols = ["ticker", "return_contribution", "risk_contribution", "drawdown_contribution", "turnover_contribution", "estimated_costs_total", "expected_return_display"]
+    cols = [
+        "ticker",
+        "return_contribution",
+        "risk_contribution",
+        "drawdown_contribution",
+        "turnover_contribution",
+        "estimated_costs_total",
+        "expected_return_display",
+    ]
     show = non_cash[[c for c in cols if c in non_cash.columns]].copy()
     st.dataframe(show.sort_values("risk_contribution", ascending=False), width="stretch")
     fig = go.Figure()
@@ -436,7 +546,7 @@ def _diversification(st, holdings: pd.DataFrame) -> None:
     weights = non_cash["weight"].fillna(0.0).sort_values(ascending=False)
     cash_weight = holdings.loc[holdings["is_cash"], "weight"].sum() if "is_cash" in holdings.columns else np.nan
     metrics = {
-        "HHI": float((weights ** 2).sum()),
+        "HHI": float((weights**2).sum()),
         "Largest position": float(weights.max()) if not weights.empty else np.nan,
         "Smallest position": float(weights.min()) if not weights.empty else np.nan,
         "Cash": float(cash_weight) if pd.notna(cash_weight) else np.nan,
@@ -468,7 +578,15 @@ def _timeline(st, data: dict[str, pd.DataFrame]) -> None:
         return
     work["action"] = work["action"].astype(str).str.upper()
     color_map = {"BUY": GREEN, "SELL": RED, "INCREASE": INFO, "REDUCE": AMBER, "HOLD": "#8B98A5", "CASH_CHANGE": "#4B5563"}
-    fig = px.scatter(work, x="date", y="ticker", color="action", size=numeric(work.get("estimated_trade_value", pd.Series(1, index=work.index))).abs().fillna(1), color_discrete_map=color_map, hover_data=[c for c in ["old_weight", "new_weight", "estimated_trade_value", "reason"] if c in work.columns])
+    fig = px.scatter(
+        work,
+        x="date",
+        y="ticker",
+        color="action",
+        size=numeric(work.get("estimated_trade_value", pd.Series(1, index=work.index))).abs().fillna(1),
+        color_discrete_map=color_map,
+        hover_data=[c for c in ["old_weight", "new_weight", "estimated_trade_value", "reason"] if c in work.columns],
+    )
     fig = apply_plotly_layout(fig, "Position Action Timeline")
     st.plotly_chart(fig, width="stretch")
     with st.expander("Official action ledger"):
@@ -483,7 +601,12 @@ def _pnl_terminal(st, holdings: pd.DataFrame) -> None:
         return
     pnl_cols = ["daily_pnl_value", "unrealized_pnl_value", "estimated_net_pnl", "realized_pnl_if_sold"]
     fig = go.Figure()
-    for col, name, color in [("daily_pnl_value", "Daily", INFO), ("unrealized_pnl_value", "Unrealized", ORANGE), ("estimated_net_pnl", "Estimated Net", AMBER), ("realized_pnl_if_sold", "Realized if Closed", PURPLE)]:
+    for col, name, color in [
+        ("daily_pnl_value", "Daily", INFO),
+        ("unrealized_pnl_value", "Unrealized", ORANGE),
+        ("estimated_net_pnl", "Estimated Net", AMBER),
+        ("realized_pnl_if_sold", "Realized if Closed", PURPLE),
+    ]:
         if col in non_cash.columns:
             fig.add_trace(go.Bar(x=non_cash["ticker"], y=numeric(non_cash[col]), name=name, marker_color=color))
     fig = apply_plotly_layout(fig, "PnL Terminal")
@@ -497,14 +620,26 @@ def _portfolio_evolution(st, data: dict[str, pd.DataFrame]) -> None:
         return
     work = state.copy()
     work["weight"] = numeric(work["paper_position_weight"]).fillna(0.0)
-    fig = px.bar(work, x="ticker", y="weight", color="ticker", animation_frame=work["date"].astype(str), range_y=[0, max(0.75, work["weight"].max() * 1.2)], color_discrete_sequence=ORANGE_SEQUENCE)
+    fig = px.bar(
+        work,
+        x="ticker",
+        y="weight",
+        color="ticker",
+        animation_frame=work["date"].astype(str),
+        range_y=[0, max(0.75, work["weight"].max() * 1.2)],
+        color_discrete_sequence=ORANGE_SEQUENCE,
+    )
     fig.update_yaxes(tickformat=".0%")
     fig = apply_plotly_layout(fig, "Portfolio Evolution by Official Date")
     st.plotly_chart(fig, width="stretch")
 
 
 def render_portfolio_terminal(st, data: dict[str, pd.DataFrame]) -> None:
-    missing = [filename for key, filename in OFFICIAL_PORTFOLIO_SOURCES.items() if data.get(f"official_{key}", pd.DataFrame()).empty and key not in {"cost_ledger", "position_pnl", "trade_lifecycle"}]
+    missing = [
+        filename
+        for key, filename in OFFICIAL_PORTFOLIO_SOURCES.items()
+        if data.get(f"official_{key}", pd.DataFrame()).empty and key not in {"cost_ledger", "position_pnl", "trade_lifecycle"}
+    ]
     # Explicit map because dashboard_data_layer names do not all include the same suffix.
     source_map = {
         "state": data.get("official_state", pd.DataFrame()),
@@ -522,7 +657,10 @@ def render_portfolio_terminal(st, data: dict[str, pd.DataFrame]) -> None:
     if missing:
         st.warning("Missing official Portfolio source(s): " + ", ".join(missing))
     if holdings.empty:
-        st.markdown("<div class='alert-box info'>Official portfolio is empty or state file is unavailable. No holdings to display.</div>", unsafe_allow_html=True)
+        st.markdown(
+            "<div class='alert-box info'>Official portfolio is empty or state file is unavailable. No holdings to display.</div>",
+            unsafe_allow_html=True,
+        )
         return
     st.subheader("Summary")
     _render_summary(st, holdings)
@@ -560,7 +698,15 @@ def build_portfolio_terminal_audits(data: dict[str, pd.DataFrame]) -> tuple[pd.D
         if not df.empty and "date" in df.columns:
             dates = pd.to_datetime(df["date"], errors="coerce")
             date_range = f"{dates.min().date()} to {dates.max().date()}" if dates.notna().any() else ""
-        audit_rows.append({"source_file": filename, "namespace": "official_forward_paper", "loaded": not df.empty, "row_count": len(df), "date_range": date_range})
+        audit_rows.append(
+            {
+                "source_file": filename,
+                "namespace": "official_forward_paper",
+                "loaded": not df.empty,
+                "row_count": len(df),
+                "date_range": date_range,
+            }
+        )
     source_audit = pd.DataFrame(audit_rows)
     holdings = _enrich_holdings(_official_holdings(data))
     non_cash = _non_cash(holdings)
@@ -569,12 +715,32 @@ def build_portfolio_terminal_audits(data: dict[str, pd.DataFrame]) -> tuple[pd.D
     actions_available = not data.get("official_actions", pd.DataFrame()).empty
     checks = [
         {"check": "official_namespace_only", "status": "PASS", "detail": "Portfolio terminal uses growth_official_* source map only"},
-        {"check": "holding_cards_render", "status": "PASS" if not non_cash.empty else "FAIL", "detail": ",".join(non_cash.get("ticker", pd.Series(dtype=str)).astype(str).tolist())},
-        {"check": "treemap_sunburst_inputs", "status": "PASS" if not non_cash.empty and "weight" in non_cash.columns else "FAIL", "detail": "official holdings with weights"},
-        {"check": "sparklines_inputs", "status": "PASS", "detail": "uses local yahoo_ohlcv_price_cache for mini chart only; no model data mutation"},
+        {
+            "check": "holding_cards_render",
+            "status": "PASS" if not non_cash.empty else "FAIL",
+            "detail": ",".join(non_cash.get("ticker", pd.Series(dtype=str)).astype(str).tolist()),
+        },
+        {
+            "check": "treemap_sunburst_inputs",
+            "status": "PASS" if not non_cash.empty and "weight" in non_cash.columns else "FAIL",
+            "detail": "official holdings with weights",
+        },
+        {
+            "check": "sparklines_inputs",
+            "status": "PASS",
+            "detail": "uses local yahoo_ohlcv_price_cache for mini chart only; no model data mutation",
+        },
         {"check": "timeline_inputs", "status": "PASS" if actions_available else "FAIL", "detail": "growth_official_paper_actions.csv"},
-        {"check": "pnl_reconciles", "status": "PASS" if pnl_available else "WARNING", "detail": "growth_official_position_pnl.csv available" if pnl_available else "position pnl missing"},
-        {"check": "weights_sum_to_one", "status": "PASS" if pd.notna(weight_sum) and abs(weight_sum - 1.0) < 1e-6 else "FAIL", "detail": f"weight_sum={weight_sum}"},
+        {
+            "check": "pnl_reconciles",
+            "status": "PASS" if pnl_available else "WARNING",
+            "detail": "growth_official_position_pnl.csv available" if pnl_available else "position pnl missing",
+        },
+        {
+            "check": "weights_sum_to_one",
+            "status": "PASS" if pd.notna(weight_sum) and abs(weight_sum - 1.0) < 1e-6 else "FAIL",
+            "detail": f"weight_sum={weight_sum}",
+        },
         {"check": "no_namespace_mixing", "status": "PASS", "detail": "debug/reconstructed files are not referenced"},
     ]
     integrity = pd.DataFrame(checks)

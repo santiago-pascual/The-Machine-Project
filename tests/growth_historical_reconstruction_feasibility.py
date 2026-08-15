@@ -191,7 +191,9 @@ def reconstructability(dependencies: pd.DataFrame) -> pd.DataFrame:
                 "can_reconstruct_exact_pre_2022": bool(classification == "fully_reconstructable" and component in {"exposure_cap_60"}),
                 "can_reconstruct_approx_pre_2022": bool(classification in {"fully_reconstructable", "partially_reconstructable"}),
                 "price_only_possible": bool(component in {"volatility_target_22pct", "exposure_cap_60"}),
-                "blocking_issue": "" if classification != "not_reconstructable" else "requires model-generated target snapshots or full historical pipeline replay",
+                "blocking_issue": ""
+                if classification != "not_reconstructable"
+                else "requires model-generated target snapshots or full historical pipeline replay",
                 "notes": row.get("notes", ""),
             }
         )
@@ -211,8 +213,14 @@ def historical_data_coverage() -> pd.DataFrame:
 
     rows = []
     for ticker in tickers:
-        snap_t = snapshots[snapshots.get("ticker", pd.Series(dtype=str)).astype(str).eq(ticker)].copy() if not snapshots.empty else pd.DataFrame()
-        real_t = realized[realized.get("ticker", pd.Series(dtype=str)).astype(str).eq(ticker)].copy() if not realized.empty else pd.DataFrame()
+        snap_t = (
+            snapshots[snapshots.get("ticker", pd.Series(dtype=str)).astype(str).eq(ticker)].copy()
+            if not snapshots.empty
+            else pd.DataFrame()
+        )
+        real_t = (
+            realized[realized.get("ticker", pd.Series(dtype=str)).astype(str).eq(ticker)].copy() if not realized.empty else pd.DataFrame()
+        )
         all_dates = snap_t["date"] if not snap_t.empty else pd.Series(dtype="datetime64[ns]")
         first_date = all_dates.min() if not all_dates.empty else pd.NaT
         last_date = all_dates.max() if not all_dates.empty else pd.NaT
@@ -316,10 +324,24 @@ def run_phase_69() -> None:
     plan, governance = reconstruction_plan(dependencies, coverage)
 
     print("\n===== FEATURE DEPENDENCY AUDIT =====")
-    print(dependencies[["component", "earliest_available_date", "can_be_reconstructed_from_prices_only", "requires_forecast_snapshots", "requires_model_generated_state"]].to_string(index=False))
+    print(
+        dependencies[
+            [
+                "component",
+                "earliest_available_date",
+                "can_be_reconstructed_from_prices_only",
+                "requires_forecast_snapshots",
+                "requires_model_generated_state",
+            ]
+        ].to_string(index=False)
+    )
 
     print("\n===== RECONSTRUCTABILITY ANALYSIS =====")
-    print(recon[["component", "classification", "can_reconstruct_exact_pre_2022", "can_reconstruct_approx_pre_2022", "price_only_possible"]].to_string(index=False))
+    print(
+        recon[
+            ["component", "classification", "can_reconstruct_exact_pre_2022", "can_reconstruct_approx_pre_2022", "price_only_possible"]
+        ].to_string(index=False)
+    )
 
     print("\n===== HISTORICAL DATA COVERAGE =====")
     print(f"tickers audited: {len(coverage)}")

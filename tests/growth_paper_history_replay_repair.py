@@ -193,8 +193,14 @@ def build_features_for_date(forecast: pd.DataFrame, date: str) -> tuple[pd.DataF
     pre_quality_positive = df[pd.to_numeric(df["raw_target_return"], errors="coerce") > 0].sort_values("raw_target_return", ascending=False)
     selected_before_quality = pre_quality_positive.head(MAX_POSITIONS)["ticker"].astype(str).tolist()
     prior = latest_previous_state()
-    prior_tickers = prior[prior.get("ticker", pd.Series(dtype=str)).astype(str).ne("CASH")]["ticker"].astype(str).str.upper().tolist() if not prior.empty else []
-    yahoo_fetch_candidates = list(dict.fromkeys(selected_before_quality + pre_quality_positive.head(20)["ticker"].astype(str).tolist() + prior_tickers))
+    prior_tickers = (
+        prior[prior.get("ticker", pd.Series(dtype=str)).astype(str).ne("CASH")]["ticker"].astype(str).str.upper().tolist()
+        if not prior.empty
+        else []
+    )
+    yahoo_fetch_candidates = list(
+        dict.fromkeys(selected_before_quality + pre_quality_positive.head(20)["ticker"].astype(str).tolist() + prior_tickers)
+    )
     df, _, _ = apply_growth_universe_quality_filter(df, pd.Timestamp(date), yahoo_fetch_tickers=yahoo_fetch_candidates)
     if "quality_pass" not in df.columns:
         df["quality_pass"] = True
@@ -257,7 +263,13 @@ def replay_date(date: str, forecast: pd.DataFrame, old_perf_for_date: pd.DataFra
     current_prices = dict(zip(features["ticker"].astype(str), pd.to_numeric(features["current_price"], errors="coerce")))
     daily_return = previous_prices_for_return(previous, current_prices)
     previous_perf = read_csv("growth_candidate_paper_performance.csv")
-    previous_value = float(pd.to_numeric(previous_perf["portfolio_value"], errors="coerce").dropna().iloc[-1]) if not previous_perf.empty and "portfolio_value" in previous_perf.columns and not pd.to_numeric(previous_perf["portfolio_value"], errors="coerce").dropna().empty else INITIAL_CAPITAL
+    previous_value = (
+        float(pd.to_numeric(previous_perf["portfolio_value"], errors="coerce").dropna().iloc[-1])
+        if not previous_perf.empty
+        and "portfolio_value" in previous_perf.columns
+        and not pd.to_numeric(previous_perf["portfolio_value"], errors="coerce").dropna().empty
+        else INITIAL_CAPITAL
+    )
     portfolio_value = previous_value * (1.0 + daily_return)
 
     action_signals, rebalance_report, rec = reconcile_growth_actions(
@@ -337,7 +349,9 @@ def replay_date(date: str, forecast: pd.DataFrame, old_perf_for_date: pd.DataFra
     append_rows("growth_candidate_paper_trades.csv", trades)
 
     perf_existing = read_csv("growth_candidate_paper_performance.csv")
-    temp = pd.concat([perf_existing, pd.DataFrame([{"date": date, "daily_return": daily_return, "portfolio_value": portfolio_value}])], ignore_index=True)
+    temp = pd.concat(
+        [perf_existing, pd.DataFrame([{"date": date, "daily_return": daily_return, "portfolio_value": portfolio_value}])], ignore_index=True
+    )
     metrics = performance_metrics(temp)
     first_alloc = allocation.iloc[0]
     perf_row = pd.DataFrame(
@@ -397,10 +411,26 @@ def replay_date(date: str, forecast: pd.DataFrame, old_perf_for_date: pd.DataFra
     )
     append_rows("growth_candidate_paper_monitor.csv", monitor)
 
-    old_value = num(old_perf_for_date["portfolio_value"].iloc[-1], np.nan) if not old_perf_for_date.empty and "portfolio_value" in old_perf_for_date.columns else np.nan
-    old_ret = num(old_perf_for_date["daily_return"].iloc[-1], np.nan) if not old_perf_for_date.empty and "daily_return" in old_perf_for_date.columns else np.nan
-    old_exp = num(old_perf_for_date["exposure"].iloc[-1], np.nan) if not old_perf_for_date.empty and "exposure" in old_perf_for_date.columns else np.nan
-    old_hold = ",".join(old_state_for_date.loc[old_state_for_date["ticker"].astype(str).ne("CASH"), "ticker"].astype(str).tolist()) if not old_state_for_date.empty and "ticker" in old_state_for_date.columns else ""
+    old_value = (
+        num(old_perf_for_date["portfolio_value"].iloc[-1], np.nan)
+        if not old_perf_for_date.empty and "portfolio_value" in old_perf_for_date.columns
+        else np.nan
+    )
+    old_ret = (
+        num(old_perf_for_date["daily_return"].iloc[-1], np.nan)
+        if not old_perf_for_date.empty and "daily_return" in old_perf_for_date.columns
+        else np.nan
+    )
+    old_exp = (
+        num(old_perf_for_date["exposure"].iloc[-1], np.nan)
+        if not old_perf_for_date.empty and "exposure" in old_perf_for_date.columns
+        else np.nan
+    )
+    old_hold = (
+        ",".join(old_state_for_date.loc[old_state_for_date["ticker"].astype(str).ne("CASH"), "ticker"].astype(str).tolist())
+        if not old_state_for_date.empty and "ticker" in old_state_for_date.columns
+        else ""
+    )
     new_hold = ",".join(selected)
     reasons = []
     if old_hold != new_hold:
@@ -456,13 +486,21 @@ def main() -> None:
 
     audit_rows = []
     for date in replay_dates:
-        old_perf_day = old_perf[old_perf["date"].astype(str).eq(date)] if not old_perf.empty and "date" in old_perf.columns else pd.DataFrame()
-        old_state_day = old_state[old_state["date"].astype(str).eq(date)] if not old_state.empty and "date" in old_state.columns else pd.DataFrame()
+        old_perf_day = (
+            old_perf[old_perf["date"].astype(str).eq(date)] if not old_perf.empty and "date" in old_perf.columns else pd.DataFrame()
+        )
+        old_state_day = (
+            old_state[old_state["date"].astype(str).eq(date)] if not old_state.empty and "date" in old_state.columns else pd.DataFrame()
+        )
         audit_rows.append(replay_date(date, forecast, old_perf_day, old_state_day))
 
     audit = pd.DataFrame(audit_rows)
     audit.to_csv("growth_paper_replay_audit.csv", index=False)
-    changes = audit[audit["reason_for_differences"].astype(str).ne("unchanged")].copy() if "reason_for_differences" in audit.columns else pd.DataFrame()
+    changes = (
+        audit[audit["reason_for_differences"].astype(str).ne("unchanged")].copy()
+        if "reason_for_differences" in audit.columns
+        else pd.DataFrame()
+    )
     changes.to_csv("growth_paper_replay_changes.csv", index=False)
 
     regenerate_dependent_reports()
@@ -471,10 +509,36 @@ def main() -> None:
     state = read_csv("growth_candidate_paper_state.csv")
     latest_date = perf["date"].astype(str).max() if not perf.empty else ""
     latest_state = state[state["date"].astype(str).eq(latest_date)] if not state.empty and latest_date else pd.DataFrame()
-    final_holdings = ",".join(latest_state.loc[latest_state["ticker"].astype(str).ne("CASH"), "ticker"].astype(str).tolist()) if not latest_state.empty else ""
+    final_holdings = (
+        ",".join(latest_state.loc[latest_state["ticker"].astype(str).ne("CASH"), "ticker"].astype(str).tolist())
+        if not latest_state.empty
+        else ""
+    )
     latest_perf = perf[perf["date"].astype(str).eq(latest_date)].iloc[-1] if not perf.empty and latest_date else pd.Series(dtype=object)
-    biggest_daily = float((pd.to_numeric(audit.get("new_daily_return", pd.Series(dtype=float)), errors="coerce") - pd.to_numeric(audit.get("old_daily_return", pd.Series(dtype=float)), errors="coerce")).abs().max()) if not audit.empty else np.nan
-    biggest_value = float((pd.to_numeric(audit.get("new_portfolio_value", pd.Series(dtype=float)), errors="coerce") - pd.to_numeric(audit.get("old_portfolio_value", pd.Series(dtype=float)), errors="coerce")).abs().max()) if not audit.empty else np.nan
+    biggest_daily = (
+        float(
+            (
+                pd.to_numeric(audit.get("new_daily_return", pd.Series(dtype=float)), errors="coerce")
+                - pd.to_numeric(audit.get("old_daily_return", pd.Series(dtype=float)), errors="coerce")
+            )
+            .abs()
+            .max()
+        )
+        if not audit.empty
+        else np.nan
+    )
+    biggest_value = (
+        float(
+            (
+                pd.to_numeric(audit.get("new_portfolio_value", pd.Series(dtype=float)), errors="coerce")
+                - pd.to_numeric(audit.get("old_portfolio_value", pd.Series(dtype=float)), errors="coerce")
+            )
+            .abs()
+            .max()
+        )
+        if not audit.empty
+        else np.nan
+    )
     summary = [
         "===== GROWTH PAPER HISTORY REPLAY AND REPAIR =====",
         f"backup_folder: {backup_dir}",

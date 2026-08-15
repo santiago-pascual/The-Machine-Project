@@ -146,7 +146,18 @@ def _prepare_dataset() -> pd.DataFrame:
     data = snapshots.merge(decomp[keys + stage_cols].drop_duplicates(keys, keep="last"), on=keys, how="left")
     data = data.loc[:, ~data.columns.duplicated()]
     for col in data.columns:
-        if col not in {"date", "ticker", "model_mode", "selected", "regime", "timing_model", "target_model", "covariance_method", "gate_decision", "gate_reason"}:
+        if col not in {
+            "date",
+            "ticker",
+            "model_mode",
+            "selected",
+            "regime",
+            "timing_model",
+            "target_model",
+            "covariance_method",
+            "gate_decision",
+            "gate_reason",
+        }:
             converted = pd.to_numeric(data[col], errors="coerce")
             if converted.notna().sum() > 0:
                 data[col] = converted
@@ -165,7 +176,9 @@ def _select_variant(data: pd.DataFrame, variant: str, score_col: str) -> pd.Data
         picks = candidates.sort_values(score_col, ascending=False).head(selected_count).copy()
         active_weight = float(_num(group.get("weight", pd.Series(dtype=float))).clip(lower=0.0).sum())
         if not np.isfinite(active_weight) or active_weight <= 0:
-            active_weight = max(0.0, 1.0 - float(_num(group.get("cash_weight", pd.Series([0.5]))).dropna().iloc[0] if "cash_weight" in group else 0.5))
+            active_weight = max(
+                0.0, 1.0 - float(_num(group.get("cash_weight", pd.Series([0.5]))).dropna().iloc[0] if "cash_weight" in group else 0.5)
+            )
         picks["ablation_variant"] = variant
         picks["ablation_score"] = picks[score_col]
         picks["ablation_weight"] = active_weight / max(1, len(picks))
@@ -310,7 +323,28 @@ def run_expected_return_ablation_backtest() -> tuple[pd.DataFrame, pd.DataFrame,
     print("capture note: non-baseline variants use diagnostic proxies from expected_return_decomposition.csv")
 
     print("\n===== ABLATION PERFORMANCE COMPARISON =====")
-    cols = ["variant", "capture_type", "realized_return", "volatility", "Sharpe", "Sortino", "Calmar", "max_drawdown", "TP_rate", "SL_rate", "TP_minus_SL", "hit_rate", "IC_5D", "IC_10D", "IC_20D", "monotonicity_20d", "average_cash", "selected_count", "turnover", "sample_size"]
+    cols = [
+        "variant",
+        "capture_type",
+        "realized_return",
+        "volatility",
+        "Sharpe",
+        "Sortino",
+        "Calmar",
+        "max_drawdown",
+        "TP_rate",
+        "SL_rate",
+        "TP_minus_SL",
+        "hit_rate",
+        "IC_5D",
+        "IC_10D",
+        "IC_20D",
+        "monotonicity_20d",
+        "average_cash",
+        "selected_count",
+        "turnover",
+        "sample_size",
+    ]
     print(results[cols].to_string(index=False))
 
     print("\n===== ABLATION GOVERNANCE =====")

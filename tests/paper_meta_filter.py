@@ -61,7 +61,9 @@ def _load_features(path: str | Path) -> list[str]:
     return [feature for feature in dict.fromkeys(features) if feature not in remove]
 
 
-def _prepare_training_data(config: PaperMetaFilterConfig, features: list[str], current_date: object | None) -> tuple[pd.DataFrame, pd.Series] | None:
+def _prepare_training_data(
+    config: PaperMetaFilterConfig, features: list[str], current_date: object | None
+) -> tuple[pd.DataFrame, pd.Series] | None:
     dataset = _read_csv(config.dataset_path)
     if dataset.empty or "meta_label" not in dataset.columns:
         return None
@@ -221,7 +223,9 @@ def apply_paper_meta_filter(
 def _fail_report(final_allocation_table: pd.DataFrame, reason: str) -> pd.DataFrame:
     active = final_allocation_table.drop(index="CASH", errors="ignore").copy()
     if active.empty:
-        return pd.DataFrame(columns=["ticker", "original_weight", "meta_probability", "meta_filter_pass", "filtered_weight", "meta_filter_reason"])
+        return pd.DataFrame(
+            columns=["ticker", "original_weight", "meta_probability", "meta_filter_pass", "filtered_weight", "meta_filter_reason"]
+        )
     return pd.DataFrame(
         {
             "ticker": active.index.astype(str),
@@ -252,11 +256,17 @@ def print_paper_meta_filter_report(
     filtered_active = filtered_allocation.drop(index="CASH", errors="ignore")
     before_cash = float(original_allocation.loc["CASH", "final_weight_decimal"]) if "CASH" in original_allocation.index else 0.0
     after_cash = float(filtered_allocation.loc["CASH", "final_weight_decimal"]) if "CASH" in filtered_allocation.index else 0.0
-    rejected = report.loc[~report.get("meta_filter_pass", pd.Series(True, index=report.index)).astype(bool), "ticker"].astype(str).tolist() if not report.empty else []
+    rejected = (
+        report.loc[~report.get("meta_filter_pass", pd.Series(True, index=report.index)).astype(bool), "ticker"].astype(str).tolist()
+        if not report.empty
+        else []
+    )
     print(f"model: {config.model}")
     print(f"threshold: {config.threshold}")
     print(f"positions before filter: {len(original_active)}")
-    print(f"positions after filter: {int((pd.to_numeric(filtered_active.get('final_weight_decimal', pd.Series(dtype=float)), errors='coerce').fillna(0.0) > 0).sum())}")
+    print(
+        f"positions after filter: {int((pd.to_numeric(filtered_active.get('final_weight_decimal', pd.Series(dtype=float)), errors='coerce').fillna(0.0) > 0).sum())}"
+    )
     print(f"cash before: {before_cash:.6f}")
     print(f"cash after: {after_cash:.6f}")
     print(f"rejected tickers: {', '.join(rejected) if rejected else 'none'}")

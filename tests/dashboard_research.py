@@ -1,4 +1,3 @@
-
 from __future__ import annotations
 
 from typing import Any
@@ -105,9 +104,19 @@ def _top_cards(st, bundle) -> None:
         ("Effective Trials", fmt_num(k.get("effective_independent_trials"), 0), "effective_trial_count.csv", "neutral"),
         ("CSCV PBO", fmt_pct(k.get("CSCV_PBO")), "pbo_distribution.csv", _metric_state(k.get("CSCV_PBO"), True, 0.5, 0.7)),
         ("Exact DSR", fmt_num(k.get("exact_deflated_sharpe")), "deflated_sharpe_exact.csv", "neutral"),
-        ("DSR p-value", fmt_num(k.get("DSR_p_value"), 4), "deflated_sharpe_exact.csv", _metric_state(k.get("DSR_p_value"), True, 0.05, 0.20)),
+        (
+            "DSR p-value",
+            fmt_num(k.get("DSR_p_value"), 4),
+            "deflated_sharpe_exact.csv",
+            _metric_state(k.get("DSR_p_value"), True, 0.05, 0.20),
+        ),
         ("Reality/SPA p", fmt_num(k.get("reality_check_p_value"), 4), "reality_check_results.csv", "neutral"),
-        ("Mean OOS Sharpe", fmt_num(k.get("mean_oos_sharpe")), "out_of_sample_governance.csv", _metric_state(k.get("mean_oos_sharpe"), False, 0.7, 0.2)),
+        (
+            "Mean OOS Sharpe",
+            fmt_num(k.get("mean_oos_sharpe")),
+            "out_of_sample_governance.csv",
+            _metric_state(k.get("mean_oos_sharpe"), False, 0.7, 0.2),
+        ),
         ("Positive OOS Folds", fmt_pct(k.get("positive_oos_folds_pct")), "purged folds", "neutral"),
         ("Holdout Sharpe", fmt_num(k.get("locked_holdout_sharpe")), "locked_holdout_results.csv", "neutral"),
         ("Holdout CAGR", fmt_pct(k.get("locked_holdout_CAGR")), "locked holdout", "neutral"),
@@ -116,7 +125,7 @@ def _top_cards(st, bundle) -> None:
     ]
     for i in range(0, len(cards), 4):
         cols = st.columns(4)
-        for col, (label, value, note, state) in zip(cols, cards[i:i+4]):
+        for col, (label, value, note, state) in zip(cols, cards[i : i + 4]):
             with col:
                 metric_card(st, label, value, note, state=state, badge="research")
 
@@ -135,7 +144,12 @@ def _anti_panel(st, bundle) -> None:
     with c2:
         cscv = anti["cscv"]
         if not cscv.empty and "lambda_logit" in cscv.columns:
-            fig = px.histogram(cscv, x="lambda_logit", color="overfit_fold" if "overfit_fold" in cscv.columns else None, color_discrete_sequence=RESEARCH_COLORS)
+            fig = px.histogram(
+                cscv,
+                x="lambda_logit",
+                color="overfit_fold" if "overfit_fold" in cscv.columns else None,
+                color_discrete_sequence=RESEARCH_COLORS,
+            )
             st.plotly_chart(apply_plotly_layout(fig, "PBO lambda distribution"), width="stretch")
         _safe_df(st, anti["effective_trials"])
     with st.expander("Deflated Sharpe diagnostics"):
@@ -176,7 +190,11 @@ def _holdout(st, bundle) -> None:
     st.markdown("### Locked Holdout Panel")
     hold = bundle.walk_forward["holdout"]
     _safe_df(st, hold)
-    alert_box(st, "Locked holdout was evaluated once in Phase 87, but later development may reduce its status as a permanently untouched sample.", "warning")
+    alert_box(
+        st,
+        "Locked holdout was evaluated once in Phase 87, but later development may reduce its status as a permanently untouched sample.",
+        "warning",
+    )
 
 
 def _parameter(st, bundle) -> None:
@@ -195,11 +213,22 @@ def _parameter(st, bundle) -> None:
         current = stab[stab.get("is_current_config", False).astype(bool)] if "is_current_config" in stab.columns else pd.DataFrame()
         if not current.empty:
             row = current.iloc[0]
-            fig.add_trace(go.Scatter3d(x=[row.get("exposure_cap")], y=[row.get("target_vol")], z=[row.get(metric)], mode="markers", marker=dict(size=8, color=RED), name="active config"))
+            fig.add_trace(
+                go.Scatter3d(
+                    x=[row.get("exposure_cap")],
+                    y=[row.get("target_vol")],
+                    z=[row.get(metric)],
+                    mode="markers",
+                    marker=dict(size=8, color=RED),
+                    name="active config",
+                )
+            )
         fig.update_layout(scene=dict(xaxis_title="Exposure cap", yaxis_title="Target vol", zaxis_title=metric))
         st.plotly_chart(apply_plotly_layout(fig, "Parameter robustness surface"), width="stretch")
     heat_cols = ["min_exposure", "vol_lookback_days", "dual_trend_caps", "Sharpe"]
-    _safe_df(st, stab[heat_cols + ["is_current_config"]].head(300) if all(c in stab.columns for c in heat_cols) else stab.head(300), height=360)
+    _safe_df(
+        st, stab[heat_cols + ["is_current_config"]].head(300) if all(c in stab.columns for c in heat_cols) else stab.head(300), height=360
+    )
 
 
 def _features(st, bundle) -> None:
@@ -210,7 +239,9 @@ def _features(st, bundle) -> None:
     c1, c2 = st.columns(2)
     with c1:
         if not raw.empty:
-            metric_card(st, "Raw Target Evidence", fmt_num(raw.iloc[0].get("rank_ic")), raw.iloc[0].get("evidence_note", ""), badge="active")
+            metric_card(
+                st, "Raw Target Evidence", fmt_num(raw.iloc[0].get("rank_ic")), raw.iloc[0].get("evidence_note", ""), badge="active"
+            )
     with c2:
         if not sig.empty:
             metric_card(st, "Signal Strength", str(sig.iloc[0].get("role")), sig.iloc[0].get("evidence_note", ""), badge="diagnostic")
@@ -224,7 +255,14 @@ def _ic_decay(st, bundle) -> None:
     if not raw_alpha.empty and "horizon" in raw_alpha.columns:
         y = "mean_rank_ic" if "mean_rank_ic" in raw_alpha.columns else "mean_spearman_rank_ic"
         if y in raw_alpha.columns:
-            fig = px.line(raw_alpha, x="horizon", y=y, color="feature" if "feature" in raw_alpha.columns else None, markers=True, color_discrete_sequence=RESEARCH_COLORS)
+            fig = px.line(
+                raw_alpha,
+                x="horizon",
+                y=y,
+                color="feature" if "feature" in raw_alpha.columns else None,
+                markers=True,
+                color_discrete_sequence=RESEARCH_COLORS,
+            )
             st.plotly_chart(apply_plotly_layout(fig, "Rank IC by horizon"), width="stretch")
     _safe_df(st, alpha, height=360)
 
@@ -246,7 +284,16 @@ def _registry_lifecycle(st, bundle) -> None:
         life = reg["lifecycle"]
         _safe_df(st, life, height=420)
         stages = ["research", "candidate", "shadow", "paper", "operational paper production", "real-capital blocked"]
-        fig = go.Figure(go.Scatter(x=list(range(len(stages))), y=[1]*len(stages), mode="lines+markers+text", text=stages, textposition="top center", marker=dict(size=16, color=RESEARCH_COLORS[:len(stages)])))
+        fig = go.Figure(
+            go.Scatter(
+                x=list(range(len(stages))),
+                y=[1] * len(stages),
+                mode="lines+markers+text",
+                text=stages,
+                textposition="top center",
+                marker=dict(size=16, color=RESEARCH_COLORS[: len(stages)]),
+            )
+        )
         fig.update_yaxes(visible=False)
         st.plotly_chart(apply_plotly_layout(fig, "Lifecycle timeline"), width="stretch")
 
@@ -272,17 +319,19 @@ def render_research_terminal(st, data: dict[str, pd.DataFrame]) -> None:
     source_caption(st, "research governance and validation CSVs", bundle.status)
     _top_cards(st, bundle)
     _warnings(st, bundle)
-    tabs = st.tabs([
-        "Anti-Overfitting",
-        "Walk-Forward",
-        "Locked Holdout",
-        "Parameters",
-        "Feature Evidence",
-        "IC Decay",
-        "Model Comparison",
-        "Registry & Lifecycle",
-        "Sources",
-    ])
+    tabs = st.tabs(
+        [
+            "Anti-Overfitting",
+            "Walk-Forward",
+            "Locked Holdout",
+            "Parameters",
+            "Feature Evidence",
+            "IC Decay",
+            "Model Comparison",
+            "Registry & Lifecycle",
+            "Sources",
+        ]
+    )
     with tabs[0]:
         _anti_panel(st, bundle)
     with tabs[1]:

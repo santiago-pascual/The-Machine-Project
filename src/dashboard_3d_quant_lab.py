@@ -73,8 +73,14 @@ def render_vol_target_surface(st, data: dict[str, pd.DataFrame]) -> None:
     exposure = np.minimum(exposure, dual_cap)
     fig = go.Figure(data=[go.Surface(x=x, y=y, z=exposure, colorscale="Teal")])
     if not np.isnan(cur_vol) and not np.isnan(cur_exposure):
-        fig.add_trace(go.Scatter3d(x=[cur_vol], y=[cur_target], z=[cur_exposure], mode="markers+text", text=["current"], marker={"size": 7, "color": AMBER}))
-    fig.update_layout(scene={"xaxis_title": "Estimated portfolio volatility", "yaxis_title": "Target volatility", "zaxis_title": "Exposure"})
+        fig.add_trace(
+            go.Scatter3d(
+                x=[cur_vol], y=[cur_target], z=[cur_exposure], mode="markers+text", text=["current"], marker={"size": 7, "color": AMBER}
+            )
+        )
+    fig.update_layout(
+        scene={"xaxis_title": "Estimated portfolio volatility", "yaxis_title": "Target volatility", "zaxis_title": "Exposure"}
+    )
     fig = apply_plotly_layout(fig, "Volatility Target Surface")
     st.plotly_chart(fig, width="stretch")
     source_caption(st, "growth_volatility_targeting_fresh.csv", "official diagnostic")
@@ -89,7 +95,11 @@ def render_parameter_surface(st, data: dict[str, pd.DataFrame]) -> None:
     metric = st.selectbox("Parameter surface metric", [c for c in ["Sharpe", "CAGR", "max_drawdown", "Calmar"] if c in df.columns], index=0)
     subset = df.copy()
     if "min_exposure" in subset.columns:
-        subset = subset[subset["min_exposure"].astype(str).eq("0.4") | subset["min_exposure"].astype(str).eq("40") | subset["min_exposure"].astype(str).str.lower().eq("0.40")]
+        subset = subset[
+            subset["min_exposure"].astype(str).eq("0.4")
+            | subset["min_exposure"].astype(str).eq("40")
+            | subset["min_exposure"].astype(str).str.lower().eq("0.40")
+        ]
         if subset.empty:
             subset = df.copy()
     if "vol_lookback_days" in subset.columns:
@@ -101,7 +111,9 @@ def render_parameter_surface(st, data: dict[str, pd.DataFrame]) -> None:
     fig = go.Figure(data=[go.Surface(z=pivot.values, x=pivot.columns, y=pivot.index, colorscale="Cividis")])
     if "Sharpe" in metric or metric in ["CAGR", "Calmar"]:
         marker_z = pivot.loc[pivot.index[np.abs(pivot.index - 0.22).argmin()], pivot.columns[np.abs(pivot.columns - 0.60).argmin()]]
-        fig.add_trace(go.Scatter3d(x=[0.60], y=[0.22], z=[marker_z], mode="markers+text", text=["active 22/60"], marker={"size": 8, "color": RED}))
+        fig.add_trace(
+            go.Scatter3d(x=[0.60], y=[0.22], z=[marker_z], mode="markers+text", text=["active 22/60"], marker={"size": 8, "color": RED})
+        )
     fig.update_layout(scene={"xaxis_title": "Exposure cap", "yaxis_title": "Target volatility", "zaxis_title": metric})
     fig = apply_plotly_layout(fig, f"Parameter Stability Surface — {metric}")
     st.plotly_chart(fig, width="stretch")
@@ -115,15 +127,26 @@ def render_hmm_3d(st, data: dict[str, pd.DataFrame]) -> None:
         source_caption(st, "hmm_out_of_sample_results.csv", "research diagnostic")
         return
     work = df.copy()
-    fig = go.Figure(data=[go.Scatter3d(
-        x=numeric(work["test_risk_off_rate"]),
-        y=numeric(work["future_volatility_corr_proxy"]),
-        z=numeric(work["test_state_switch_rate"]),
-        mode="markers",
-        marker={"size": 5, "color": numeric(work.get("n_states", pd.Series(4, index=work.index))), "colorscale": "Turbo", "showscale": True},
-        text=work.get("fold", pd.Series(index=work.index)).astype(str),
-    )])
-    fig.update_layout(scene={"xaxis_title": "Risk-off probability", "yaxis_title": "Future vol corr proxy", "zaxis_title": "State switch rate"})
+    fig = go.Figure(
+        data=[
+            go.Scatter3d(
+                x=numeric(work["test_risk_off_rate"]),
+                y=numeric(work["future_volatility_corr_proxy"]),
+                z=numeric(work["test_state_switch_rate"]),
+                mode="markers",
+                marker={
+                    "size": 5,
+                    "color": numeric(work.get("n_states", pd.Series(4, index=work.index))),
+                    "colorscale": "Turbo",
+                    "showscale": True,
+                },
+                text=work.get("fold", pd.Series(index=work.index)).astype(str),
+            )
+        ]
+    )
+    fig.update_layout(
+        scene={"xaxis_title": "Risk-off probability", "yaxis_title": "Future vol corr proxy", "zaxis_title": "State switch rate"}
+    )
     fig = apply_plotly_layout(fig, "HMM Regime 3D — diagnostic only")
     st.plotly_chart(fig, width="stretch")
     source_caption(st, "hmm_out_of_sample_results.csv", "research diagnostic — not used by Growth official allocation")
@@ -144,14 +167,18 @@ def render_feature_relationship(st, data: dict[str, pd.DataFrame]) -> None:
     if work.empty:
         st.warning("Insufficient data for this surface.")
         return
-    fig = go.Figure(data=[go.Scatter3d(
-        x=numeric(work["raw_target_return_exact"]),
-        y=numeric(work["realized_vol_60d"]),
-        z=numeric(work[z_col]),
-        mode="markers+text",
-        text=work.get("ticker", pd.Series(index=work.index)).astype(str),
-        marker={"size": 6, "color": numeric(work[z_col]), "colorscale": "Viridis", "showscale": True},
-    )])
+    fig = go.Figure(
+        data=[
+            go.Scatter3d(
+                x=numeric(work["raw_target_return_exact"]),
+                y=numeric(work["realized_vol_60d"]),
+                z=numeric(work[z_col]),
+                mode="markers+text",
+                text=work.get("ticker", pd.Series(index=work.index)).astype(str),
+                marker={"size": 6, "color": numeric(work[z_col]), "colorscale": "Viridis", "showscale": True},
+            )
+        ]
+    )
     fig.update_layout(scene={"xaxis_title": "raw_target_return_exact", "yaxis_title": "60D realized volatility", "zaxis_title": z_col})
     fig = apply_plotly_layout(fig, "Feature Relationship 3D")
     st.plotly_chart(fig, width="stretch")
@@ -180,10 +207,20 @@ def render_efficient_frontier(st, data: dict[str, pd.DataFrame]) -> None:
         w = rng.dirichlet(np.ones(returns.shape[1]))
         mu = float(np.dot(returns.mean() * 252, w))
         vol = float(np.sqrt(w @ (returns.cov() * 252).values @ w))
-        conc = float((w ** 2).sum())
+        conc = float((w**2).sum())
         points.append((vol, mu, conc))
     arr = np.array(points)
-    fig = go.Figure(data=[go.Scatter3d(x=arr[:, 0], y=arr[:, 1], z=arr[:, 2], mode="markers", marker={"size": 3, "color": arr[:, 1] / np.maximum(arr[:, 0], 1e-9), "colorscale": "Viridis", "showscale": True})])
+    fig = go.Figure(
+        data=[
+            go.Scatter3d(
+                x=arr[:, 0],
+                y=arr[:, 1],
+                z=arr[:, 2],
+                mode="markers",
+                marker={"size": 3, "color": arr[:, 1] / np.maximum(arr[:, 0], 1e-9), "colorscale": "Viridis", "showscale": True},
+            )
+        ]
+    )
     fig.update_layout(scene={"xaxis_title": "Volatility", "yaxis_title": "Expected return proxy", "zaxis_title": "Concentration HHI"})
     fig = apply_plotly_layout(fig, "Efficient Frontier 3D — diagnostic proxy")
     st.plotly_chart(fig, width="stretch")

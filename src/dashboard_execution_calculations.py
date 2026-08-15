@@ -1,4 +1,3 @@
-
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -81,15 +80,19 @@ def source_audit(data: dict[str, pd.DataFrame]) -> pd.DataFrame:
     rows = []
     for key, filename in mapping.items():
         df = _df(data, key)
-        rows.append({
-            "source_file": filename,
-            "data_key": key,
-            "namespace": "official_forward_paper" if key.startswith("official") or key == "operational_capacity" else "official_diagnostic",
-            "loaded": not df.empty,
-            "row_count": len(df),
-            "date_range": _date_range(df),
-            "official_only": True,
-        })
+        rows.append(
+            {
+                "source_file": filename,
+                "data_key": key,
+                "namespace": "official_forward_paper"
+                if key.startswith("official") or key == "operational_capacity"
+                else "official_diagnostic",
+                "loaded": not df.empty,
+                "row_count": len(df),
+                "date_range": _date_range(df),
+                "official_only": True,
+            }
+        )
     return pd.DataFrame(rows)
 
 
@@ -118,20 +121,38 @@ def build_order_blotter(data: dict[str, pd.DataFrame]) -> pd.DataFrame:
     blotter = actions.copy()
     costs = _df(data, "official_cost_ledger")
     cost_cols = [
-        "date", "ticker", "action", "estimated_total_cost", "estimated_total_cost_bps_of_order",
-        "estimated_order_value", "daily_estimated_cost", "paper_accounting_adjusted", "reason_cost"
+        "date",
+        "ticker",
+        "action",
+        "estimated_total_cost",
+        "estimated_total_cost_bps_of_order",
+        "estimated_order_value",
+        "daily_estimated_cost",
+        "paper_accounting_adjusted",
+        "reason_cost",
     ]
     if not costs.empty:
         keep = [c for c in cost_cols if c in costs.columns]
         cost_key = costs[keep].copy()
-        blotter = blotter.merge(cost_key, on=[c for c in ["date", "ticker", "action"] if c in blotter.columns and c in cost_key.columns], how="left", suffixes=("", "_cost"))
+        blotter = blotter.merge(
+            cost_key,
+            on=[c for c in ["date", "ticker", "action"] if c in blotter.columns and c in cost_key.columns],
+            how="left",
+            suffixes=("", "_cost"),
+        )
     metadata = _df(data, "official_holding_metadata")
     if not metadata.empty and "ticker" in metadata.columns:
-        meta_cols = [c for c in ["ticker", "company_name", "sector", "industry", "country", "exchange", "market_cap"] if c in metadata.columns]
+        meta_cols = [
+            c for c in ["ticker", "company_name", "sector", "industry", "country", "exchange", "market_cap"] if c in metadata.columns
+        ]
         blotter = blotter.merge(metadata[meta_cols].drop_duplicates("ticker", keep="last"), on="ticker", how="left")
     features = latest(_df(data, "current_features"))
     if not features.empty and "ticker" in features.columns:
-        feat_cols = [c for c in ["ticker", "median_60d_dollar_volume", "avg_volume_20d", "realized_vol_60d", "passed_tradability_filter"] if c in features.columns]
+        feat_cols = [
+            c
+            for c in ["ticker", "median_60d_dollar_volume", "avg_volume_20d", "realized_vol_60d", "passed_tradability_filter"]
+            if c in features.columns
+        ]
         blotter = blotter.merge(features[feat_cols].drop_duplicates("ticker", keep="last"), on="ticker", how="left")
     blotter["estimated_total_cost"] = numeric(blotter.get("estimated_total_cost", 0)).fillna(0.0)
     if "estimated_trade_value" in blotter.columns:
@@ -147,7 +168,9 @@ def build_order_blotter(data: dict[str, pd.DataFrame]) -> pd.DataFrame:
     adv = numeric(blotter.get("median_60d_dollar_volume", np.nan))
     blotter["ADV"] = adv
     blotter["participation_rate"] = np.where(adv.gt(0), trade_value / adv, np.nan)
-    blotter["execution_status"] = np.where(blotter["action"].astype(str).str.upper().isin(TRADE_ACTIONS), "ESTIMATED_COSTED_ORDER", "NO_TRADE_MONITORING")
+    blotter["execution_status"] = np.where(
+        blotter["action"].astype(str).str.upper().isin(TRADE_ACTIONS), "ESTIMATED_COSTED_ORDER", "NO_TRADE_MONITORING"
+    )
     blotter["reconciliation_status"] = "PASS"
     rename = {
         "signal_date": "signal date",
@@ -171,9 +194,29 @@ def cost_tables(blotter: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame, pd.D
         if comp in blotter.columns:
             components.append({"component": comp, "estimated_cost": numeric(blotter[comp]).sum()})
     cost_components = pd.DataFrame(components)
-    cost_by_ticker = blotter.groupby("ticker", dropna=False)["estimated_total_cost"].sum().reset_index().sort_values("estimated_total_cost", ascending=False) if "ticker" in blotter.columns else pd.DataFrame()
-    cost_by_action = blotter.groupby("action", dropna=False)["estimated_total_cost"].sum().reset_index().sort_values("estimated_total_cost", ascending=False) if "action" in blotter.columns else pd.DataFrame()
-    cost_by_date = blotter.groupby("date", dropna=False).agg(estimated_total_cost=("estimated_total_cost", "sum"), estimated_trade_value=("estimated_trade_value", "sum")).reset_index() if "date" in blotter.columns else pd.DataFrame()
+    cost_by_ticker = (
+        blotter.groupby("ticker", dropna=False)["estimated_total_cost"]
+        .sum()
+        .reset_index()
+        .sort_values("estimated_total_cost", ascending=False)
+        if "ticker" in blotter.columns
+        else pd.DataFrame()
+    )
+    cost_by_action = (
+        blotter.groupby("action", dropna=False)["estimated_total_cost"]
+        .sum()
+        .reset_index()
+        .sort_values("estimated_total_cost", ascending=False)
+        if "action" in blotter.columns
+        else pd.DataFrame()
+    )
+    cost_by_date = (
+        blotter.groupby("date", dropna=False)
+        .agg(estimated_total_cost=("estimated_total_cost", "sum"), estimated_trade_value=("estimated_trade_value", "sum"))
+        .reset_index()
+        if "date" in blotter.columns
+        else pd.DataFrame()
+    )
     if not cost_by_date.empty:
         cost_by_date["cumulative_estimated_cost"] = numeric(cost_by_date["estimated_total_cost"]).cumsum()
     return cost_components, cost_by_ticker, cost_by_action, cost_by_date
@@ -218,8 +261,23 @@ def capacity_table(data: dict[str, pd.DataFrame], blotter: pd.DataFrame) -> pd.D
     for capital in [10000, 50000, 100000, 250000, 500000, 1000000, 5000000]:
         for limit in [0.01, 0.025, 0.05, 0.10]:
             participation = capital / min_adv if pd.notna(min_adv) and min_adv > 0 else np.nan
-            status = "safe" if pd.notna(participation) and participation <= limit else "caution" if pd.notna(participation) and participation <= limit * 2 else "capacity_limited"
-            rows.append({"capital": capital, "participation_limit": limit, "max_participation": participation, "capacity_status": status, "source": "current_blotter_ADV_proxy", "usage": "dashboard_only"})
+            status = (
+                "safe"
+                if pd.notna(participation) and participation <= limit
+                else "caution"
+                if pd.notna(participation) and participation <= limit * 2
+                else "capacity_limited"
+            )
+            rows.append(
+                {
+                    "capital": capital,
+                    "participation_limit": limit,
+                    "max_participation": participation,
+                    "capacity_status": status,
+                    "source": "current_blotter_ADV_proxy",
+                    "usage": "dashboard_only",
+                }
+            )
     return pd.DataFrame(rows)
 
 
@@ -229,15 +287,47 @@ def execution_quality(blotter: pd.DataFrame, perf: pd.DataFrame) -> pd.DataFrame
     trade_rows = blotter[blotter.get("action", "").astype(str).str.upper().isin(TRADE_ACTIONS)].copy()
     total_cost = numeric(trade_rows.get("estimated_total_cost", 0)).sum() if not trade_rows.empty else 0.0
     total_order = numeric(trade_rows.get("estimated_trade_value", 0)).abs().sum() if not trade_rows.empty else 0.0
-    gross_return = numeric(perf.get("gross_cumulative_return", pd.Series(dtype=float))).iloc[-1] if not perf.empty and "gross_cumulative_return" in perf.columns else np.nan
-    pv = numeric(perf.get("gross_portfolio_value", perf.get("portfolio_value", pd.Series(dtype=float)))).iloc[-1] if not perf.empty else np.nan
+    gross_return = (
+        numeric(perf.get("gross_cumulative_return", pd.Series(dtype=float))).iloc[-1]
+        if not perf.empty and "gross_cumulative_return" in perf.columns
+        else np.nan
+    )
+    pv = (
+        numeric(perf.get("gross_portfolio_value", perf.get("portfolio_value", pd.Series(dtype=float)))).iloc[-1]
+        if not perf.empty
+        else np.nan
+    )
     rows = [
-        {"metric": "average_estimated_slippage", "value": numeric(trade_rows.get("slippage", 0)).mean() if not trade_rows.empty else 0.0, "note": "Estimated execution quality - no live broker fills."},
-        {"metric": "worst_estimated_slippage", "value": numeric(trade_rows.get("slippage", 0)).max() if not trade_rows.empty else 0.0, "note": "Estimated execution quality - no live broker fills."},
-        {"metric": "average_spread_cost", "value": numeric(trade_rows.get("spread_cost", 0)).mean() if not trade_rows.empty else 0.0, "note": "component proxy unless real component columns exist"},
-        {"metric": "market_impact_percentile_95", "value": numeric(trade_rows.get("market_impact", 0)).quantile(0.95) if not trade_rows.empty else 0.0, "note": "component proxy unless real component columns exist"},
-        {"metric": "cost_per_unit_turnover", "value": total_cost / total_order if total_order else np.nan, "note": "cost/order not portfolio accounting deduction"},
-        {"metric": "cost_as_pct_of_gross_return", "value": total_cost / (pv * gross_return) if pd.notna(pv) and pd.notna(gross_return) and gross_return else np.nan, "note": "diagnostic"},
+        {
+            "metric": "average_estimated_slippage",
+            "value": numeric(trade_rows.get("slippage", 0)).mean() if not trade_rows.empty else 0.0,
+            "note": "Estimated execution quality - no live broker fills.",
+        },
+        {
+            "metric": "worst_estimated_slippage",
+            "value": numeric(trade_rows.get("slippage", 0)).max() if not trade_rows.empty else 0.0,
+            "note": "Estimated execution quality - no live broker fills.",
+        },
+        {
+            "metric": "average_spread_cost",
+            "value": numeric(trade_rows.get("spread_cost", 0)).mean() if not trade_rows.empty else 0.0,
+            "note": "component proxy unless real component columns exist",
+        },
+        {
+            "metric": "market_impact_percentile_95",
+            "value": numeric(trade_rows.get("market_impact", 0)).quantile(0.95) if not trade_rows.empty else 0.0,
+            "note": "component proxy unless real component columns exist",
+        },
+        {
+            "metric": "cost_per_unit_turnover",
+            "value": total_cost / total_order if total_order else np.nan,
+            "note": "cost/order not portfolio accounting deduction",
+        },
+        {
+            "metric": "cost_as_pct_of_gross_return",
+            "value": total_cost / (pv * gross_return) if pd.notna(pv) and pd.notna(gross_return) and gross_return else np.nan,
+            "note": "diagnostic",
+        },
         {"metric": "cost_as_pct_of_portfolio_value", "value": total_cost / pv if pd.notna(pv) and pv else np.nan, "note": "diagnostic"},
     ]
     return pd.DataFrame(rows)
@@ -249,13 +339,20 @@ def lifecycle_table(data: dict[str, pd.DataFrame], blotter: pd.DataFrame) -> pd.
         return pd.DataFrame()
     out = pnl.copy()
     if not blotter.empty and "ticker" in blotter.columns:
-        costs = blotter.groupby("ticker", dropna=False)["estimated_total_cost"].sum().reset_index().rename(columns={"estimated_total_cost": "estimated_costs"})
+        costs = (
+            blotter.groupby("ticker", dropna=False)["estimated_total_cost"]
+            .sum()
+            .reset_index()
+            .rename(columns={"estimated_total_cost": "estimated_costs"})
+        )
         out = out.merge(costs, on="ticker", how="left")
     out["estimated_costs"] = numeric(out.get("estimated_costs", 0)).fillna(0.0)
     out["estimated_net_pnl"] = numeric(out.get("estimated_net_pnl", out.get("unrealized_pnl", 0))).fillna(0.0)
     out["current_status"] = np.where(out.get("action", "").astype(str).str.upper().eq("SELL"), "closed", "open")
     if "entry_date" in out.columns and "date" in out.columns:
-        out["holding_duration_days"] = (pd.to_datetime(out["date"], errors="coerce") - pd.to_datetime(out["entry_date"], errors="coerce")).dt.days
+        out["holding_duration_days"] = (
+            pd.to_datetime(out["date"], errors="coerce") - pd.to_datetime(out["entry_date"], errors="coerce")
+        ).dt.days
     return out
 
 
@@ -268,16 +365,48 @@ def reconciliation_panel(data: dict[str, pd.DataFrame], blotter: pd.DataFrame, t
     accounting = _df(data, "official_accounting_audit")
     cost_dup = _df(data, "official_cost_duplication_audit")
     rows = []
-    weight_sum = numeric(state.get("paper_position_weight", state.get("weight", pd.Series(dtype=float)))).sum() if not state.empty else np.nan
-    rows.append({"control": "weights sum to 1", "status": "PASS" if pd.notna(weight_sum) and abs(weight_sum - 1) < 1e-6 else "FAIL", "detail": weight_sum})
+    weight_sum = (
+        numeric(state.get("paper_position_weight", state.get("weight", pd.Series(dtype=float)))).sum() if not state.empty else np.nan
+    )
+    rows.append(
+        {
+            "control": "weights sum to 1",
+            "status": "PASS" if pd.notna(weight_sum) and abs(weight_sum - 1) < 1e-6 else "FAIL",
+            "detail": weight_sum,
+        }
+    )
     if not actions.empty:
         latest_actions = latest(actions)
-        latest_turnover = numeric(latest_actions[~latest_actions.get("ticker", "").astype(str).str.upper().eq("CASH")].get("weight_change", 0)).abs().sum() if not latest_actions.empty else np.nan
-        report_turnover = numeric(latest(_df(data, "official_rebalance_report")).get("turnover", pd.Series(dtype=float))).iloc[-1] if not latest(_df(data, "official_rebalance_report")).empty else np.nan
-        rows.append({"control": "turnover matches absolute weight changes", "status": "PASS" if pd.notna(latest_turnover) and pd.notna(report_turnover) and abs(latest_turnover - report_turnover) < 1e-6 else "WARNING", "detail": f"actions={latest_turnover}, report={report_turnover}"})
+        latest_turnover = (
+            numeric(latest_actions[~latest_actions.get("ticker", "").astype(str).str.upper().eq("CASH")].get("weight_change", 0))
+            .abs()
+            .sum()
+            if not latest_actions.empty
+            else np.nan
+        )
+        report_turnover = (
+            numeric(latest(_df(data, "official_rebalance_report")).get("turnover", pd.Series(dtype=float))).iloc[-1]
+            if not latest(_df(data, "official_rebalance_report")).empty
+            else np.nan
+        )
+        rows.append(
+            {
+                "control": "turnover matches absolute weight changes",
+                "status": "PASS"
+                if pd.notna(latest_turnover) and pd.notna(report_turnover) and abs(latest_turnover - report_turnover) < 1e-6
+                else "WARNING",
+                "detail": f"actions={latest_turnover}, report={report_turnover}",
+            }
+        )
     cost_trades = numeric(trades.get("estimated_total_cost", 0)).sum() if not trades.empty else 0.0
     cost_ledger = numeric(ledger.get("estimated_total_cost", 0)).sum() if not ledger.empty else 0.0
-    rows.append({"control": "action ledger matches cost ledger", "status": "PASS" if abs(cost_trades - cost_ledger) < 1e-6 else "FAIL", "detail": f"trades={cost_trades}, ledger={cost_ledger}"})
+    rows.append(
+        {
+            "control": "action ledger matches cost ledger",
+            "status": "PASS" if abs(cost_trades - cost_ledger) < 1e-6 else "FAIL",
+            "detail": f"trades={cost_trades}, ledger={cost_ledger}",
+        }
+    )
     hold_cost = 0.0
     if not ledger.empty and "action" in ledger.columns:
         hold_cost = numeric(ledger[ledger["action"].astype(str).str.upper().eq("HOLD")].get("estimated_total_cost", 0)).sum()
@@ -288,11 +417,31 @@ def reconciliation_panel(data: dict[str, pd.DataFrame], blotter: pd.DataFrame, t
     rows.append({"control": "no duplicated cost rows", "status": "PASS" if dup == 0 else "FAIL", "detail": dup})
     if not accounting.empty:
         row = accounting.iloc[-1]
-        rows.append({"control": "cost charged once", "status": "PASS" if bool(row.get("initial_cost_charged_once", False)) else "FAIL", "detail": row.get("cumulative_estimated_costs", np.nan)})
-        rows.append({"control": "signal date vs application date correct", "status": "PASS" if bool(row.get("no_signal_date_return_leakage", False)) and not bool(row.get("weekend_return_created", True)) else "FAIL", "detail": row.get("first_valid_return_date", "")})
+        rows.append(
+            {
+                "control": "cost charged once",
+                "status": "PASS" if bool(row.get("initial_cost_charged_once", False)) else "FAIL",
+                "detail": row.get("cumulative_estimated_costs", np.nan),
+            }
+        )
+        rows.append(
+            {
+                "control": "signal date vs application date correct",
+                "status": "PASS"
+                if bool(row.get("no_signal_date_return_leakage", False)) and not bool(row.get("weekend_return_created", True))
+                else "FAIL",
+                "detail": row.get("first_valid_return_date", ""),
+            }
+        )
     actions_upper = actions.get("action", pd.Series(dtype=str)).astype(str).str.upper() if not actions.empty else pd.Series(dtype=str)
     rows.append({"control": "no missing SELL", "status": "PASS", "detail": "covered by official action reconciliation"})
-    rows.append({"control": "no duplicated BUY", "status": "PASS" if not actions_upper.empty else "WARNING", "detail": int(actions_upper.eq("BUY").sum()) if not actions_upper.empty else "no actions"})
+    rows.append(
+        {
+            "control": "no duplicated BUY",
+            "status": "PASS" if not actions_upper.empty else "WARNING",
+            "detail": int(actions_upper.eq("BUY").sum()) if not actions_upper.empty else "no actions",
+        }
+    )
     return pd.DataFrame(rows)
 
 
@@ -355,7 +504,11 @@ def deterministic_commentary(kpis: dict[str, Any], blotter: pd.DataFrame) -> str
     latest_date = kpis.get("last_rebalance_date", "unavailable")
     latest = blotter[blotter.get("date", pd.Series(dtype=str)).astype(str).eq(str(latest_date))] if not blotter.empty else pd.DataFrame()
     counts = latest.get("action", pd.Series(dtype=str)).astype(str).str.upper().value_counts().to_dict() if not latest.empty else {}
-    cost_by_ticker = blotter.groupby("ticker")["estimated_total_cost"].sum().sort_values(ascending=False) if not blotter.empty and "estimated_total_cost" in blotter.columns else pd.Series(dtype=float)
+    cost_by_ticker = (
+        blotter.groupby("ticker")["estimated_total_cost"].sum().sort_values(ascending=False)
+        if not blotter.empty and "estimated_total_cost" in blotter.columns
+        else pd.Series(dtype=float)
+    )
     driver = cost_by_ticker.index[0] if not cost_by_ticker.empty else "n/a"
     return (
         f"Latest official rebalance date is {latest_date}. "
@@ -370,9 +523,23 @@ def integrity_table(data: dict[str, pd.DataFrame], reconciliation: pd.DataFrame,
     rows = [
         {"check": "official_namespace_only", "status": "PASS", "detail": "uses growth_official_* sources for active execution"},
         {"check": "broker_orders_disabled", "status": "PASS", "detail": "dashboard read-only; no broker controls"},
-        {"check": "reconciliation_controls", "status": "PASS" if not reconciliation["status"].eq("FAIL").any() else "FAIL", "detail": "; ".join(reconciliation[reconciliation["status"].ne("PASS")]["control"].astype(str).tolist())},
-        {"check": "cost_rows_present", "status": "PASS" if kpis.get("costed_order_count", 0) >= 0 else "WARNING", "detail": kpis.get("costed_order_count", 0)},
-        {"check": "gross_net_available", "status": "PASS" if pd.notna(kpis.get("gross_portfolio_value")) and pd.notna(kpis.get("estimated_net_portfolio_value")) else "WARNING", "detail": "official performance ledger"},
+        {
+            "check": "reconciliation_controls",
+            "status": "PASS" if not reconciliation["status"].eq("FAIL").any() else "FAIL",
+            "detail": "; ".join(reconciliation[reconciliation["status"].ne("PASS")]["control"].astype(str).tolist()),
+        },
+        {
+            "check": "cost_rows_present",
+            "status": "PASS" if kpis.get("costed_order_count", 0) >= 0 else "WARNING",
+            "detail": kpis.get("costed_order_count", 0),
+        },
+        {
+            "check": "gross_net_available",
+            "status": "PASS"
+            if pd.notna(kpis.get("gross_portfolio_value")) and pd.notna(kpis.get("estimated_net_portfolio_value"))
+            else "WARNING",
+            "detail": "official performance ledger",
+        },
         {"check": "debug_reconstructed_leakage", "status": "PASS", "detail": "diagnostic data not used in active execution metrics"},
     ]
     return pd.DataFrame(rows)
@@ -398,4 +565,22 @@ def build_execution_bundle(data: dict[str, pd.DataFrame]) -> ExecutionBundle:
         status = "execution_terminal_fail"
     elif integrity["status"].eq("WARNING").any() or reconciliation["status"].eq("WARNING").any():
         status = "execution_terminal_warning"
-    return ExecutionBundle(kpis, latest(blotter) if not blotter.empty else pd.DataFrame(), blotter, components, by_ticker, by_action, by_date, equity, turnover, capacity, quality, lifecycle, reconciliation, src, integrity, commentary, status)
+    return ExecutionBundle(
+        kpis,
+        latest(blotter) if not blotter.empty else pd.DataFrame(),
+        blotter,
+        components,
+        by_ticker,
+        by_action,
+        by_date,
+        equity,
+        turnover,
+        capacity,
+        quality,
+        lifecycle,
+        reconciliation,
+        src,
+        integrity,
+        commentary,
+        status,
+    )

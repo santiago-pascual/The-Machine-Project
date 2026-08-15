@@ -80,7 +80,9 @@ def _analyze_subset(df: pd.DataFrame, subset_name: str) -> pd.DataFrame:
 
             avg_tp = float(feature_values[touch_type == "take_profit"].mean()) if (touch_type == "take_profit").any() else np.nan
             avg_sl = float(feature_values[touch_type == "stop_loss"].mean()) if (touch_type == "stop_loss").any() else np.nan
-            avg_timeout = float(feature_values[touch_type == "vertical_timeout"].mean()) if (touch_type == "vertical_timeout").any() else np.nan
+            avg_timeout = (
+                float(feature_values[touch_type == "vertical_timeout"].mean()) if (touch_type == "vertical_timeout").any() else np.nan
+            )
 
             try:
                 quintile = pd.qcut(feature_values, q=5, labels=False, duplicates="drop")
@@ -145,7 +147,9 @@ def load_and_merge_triple_barrier_features(
         df["date"] = pd.to_datetime(df["date"], errors="coerce").dt.strftime("%Y-%m-%d")
         df["ticker"] = df["ticker"].astype(str)
 
-    prediction_cols = [col for col in predictions.columns if col not in {"realized_return_5d", "realized_return_10d", "realized_return_20d"}]
+    prediction_cols = [
+        col for col in predictions.columns if col not in {"realized_return_5d", "realized_return_10d", "realized_return_20d"}
+    ]
     merged = labels.merge(
         predictions[prediction_cols],
         on=["date", "ticker"],

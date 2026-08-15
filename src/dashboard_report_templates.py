@@ -1,4 +1,3 @@
-
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -76,9 +75,19 @@ def _period_window(perf: pd.DataFrame, report_type: str, start_date: str | None,
 
 def _source_audit(data: dict[str, pd.DataFrame]) -> pd.DataFrame:
     official_keys = [
-        "official_performance", "official_state", "official_actions", "official_rebalance_report", "official_monitor",
-        "official_benchmark_daily", "official_benchmark_equity", "official_market_data_integrity", "official_accounting_reconciliation",
-        "active_alerts", "anti_overfitting_governance", "out_of_sample_governance", "parameter_governance",
+        "official_performance",
+        "official_state",
+        "official_actions",
+        "official_rebalance_report",
+        "official_monitor",
+        "official_benchmark_daily",
+        "official_benchmark_equity",
+        "official_market_data_integrity",
+        "official_accounting_reconciliation",
+        "active_alerts",
+        "anti_overfitting_governance",
+        "out_of_sample_governance",
+        "parameter_governance",
     ]
     rows = []
     for key in official_keys:
@@ -92,7 +101,9 @@ def _source_audit(data: dict[str, pd.DataFrame]) -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
-def build_report_bundle(data: dict[str, pd.DataFrame], report_type: str = "daily", start_date: str | None = None, end_date: str | None = None) -> ReportBundle:
+def build_report_bundle(
+    data: dict[str, pd.DataFrame], report_type: str = "daily", start_date: str | None = None, end_date: str | None = None
+) -> ReportBundle:
     warnings: list[str] = []
     perf_all = data.get("official_performance", pd.DataFrame()).copy()
     perf = _period_window(perf_all, report_type, start_date, end_date)
@@ -109,14 +120,22 @@ def build_report_bundle(data: dict[str, pd.DataFrame], report_type: str = "daily
     alerts_result = build_alert_engine(data, write_outputs=False)
     active_alerts = alerts_result["active"]
     history = alerts_result["history"]
-    non_cash = state[~state.get("ticker", pd.Series(dtype=str)).astype(str).str.upper().eq("CASH")].copy() if not state.empty and "ticker" in state.columns else pd.DataFrame()
+    non_cash = (
+        state[~state.get("ticker", pd.Series(dtype=str)).astype(str).str.upper().eq("CASH")].copy()
+        if not state.empty and "ticker" in state.columns
+        else pd.DataFrame()
+    )
     weights = numeric(non_cash.get("paper_position_weight", pd.Series(dtype=float))) if not non_cash.empty else pd.Series(dtype=float)
     hhi = float((weights.dropna() ** 2).sum()) if not weights.empty else np.nan
     largest_position = "n/a"
     if not non_cash.empty and "paper_position_weight" in non_cash.columns:
         idx = numeric(non_cash["paper_position_weight"]).idxmax()
         largest_position = f"{non_cash.loc[idx, 'ticker']} ({fmt_pct(non_cash.loc[idx, 'paper_position_weight'])})"
-    returns = numeric(perf.get("gross_daily_return", perf.get("daily_return", pd.Series(dtype=float)))) if not perf.empty else pd.Series(dtype=float)
+    returns = (
+        numeric(perf.get("gross_daily_return", perf.get("daily_return", pd.Series(dtype=float))))
+        if not perf.empty
+        else pd.Series(dtype=float)
+    )
     stats = _series_stats(returns)
     drawdown_series = []
     if not perf.empty and "gross_portfolio_value" in perf.columns:
@@ -127,9 +146,17 @@ def build_report_bundle(data: dict[str, pd.DataFrame], report_type: str = "daily
         m = perf_all.copy()
         m["year"] = m["date"].dt.year
         m["month"] = m["date"].dt.month
-        monthly = m.groupby(["year", "month"])["gross_daily_return"].apply(lambda s: (1 + numeric(s).fillna(0)).prod() - 1).reset_index(name="return")
+        monthly = (
+            m.groupby(["year", "month"])["gross_daily_return"]
+            .apply(lambda s: (1 + numeric(s).fillna(0)).prod() - 1)
+            .reset_index(name="return")
+        )
     research_rows = []
-    for key, name in [("anti_overfitting_governance", "Anti-overfitting"), ("out_of_sample_governance", "Out-of-sample"), ("parameter_governance", "Parameter stability")]:
+    for key, name in [
+        ("anti_overfitting_governance", "Anti-overfitting"),
+        ("out_of_sample_governance", "Out-of-sample"),
+        ("parameter_governance", "Parameter stability"),
+    ]:
         df = latest(data.get(key, pd.DataFrame()))
         if not df.empty:
             row = df.iloc[-1].to_dict()
@@ -163,14 +190,43 @@ def build_report_bundle(data: dict[str, pd.DataFrame], report_type: str = "daily
         },
         "performance": {"rows": perf, "stats": stats, "drawdown": drawdown_series, "monthly": monthly},
         "portfolio": {"holdings": state, "non_cash": non_cash, "hhi": hhi},
-        "risk": {"volatility": stats.get("Volatility"), "target_volatility": 0.22, "VaR95": returns.quantile(0.05) if not returns.empty else np.nan, "CVaR95": returns[returns <= returns.quantile(0.05)].mean() if len(returns) > 2 else np.nan, "HHI": hhi},
-        "execution": {"actions": actions_period, "turnover": fmt_pct(latest_perf.get("turnover", np.nan)), "cost": fmt_money(latest_perf.get("estimated_execution_cost", np.nan))},
+        "risk": {
+            "volatility": stats.get("Volatility"),
+            "target_volatility": 0.22,
+            "VaR95": returns.quantile(0.05) if not returns.empty else np.nan,
+            "CVaR95": returns[returns <= returns.quantile(0.05)].mean() if len(returns) > 2 else np.nan,
+            "HHI": hhi,
+        },
+        "execution": {
+            "actions": actions_period,
+            "turnover": fmt_pct(latest_perf.get("turnover", np.nan)),
+            "cost": fmt_money(latest_perf.get("estimated_execution_cost", np.nan)),
+        },
         "research": pd.DataFrame(research_rows),
-        "governance": {"monitor": monitor, "market_data": latest(data.get("official_market_data_governance", pd.DataFrame())), "accounting": latest(data.get("official_accounting_reconciliation", pd.DataFrame()))},
-        "alerts": {"active": active_alerts, "history": history, "health_score": alerts_result["health_score"], "health_label": alerts_result["health_label"]},
+        "governance": {
+            "monitor": monitor,
+            "market_data": latest(data.get("official_market_data_governance", pd.DataFrame())),
+            "accounting": latest(data.get("official_accounting_reconciliation", pd.DataFrame())),
+        },
+        "alerts": {
+            "active": active_alerts,
+            "history": history,
+            "health_score": alerts_result["health_score"],
+            "health_label": alerts_result["health_label"],
+        },
     }
     generated_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     start = perf["date"].min().date().isoformat() if not perf.empty and "date" in perf.columns else "unavailable"
     end = perf["date"].max().date().isoformat() if not perf.empty and "date" in perf.columns else latest_market_date(data)
     status = "report_generator_warning" if warnings else "report_generator_pass"
-    return ReportBundle(report_type=report_type, title=f"{report_type.title()} Institutional Report", start_date=start, end_date=end, generated_at=generated_at, sections=sections, source_audit=source_audit, status=status, warnings=warnings)
+    return ReportBundle(
+        report_type=report_type,
+        title=f"{report_type.title()} Institutional Report",
+        start_date=start,
+        end_date=end,
+        generated_at=generated_at,
+        sections=sections,
+        source_audit=source_audit,
+        status=status,
+        warnings=warnings,
+    )

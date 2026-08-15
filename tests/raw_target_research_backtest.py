@@ -78,8 +78,7 @@ def _calmar(returns: pd.Series) -> float:
 def _portfolio_mode_metrics(portfolio: pd.DataFrame, snapshots: pd.DataFrame, labels: pd.DataFrame, mode: str) -> dict[str, object]:
     daily = portfolio[portfolio["model_mode"].astype(str).eq(mode)].copy()
     trades = snapshots[
-        snapshots["model_mode"].astype(str).eq(mode)
-        & _bool(snapshots.get("selected", pd.Series(False, index=snapshots.index)))
+        snapshots["model_mode"].astype(str).eq(mode) & _bool(snapshots.get("selected", pd.Series(False, index=snapshots.index)))
     ].copy()
     returns = _num(daily.get("realized_portfolio_return_1d", pd.Series(dtype=float))).dropna()
     label_metrics = _label_metrics(labels, trades)
@@ -201,8 +200,16 @@ def run_raw_target_research_backtest() -> tuple[pd.DataFrame, pd.DataFrame, pd.D
             _raw_target_metrics(ablation_results),
         ]
     )
-    raw_daily = ablation_daily[ablation_daily["variant"].astype(str).eq("raw_target_return_only")].copy() if "variant" in ablation_daily else pd.DataFrame()
-    raw_trades = ablation_trades[ablation_trades["variant"].astype(str).eq("raw_target_return_only")].copy() if "variant" in ablation_trades else pd.DataFrame()
+    raw_daily = (
+        ablation_daily[ablation_daily["variant"].astype(str).eq("raw_target_return_only")].copy()
+        if "variant" in ablation_daily
+        else pd.DataFrame()
+    )
+    raw_trades = (
+        ablation_trades[ablation_trades["variant"].astype(str).eq("raw_target_return_only")].copy()
+        if "variant" in ablation_trades
+        else pd.DataFrame()
+    )
     daily_out = pd.concat(
         [
             portfolio[portfolio["model_mode"].astype(str).isin(["baseline", "regime_gated_full_quant"])],
@@ -229,7 +236,24 @@ def run_raw_target_research_backtest() -> tuple[pd.DataFrame, pd.DataFrame, pd.D
     print("\n===== RAW TARGET RESEARCH BACKTEST =====")
     print("source: expected_return_ablation_results.csv + historical walk-forward references")
     print("\n===== BASELINE VS REGIME GATED VS RAW TARGET =====")
-    cols = ["model_mode", "realized_return", "volatility", "Sharpe", "Sortino", "Calmar", "max_drawdown", "average_cash", "average_selected_count", "turnover", "TP_rate", "SL_rate", "TP_minus_SL", "hit_rate", "direction_accuracy", "sample_size"]
+    cols = [
+        "model_mode",
+        "realized_return",
+        "volatility",
+        "Sharpe",
+        "Sortino",
+        "Calmar",
+        "max_drawdown",
+        "average_cash",
+        "average_selected_count",
+        "turnover",
+        "TP_rate",
+        "SL_rate",
+        "TP_minus_SL",
+        "hit_rate",
+        "direction_accuracy",
+        "sample_size",
+    ]
     print(results[cols].to_string(index=False))
     print("\n===== RAW TARGET GOVERNANCE =====")
     print(governance.to_string(index=False))

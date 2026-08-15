@@ -71,7 +71,9 @@ def build_prediction_snapshot(
             "raw_target_price_exact": _get_optional_series(diagnostics_df, "raw_target_price_exact", tickers).values,
             "time_to_target": days_to_target.values,
             "signal_strength_adjustment_value": _get_optional_series(diagnostics_df, "signal_strength_adjustment_value", tickers).values,
-            "final_expected_return_after_adjustments": _get_optional_series(diagnostics_df, "final_expected_return_after_adjustments", tickers).values,
+            "final_expected_return_after_adjustments": _get_optional_series(
+                diagnostics_df, "final_expected_return_after_adjustments", tickers
+            ).values,
         }
     )
     return snapshot.replace([np.inf, -np.inf], np.nan)
@@ -105,10 +107,7 @@ def append_prediction_snapshot(
 
     if overwrite_same_day and duplicate_rows > 0 and not history.empty:
         update_keys = set(snapshot.loc[duplicate_mask, key_cols].itertuples(index=False, name=None))
-        keep_history = [
-            (date, ticker) not in update_keys
-            for date, ticker in zip(history["date"], history["ticker"])
-        ]
+        keep_history = [(date, ticker) not in update_keys for date, ticker in zip(history["date"], history["ticker"])]
         history = history.loc[keep_history].copy()
         rows_to_add = snapshot.copy()
         rows_overwritten = duplicate_rows
@@ -122,7 +121,7 @@ def append_prediction_snapshot(
         history = history.reindex(columns=combined_columns)
         write_header = not path.exists() or path.stat().st_size == 0
         schema_changed = path.exists() and set(pd.read_csv(path, nrows=0).columns) != set(combined_columns)
-        if overwrite_same_day and duplicate_rows > 0 or schema_changed:
+        if (overwrite_same_day and duplicate_rows > 0) or schema_changed:
             combined = pd.concat([history, rows_to_add], axis=0, ignore_index=True)
             combined.to_csv(path, index=False)
         else:
@@ -242,11 +241,7 @@ def compute_calibration_metrics(
 
     horizon_cols = [f"realized_return_{horizon}d" for horizon in horizons]
     evaluable = evaluated_history.dropna(subset=horizon_cols, how="all")
-    selected = (
-        evaluable[evaluable["selected"].astype(bool)]
-        if "selected" in evaluable.columns
-        else evaluable.iloc[0:0]
-    )
+    selected = evaluable[evaluable["selected"].astype(bool)] if "selected" in evaluable.columns else evaluable.iloc[0:0]
     return {
         "universe": _metric_block(evaluable, horizons),
         "selected": _metric_block(selected, horizons),

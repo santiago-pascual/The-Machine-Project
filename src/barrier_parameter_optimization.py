@@ -102,7 +102,9 @@ def run_barrier_parameter_optimization(
                         sl_multiple=float(sl_multiple),
                         output_path=Path(output_path).with_suffix(".tmp.csv"),
                     )
-                selected_labels = labels[labels["selected"].astype(bool)] if not labels.empty and "selected" in labels.columns else labels.iloc[0:0]
+                selected_labels = (
+                    labels[labels["selected"].astype(bool)] if not labels.empty and "selected" in labels.columns else labels.iloc[0:0]
+                )
                 for subset_name, subset in [("universe", labels), ("selected_only", selected_labels)]:
                     metrics = _performance_block(subset, subset_name=subset_name)
                     rows.append(

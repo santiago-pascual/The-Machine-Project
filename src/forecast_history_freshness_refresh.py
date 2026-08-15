@@ -1,4 +1,3 @@
-
 from __future__ import annotations
 
 from pathlib import Path
@@ -134,15 +133,17 @@ def refresh_forecast_history_to_cache_latest(overwrite_same_day: bool = True) ->
     combined = pd.concat([existing.reindex(columns=combined_cols), new_rows.reindex(columns=combined_cols)], ignore_index=True)
     combined.to_csv(FORECAST_HISTORY, index=False)
     after = _latest_forecast_date(combined)
-    report.update({
-        "forecast_history_latest_after": after.date().isoformat() if pd.notna(after) else "missing",
-        "rows_added": len(new_rows),
-        "rows_overwritten": rows_overwritten,
-        "rows_with_cache_price_update": updates,
-        "status": "refreshed",
-        "method": "carry_forward_latest_forecast_snapshot",
-        "warning": "forecast snapshot was carried forward; model calculations were not changed or rerun for this bridge",
-    })
+    report.update(
+        {
+            "forecast_history_latest_after": after.date().isoformat() if pd.notna(after) else "missing",
+            "rows_added": len(new_rows),
+            "rows_overwritten": rows_overwritten,
+            "rows_with_cache_price_update": updates,
+            "status": "refreshed",
+            "method": "carry_forward_latest_forecast_snapshot",
+            "warning": "forecast snapshot was carried forward; model calculations were not changed or rerun for this bridge",
+        }
+    )
     pd.DataFrame([report]).to_csv(REPORT_FILE, index=False)
     return report
 

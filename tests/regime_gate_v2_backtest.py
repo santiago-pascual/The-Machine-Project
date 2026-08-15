@@ -196,8 +196,7 @@ def _trades_for_mode(snapshots: pd.DataFrame, mode: str) -> pd.DataFrame:
     if snapshots.empty:
         return pd.DataFrame()
     data = snapshots[
-        snapshots["model_mode"].astype(str).eq(mode)
-        & _bool(snapshots.get("selected", pd.Series(False, index=snapshots.index)))
+        snapshots["model_mode"].astype(str).eq(mode) & _bool(snapshots.get("selected", pd.Series(False, index=snapshots.index)))
     ].copy()
     data["candidate_model_mode"] = mode
     return data
@@ -373,8 +372,12 @@ def run_regime_gate_v2_backtest() -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFr
 
     print("\n===== REGIME GATE V2 BACKTEST =====")
     print(f"dates tested: {candidate_daily['date'].nunique() if not candidate_daily.empty else 0}")
-    print(f"full quant allowed dates: {int(candidate_daily['source_model_mode'].astype(str).eq('regime_gated_full_quant').sum()) if not candidate_daily.empty else 0}")
-    print(f"baseline fallback dates: {int(candidate_daily['source_model_mode'].astype(str).eq('baseline').sum()) if not candidate_daily.empty else 0}")
+    print(
+        f"full quant allowed dates: {int(candidate_daily['source_model_mode'].astype(str).eq('regime_gated_full_quant').sum()) if not candidate_daily.empty else 0}"
+    )
+    print(
+        f"baseline fallback dates: {int(candidate_daily['source_model_mode'].astype(str).eq('baseline').sum()) if not candidate_daily.empty else 0}"
+    )
 
     print("\n===== OLD GATE VS V2 GATE =====")
     cols = [

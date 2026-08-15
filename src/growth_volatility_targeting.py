@@ -195,7 +195,9 @@ def _tp_sl_for_variant(variant: str, trades: pd.DataFrame, labels: pd.DataFrame)
     base_variant = variant.rsplit("_vol_target_", 1)[0]
     if trades.empty or labels.empty:
         return {"TP_rate": np.nan, "SL_rate": np.nan, "TP_minus_SL": np.nan}
-    data = trades[trades["variant"].eq(base_variant)][["date", "ticker"]].merge(labels[["date", "ticker", "label"]], on=["date", "ticker"], how="left")
+    data = trades[trades["variant"].eq(base_variant)][["date", "ticker"]].merge(
+        labels[["date", "ticker", "label"]], on=["date", "ticker"], how="left"
+    )
     data = data.dropna(subset=["label"])
     if data.empty:
         return {"TP_rate": np.nan, "SL_rate": np.nan, "TP_minus_SL": np.nan}
@@ -249,12 +251,14 @@ def _governance(results: pd.DataFrame, raw_metrics: dict, spy_metrics: dict) -> 
                 reasons.append("beats SPY return/Sharpe/DD without excessive defensiveness")
             else:
                 reasons.append("needs more validation")
-        rows.append({
-            "variant": row["variant"],
-            "classification": classification,
-            "reason": "; ".join(reasons),
-            "production_change": "none",
-        })
+        rows.append(
+            {
+                "variant": row["variant"],
+                "classification": classification,
+                "reason": "; ".join(reasons),
+                "production_change": "none",
+            }
+        )
     return pd.DataFrame(rows)
 
 
@@ -287,7 +291,19 @@ def run_growth_volatility_targeting() -> dict[str, pd.DataFrame]:
         rows.append(result)
     results = pd.DataFrame(rows).sort_values(["Sharpe", "total_return"], ascending=False)
     governance = _governance(results, raw_metrics, spy_metrics)
-    exposure = daily[["date", "variant", "target_volatility", "rolling_vol_used", "raw_target_exposure", "target_exposure", "cash_weight", "vol_target_return", "uses_hindsight"]].copy()
+    exposure = daily[
+        [
+            "date",
+            "variant",
+            "target_volatility",
+            "rolling_vol_used",
+            "raw_target_exposure",
+            "target_exposure",
+            "cash_weight",
+            "vol_target_return",
+            "uses_hindsight",
+        ]
+    ].copy()
 
     results.to_csv(OUT_RESULTS, index=False)
     daily.to_csv(OUT_DAILY, index=False)
@@ -297,15 +313,33 @@ def run_growth_volatility_targeting() -> dict[str, pd.DataFrame]:
     print("\n===== GROWTH VOLATILITY TARGETING =====")
     print(results.to_string(index=False))
     print("\n===== VOL TARGET VARIANT COMPARISON =====")
-    show = ["variant", "total_return", "CAGR", "realized_volatility", "Sharpe", "max_drawdown", "average_exposure", "min_exposure", "max_exposure", "time_below_50pct_exposure", "return_vs_SPY", "Sharpe_vs_SPY", "DD_vs_SPY"]
+    show = [
+        "variant",
+        "total_return",
+        "CAGR",
+        "realized_volatility",
+        "Sharpe",
+        "max_drawdown",
+        "average_exposure",
+        "min_exposure",
+        "max_exposure",
+        "time_below_50pct_exposure",
+        "return_vs_SPY",
+        "Sharpe_vs_SPY",
+        "DD_vs_SPY",
+    ]
     print(results[[c for c in show if c in results.columns]].to_string(index=False))
     print("\n===== EXPOSURE ANALYSIS =====")
-    exposure_summary = exposure.groupby("variant").agg(
-        avg_exposure=("target_exposure", "mean"),
-        min_exposure=("target_exposure", "min"),
-        max_exposure=("target_exposure", "max"),
-        periods_below_50=("target_exposure", lambda x: float((x < 0.50).mean())),
-    ).reset_index()
+    exposure_summary = (
+        exposure.groupby("variant")
+        .agg(
+            avg_exposure=("target_exposure", "mean"),
+            min_exposure=("target_exposure", "min"),
+            max_exposure=("target_exposure", "max"),
+            periods_below_50=("target_exposure", lambda x: float((x < 0.50).mean())),
+        )
+        .reset_index()
+    )
     print(exposure_summary.to_string(index=False))
     print("\n===== GOVERNANCE =====")
     print(governance.to_string(index=False))

@@ -116,7 +116,11 @@ def _apply_position_cap(weights: pd.Series, cap: float) -> pd.Series:
 def _erc_weights(group: pd.DataFrame, target_exposure: float) -> pd.Series:
     vol = _num(group["asset_vol_proxy"]).replace(0.0, np.nan).fillna(_num(group["asset_vol_proxy"]).median()).fillna(0.02)
     inv_vol = 1.0 / vol
-    weights = inv_vol / float(inv_vol.sum()) * target_exposure if float(inv_vol.sum()) > 0 else pd.Series(target_exposure / len(group), index=group.index)
+    weights = (
+        inv_vol / float(inv_vol.sum()) * target_exposure
+        if float(inv_vol.sum()) > 0
+        else pd.Series(target_exposure / len(group), index=group.index)
+    )
     return weights.clip(lower=0.0)
 
 
@@ -197,7 +201,11 @@ def _label_metrics(trades: pd.DataFrame) -> dict[str, float]:
     merged = trades[["date", "ticker"]].drop_duplicates().merge(labels20, on=["date", "ticker"], how="left")
     tp = float((merged["first_touch_type"].astype(str) == "take_profit").mean()) if "first_touch_type" in merged else np.nan
     sl = float((merged["first_touch_type"].astype(str) == "stop_loss").mean()) if "first_touch_type" in merged else np.nan
-    hit = float((_num(merged.get("realized_return_at_barrier", pd.Series(dtype=float))) > 0).mean()) if "realized_return_at_barrier" in merged else np.nan
+    hit = (
+        float((_num(merged.get("realized_return_at_barrier", pd.Series(dtype=float))) > 0).mean())
+        if "realized_return_at_barrier" in merged
+        else np.nan
+    )
     return {"TP_rate": tp, "SL_rate": sl, "TP_minus_SL": tp - sl if np.isfinite(tp) and np.isfinite(sl) else np.nan, "hit_rate": hit}
 
 
@@ -320,7 +328,24 @@ def run_raw_target_risk_budgeting() -> tuple[pd.DataFrame, pd.DataFrame, pd.Data
     print("production change: none")
 
     print("\n===== RISK BUDGET VARIANT COMPARISON =====")
-    cols = ["variant", "realized_return", "annualized_volatility", "Sharpe", "Sortino", "Calmar", "max_drawdown", "average_cash", "average_exposure", "average_position_size", "max_position_size", "turnover", "TP_rate", "SL_rate", "TP_minus_SL", "hit_rate"]
+    cols = [
+        "variant",
+        "realized_return",
+        "annualized_volatility",
+        "Sharpe",
+        "Sortino",
+        "Calmar",
+        "max_drawdown",
+        "average_cash",
+        "average_exposure",
+        "average_position_size",
+        "max_position_size",
+        "turnover",
+        "TP_rate",
+        "SL_rate",
+        "TP_minus_SL",
+        "hit_rate",
+    ]
     print(results[cols].to_string(index=False))
 
     print("\n===== RAW TARGET RISK BUDGET GOVERNANCE =====")

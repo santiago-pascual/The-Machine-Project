@@ -141,7 +141,7 @@ def _market_proxy(snapshots: pd.DataFrame) -> pd.DataFrame:
     for idx in range(len(pivot)):
         if idx < 60:
             continue
-        window = pivot.iloc[max(0, idx - 60): idx + 1].pct_change().dropna(how="all")
+        window = pivot.iloc[max(0, idx - 60) : idx + 1].pct_change().dropna(how="all")
         if window.shape[0] < 20 or window.shape[1] < 3:
             continue
         corr = window.corr().replace([np.inf, -np.inf], np.nan)
@@ -160,7 +160,11 @@ def _classify_states(features: pd.DataFrame) -> pd.DataFrame:
     if features.empty:
         return features
     out = features.copy()
-    trend_raw = 0.45 * out["risk_adjusted_momentum_20d"].fillna(0.0) + 0.35 * out["risk_adjusted_momentum_60d"].fillna(0.0) + 20.0 * out["trend_slope_20d"].fillna(0.0)
+    trend_raw = (
+        0.45 * out["risk_adjusted_momentum_20d"].fillna(0.0)
+        + 0.35 * out["risk_adjusted_momentum_60d"].fillna(0.0)
+        + 20.0 * out["trend_slope_20d"].fillna(0.0)
+    )
     out["trend_score"] = np.tanh(trend_raw / 2.0)
     out["trend_state"] = np.where(out["trend_score"] > 0.20, "uptrend", np.where(out["trend_score"] < -0.20, "downtrend", "sideways"))
 
@@ -279,9 +283,7 @@ def _performance_by_regime(data: pd.DataFrame, label_col: str, labels: pd.DataFr
         label_group = pd.DataFrame()
         if not labels.empty and label_col in labels.columns:
             label_group = labels[
-                labels[label_col].astype(str).eq(str(label))
-                & labels["horizon"].astype(str).eq("20")
-                & _bool(labels["selected"])
+                labels[label_col].astype(str).eq(str(label)) & labels["horizon"].astype(str).eq("20") & _bool(labels["selected"])
             ]
         tp = float((label_group["first_touch_type"].astype(str) == "take_profit").mean()) if not label_group.empty else np.nan
         sl = float((label_group["first_touch_type"].astype(str) == "stop_loss").mean()) if not label_group.empty else np.nan
@@ -298,8 +300,12 @@ def _performance_by_regime(data: pd.DataFrame, label_col: str, labels: pd.DataFr
                 "TP_minus_SL": tp - sl if np.isfinite(tp) and np.isfinite(sl) else np.nan,
                 "hit_rate": float((returns > 0).mean()) if returns.notna().any() else np.nan,
                 "forecast_IC": _spearman(forecast, returns),
-                "average_selected_count": float(data[data[label_col].astype(str).eq(str(label))].groupby("date")["selected"].apply(lambda s: _bool(s).sum()).mean()),
-                "average_cash": float(_num(data[data[label_col].astype(str).eq(str(label))].get("cash_weight", pd.Series(dtype=float))).mean()),
+                "average_selected_count": float(
+                    data[data[label_col].astype(str).eq(str(label))].groupby("date")["selected"].apply(lambda s: _bool(s).sum()).mean()
+                ),
+                "average_cash": float(
+                    _num(data[data[label_col].astype(str).eq(str(label))].get("cash_weight", pd.Series(dtype=float))).mean()
+                ),
             }
         )
     return pd.DataFrame(rows).sort_values("sample_size", ascending=False)
@@ -335,6 +341,7 @@ def _comparison(old_perf: pd.DataFrame, new_perf: pd.DataFrame) -> pd.DataFrame:
             "mean_abs_forecast_IC": float(frame["forecast_IC"].abs().mean(skipna=True)),
             "mean_TP_minus_SL": float(frame["TP_minus_SL"].mean(skipna=True)),
         }
+
     return pd.DataFrame([summarize(old_perf, "current_regime"), summarize(new_perf, "regime_v2")])
 
 
@@ -422,7 +429,19 @@ def run_regime_engine_v2() -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     print(transition.round(4).to_string() if not transition.empty else "insufficient data")
 
     print("\n===== REGIME V2 PERFORMANCE ATTRIBUTION =====")
-    cols = ["regime", "sample_size", "average_forward_return", "volatility", "Sharpe", "TP_rate", "SL_rate", "TP_minus_SL", "hit_rate", "forecast_IC", "average_cash"]
+    cols = [
+        "regime",
+        "sample_size",
+        "average_forward_return",
+        "volatility",
+        "Sharpe",
+        "TP_rate",
+        "SL_rate",
+        "TP_minus_SL",
+        "hit_rate",
+        "forecast_IC",
+        "average_cash",
+    ]
     print(new_perf[cols].to_string(index=False))
 
     print("\n===== REGIME V2 GOVERNANCE =====")

@@ -136,7 +136,9 @@ def _snapshot_data() -> pd.DataFrame:
     snaps = snaps.sort_values(["ticker", "date"])
     snaps["momentum_20d_proxy"] = snaps.groupby("ticker")["current_price"].pct_change(4)
     snaps["momentum_60d_proxy"] = snaps.groupby("ticker")["current_price"].pct_change(12)
-    snaps["volatility_proxy"] = snaps.groupby("ticker")["current_price"].pct_change().rolling(12, min_periods=4).std().reset_index(level=0, drop=True)
+    snaps["volatility_proxy"] = (
+        snaps.groupby("ticker")["current_price"].pct_change().rolling(12, min_periods=4).std().reset_index(level=0, drop=True)
+    )
     snaps["expected_return_rank_pct"] = snaps.groupby("date")["expected_daily_return"].rank(pct=True, ascending=False)
     snaps["signal_rank_pct"] = snaps.groupby("date")["signal_strength"].rank(pct=True, ascending=False)
     snaps["volatility_rank_pct"] = snaps.groupby("date")["volatility_proxy"].rank(pct=True, ascending=False)
@@ -174,28 +176,38 @@ def missed_winners_attribution(raw_daily: pd.DataFrame, snaps: pd.DataFrame) -> 
         return pd.DataFrame()
     selected = _selected_map(raw_daily)
     rows = []
-    rank_cols = ["date", "ticker", "expected_return_rank_pct", "signal_rank_pct", "volatility_rank_pct", "quality_score", "target_confidence"]
+    rank_cols = [
+        "date",
+        "ticker",
+        "expected_return_rank_pct",
+        "signal_rank_pct",
+        "volatility_rank_pct",
+        "quality_score",
+        "target_confidence",
+    ]
     rank_data = snaps[[c for c in rank_cols if c in snaps.columns]].drop_duplicates(["date", "ticker"])
     missed = missed.merge(rank_data, on=["date", "ticker"], how="left", suffixes=("", "_ranked"))
     for _, row in missed.iterrows():
         selected_now = row["ticker"] in selected.get(row["date"], [])
-        rows.append({
-            "date": row["date"],
-            "ticker": row["ticker"],
-            "period_return_20d": row.get("winner_forward_return_20d", row.get("realized_return_20d")),
-            "was_in_universe": True,
-            "was_selected": bool(selected_now),
-            "was_underweighted": bool(selected_now and row.get("raw_weight_proxy", 0.0) < 0.20),
-            "expected_return_rank_pct": row.get("expected_return_rank_pct"),
-            "signal_rank_pct": row.get("signal_rank_pct"),
-            "volatility_rank_pct": row.get("volatility_rank_pct"),
-            "expected_daily_return": row.get("expected_daily_return"),
-            "signal_strength": row.get("signal_strength"),
-            "quality_score": row.get("quality_score"),
-            "target_confidence": row.get("target_confidence"),
-            "filter_status": row.get("miss_reason"),
-            "diagnosis": "selected" if selected_now else row.get("miss_reason", "not_selected"),
-        })
+        rows.append(
+            {
+                "date": row["date"],
+                "ticker": row["ticker"],
+                "period_return_20d": row.get("winner_forward_return_20d", row.get("realized_return_20d")),
+                "was_in_universe": True,
+                "was_selected": bool(selected_now),
+                "was_underweighted": bool(selected_now and row.get("raw_weight_proxy", 0.0) < 0.20),
+                "expected_return_rank_pct": row.get("expected_return_rank_pct"),
+                "signal_rank_pct": row.get("signal_rank_pct"),
+                "volatility_rank_pct": row.get("volatility_rank_pct"),
+                "expected_daily_return": row.get("expected_daily_return"),
+                "signal_strength": row.get("signal_strength"),
+                "quality_score": row.get("quality_score"),
+                "target_confidence": row.get("target_confidence"),
+                "filter_status": row.get("miss_reason"),
+                "diagnosis": "selected" if selected_now else row.get("miss_reason", "not_selected"),
+            }
+        )
     return pd.DataFrame(rows)
 
 
@@ -216,29 +228,37 @@ def winner_retention_analysis(raw_daily: pd.DataFrame, realized: pd.DataFrame) -
             elif active_start is not None:
                 exit_date = date
                 exit_ret = realized[(realized["date"].eq(exit_date)) & (realized["ticker"].eq(ticker))]
-                rows.append({
-                    "ticker": ticker,
-                    "entry_date": active_start,
-                    "exit_date": exit_date,
-                    "holding_periods": len(active_dates),
-                    "return_after_exit_5d": float(exit_ret["realized_return_5d"].iloc[0]) if not exit_ret.empty and "realized_return_5d" in exit_ret else np.nan,
-                    "return_after_exit_20d": float(exit_ret["realized_return_20d"].iloc[0]) if not exit_ret.empty and "realized_return_20d" in exit_ret else np.nan,
-                    "sold_too_early_proxy": bool(not exit_ret.empty and float(exit_ret["realized_return_20d"].iloc[0]) > 0.05),
-                    "exit_reason_proxy": "removed_by_ranking_or_optimizer",
-                })
+                rows.append(
+                    {
+                        "ticker": ticker,
+                        "entry_date": active_start,
+                        "exit_date": exit_date,
+                        "holding_periods": len(active_dates),
+                        "return_after_exit_5d": float(exit_ret["realized_return_5d"].iloc[0])
+                        if not exit_ret.empty and "realized_return_5d" in exit_ret
+                        else np.nan,
+                        "return_after_exit_20d": float(exit_ret["realized_return_20d"].iloc[0])
+                        if not exit_ret.empty and "realized_return_20d" in exit_ret
+                        else np.nan,
+                        "sold_too_early_proxy": bool(not exit_ret.empty and float(exit_ret["realized_return_20d"].iloc[0]) > 0.05),
+                        "exit_reason_proxy": "removed_by_ranking_or_optimizer",
+                    }
+                )
                 active_start = None
                 active_dates = []
         if active_start is not None:
-            rows.append({
-                "ticker": ticker,
-                "entry_date": active_start,
-                "exit_date": pd.NaT,
-                "holding_periods": len(active_dates),
-                "return_after_exit_5d": np.nan,
-                "return_after_exit_20d": np.nan,
-                "sold_too_early_proxy": False,
-                "exit_reason_proxy": "still_active_at_sample_end",
-            })
+            rows.append(
+                {
+                    "ticker": ticker,
+                    "entry_date": active_start,
+                    "exit_date": pd.NaT,
+                    "holding_periods": len(active_dates),
+                    "return_after_exit_5d": np.nan,
+                    "return_after_exit_20d": np.nan,
+                    "sold_too_early_proxy": False,
+                    "exit_reason_proxy": "still_active_at_sample_end",
+                }
+            )
     return pd.DataFrame(rows)
 
 
@@ -257,18 +277,20 @@ def turnover_drag_analysis(raw_daily: pd.DataFrame, realized: pd.DataFrame) -> p
             rr = realized[(realized["date"].eq(date)) & (realized["ticker"].eq(ticker))]
             if not rr.empty and "realized_return_20d" in rr:
                 sold_forward.append(float(rr["realized_return_20d"].iloc[0]))
-        rows.append({
-            "date": date,
-            "turnover_count": len(sold) + len(bought),
-            "sold_count": len(sold),
-            "bought_count": len(bought),
-            "retained_count": len(retained),
-            "sold_tickers": ",".join(sold),
-            "bought_tickers": ",".join(bought),
-            "avg_return_after_sale_20d": float(np.nanmean(sold_forward)) if sold_forward else np.nan,
-            "winner_sold_count": int(sum(np.array(sold_forward) > 0.05)) if sold_forward else 0,
-            "whipsaw_proxy": len(set(sold) & set(bought)),
-        })
+        rows.append(
+            {
+                "date": date,
+                "turnover_count": len(sold) + len(bought),
+                "sold_count": len(sold),
+                "bought_count": len(bought),
+                "retained_count": len(retained),
+                "sold_tickers": ",".join(sold),
+                "bought_tickers": ",".join(bought),
+                "avg_return_after_sale_20d": float(np.nanmean(sold_forward)) if sold_forward else np.nan,
+                "winner_sold_count": int(sum(np.array(sold_forward) > 0.05)) if sold_forward else 0,
+                "whipsaw_proxy": len(set(sold) & set(bought)),
+            }
+        )
         previous = current
     out = pd.DataFrame(rows)
     if not out.empty:
@@ -281,7 +303,9 @@ def _base_candidates_for_date(date: pd.Timestamp, snaps: pd.DataFrame) -> pd.Dat
     return data.sort_values(["expected_daily_return", "signal_strength"], ascending=False)
 
 
-def _selected_return(date: pd.Timestamp, selected: list[str], realized: pd.DataFrame, cash: float = 0.0, weights: dict[str, float] | None = None) -> float:
+def _selected_return(
+    date: pd.Timestamp, selected: list[str], realized: pd.DataFrame, cash: float = 0.0, weights: dict[str, float] | None = None
+) -> float:
     if not selected:
         return 0.0
     rr = realized[(realized["date"].eq(date)) & (realized["ticker"].isin(selected))]
@@ -302,7 +326,9 @@ def _selected_return(date: pd.Timestamp, selected: list[str], realized: pd.DataF
     return float(rr["realized_return_5d"].mean() * exposure)
 
 
-def _simulate_variants(raw_daily: pd.DataFrame, snaps: pd.DataFrame, realized: pd.DataFrame, missed_attr: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
+def _simulate_variants(
+    raw_daily: pd.DataFrame, snaps: pd.DataFrame, realized: pd.DataFrame, missed_attr: pd.DataFrame
+) -> tuple[pd.DataFrame, pd.DataFrame]:
     selected_base = _selected_map(raw_daily)
     dates = list(raw_daily["date"])
     previous_by_variant: dict[str, list[str]] = {}
@@ -326,11 +352,16 @@ def _simulate_variants(raw_daily: pd.DataFrame, snaps: pd.DataFrame, realized: p
             & (candidate_data["momentum_20d_proxy"] > 0)
             & (candidate_data["momentum_60d_proxy"] > 0)
         ]["ticker"].tolist()
-        winner_rescue = missed_attr[
-            (missed_attr["date"].eq(date))
-            & (missed_attr["expected_daily_return"] > 0)
-            & (~missed_attr["was_selected"].fillna(False).astype(bool))
-        ].sort_values("period_return_20d", ascending=False)["ticker"].head(1).tolist()
+        winner_rescue = (
+            missed_attr[
+                (missed_attr["date"].eq(date))
+                & (missed_attr["expected_daily_return"] > 0)
+                & (~missed_attr["was_selected"].fillna(False).astype(bool))
+            ]
+            .sort_values("period_return_20d", ascending=False)["ticker"]
+            .head(1)
+            .tolist()
+        )
 
         variant_selection = {"raw_target_current": base}
         prev = previous_by_variant.get("winner_retention_rule", [])
@@ -365,15 +396,19 @@ def _simulate_variants(raw_daily: pd.DataFrame, snaps: pd.DataFrame, realized: p
                 ret = _selected_return(date, selection, realized, cash=0.0)
             prev = previous_by_variant.get(variant, [])
             turnover = len(set(selection).symmetric_difference(set(prev))) / max(len(set(selection).union(prev)), 1)
-            daily_rows.append({
-                "date": date,
-                "variant": variant,
-                "return": ret,
-                "selected_tickers": ",".join(selection),
-                "selected_count": len(selection),
-                "turnover": turnover,
-                "validity_warning": "benchmark_hindsight_diagnostic_only" if variant == "top_winner_rescue_overlay" else "research_proxy_no_production_change",
-            })
+            daily_rows.append(
+                {
+                    "date": date,
+                    "variant": variant,
+                    "return": ret,
+                    "selected_tickers": ",".join(selection),
+                    "selected_count": len(selection),
+                    "turnover": turnover,
+                    "validity_warning": "benchmark_hindsight_diagnostic_only"
+                    if variant == "top_winner_rescue_overlay"
+                    else "research_proxy_no_production_change",
+                }
+            )
             previous_by_variant[variant] = selection
     variant_daily = pd.DataFrame(daily_rows).dropna(subset=["return"])
     results = []
@@ -462,12 +497,14 @@ def _governance(results: pd.DataFrame) -> pd.DataFrame:
             reasons.append("weak Sharpe")
         else:
             reasons.append("needs further walk-forward validation")
-        rows.append({
-            "variant": row["variant"],
-            "classification": classification,
-            "reason": "; ".join(reasons),
-            "production_change": "none",
-        })
+        rows.append(
+            {
+                "variant": row["variant"],
+                "classification": classification,
+                "reason": "; ".join(reasons),
+                "production_change": "none",
+            }
+        )
     return pd.DataFrame(rows)
 
 
@@ -495,7 +532,17 @@ def run_missed_winners_turnover_research() -> dict[str, pd.DataFrame]:
     print(variant_results.to_string(index=False))
 
     print("\n===== MISSED WINNERS ATTRIBUTION =====")
-    cols = ["date", "ticker", "period_return_20d", "was_selected", "was_underweighted", "expected_return_rank_pct", "signal_rank_pct", "filter_status", "diagnosis"]
+    cols = [
+        "date",
+        "ticker",
+        "period_return_20d",
+        "was_selected",
+        "was_underweighted",
+        "expected_return_rank_pct",
+        "signal_rank_pct",
+        "filter_status",
+        "diagnosis",
+    ]
     print(missed_attr[[c for c in cols if c in missed_attr.columns]].head(30).to_string(index=False))
 
     print("\n===== WINNER RETENTION ANALYSIS =====")
@@ -505,7 +552,20 @@ def run_missed_winners_turnover_research() -> dict[str, pd.DataFrame]:
     print(turnover.sort_values("avg_return_after_sale_20d", ascending=False).head(20).to_string(index=False))
 
     print("\n===== OVERLAY VARIANT COMPARISON =====")
-    show_cols = ["variant", "total_return", "CAGR", "volatility", "Sharpe", "max_drawdown", "turnover", "missed_winner_capture_rate", "return_vs_SPY", "Sharpe_vs_SPY", "DD_vs_SPY", "validity_warning"]
+    show_cols = [
+        "variant",
+        "total_return",
+        "CAGR",
+        "volatility",
+        "Sharpe",
+        "max_drawdown",
+        "turnover",
+        "missed_winner_capture_rate",
+        "return_vs_SPY",
+        "Sharpe_vs_SPY",
+        "DD_vs_SPY",
+        "validity_warning",
+    ]
     print(variant_results[[c for c in show_cols if c in variant_results.columns]].to_string(index=False))
 
     print("\n===== GOVERNANCE =====")

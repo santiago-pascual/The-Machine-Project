@@ -42,8 +42,20 @@ pio.templates[PLOTLY_TEMPLATE] = go.layout.Template(
         plot_bgcolor="rgba(0,0,0,0)",
         font={"family": "Inter, IBM Plex Sans, system-ui, sans-serif", "color": TEXT, "size": 12},
         colorway=[ORANGE, INFO, PURPLE, GREEN, RED, AMBER, CYAN, MUTED],
-        xaxis={"gridcolor": GRID, "zerolinecolor": GRID, "linecolor": BORDER, "tickfont": {"color": MUTED}, "title": {"font": {"color": MUTED}}},
-        yaxis={"gridcolor": GRID, "zerolinecolor": GRID, "linecolor": BORDER, "tickfont": {"color": MUTED}, "title": {"font": {"color": MUTED}}},
+        xaxis={
+            "gridcolor": GRID,
+            "zerolinecolor": GRID,
+            "linecolor": BORDER,
+            "tickfont": {"color": MUTED},
+            "title": {"font": {"color": MUTED}},
+        },
+        yaxis={
+            "gridcolor": GRID,
+            "zerolinecolor": GRID,
+            "linecolor": BORDER,
+            "tickfont": {"color": MUTED},
+            "title": {"font": {"color": MUTED}},
+        },
         legend={"font": {"color": MUTED}, "orientation": "h", "yanchor": "bottom", "y": 1.02, "xanchor": "right", "x": 1},
         margin={"l": 28, "r": 28, "t": 58, "b": 42},
     )

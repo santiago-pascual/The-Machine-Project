@@ -145,19 +145,21 @@ def audit_official_freshness() -> pd.DataFrame:
         df = read_csv(p)
         latest = latest_date(p)
         stale = bool(pd.notna(market) and pd.notna(latest) and latest < market)
-        rows.append({
-            "file": name,
-            "exists": p.exists(),
-            "rows": len(df),
-            "date_column": date_col(df) or "",
-            "latest_market_observation_date": market.date().isoformat() if pd.notna(market) else "missing",
-            "latest_artifact_date": latest.date().isoformat() if pd.notna(latest) else "missing",
-            "duplicate_date_or_date_ticker_rows": dup_dates(p),
-            "stale": stale,
-            "source_or_regenerator": REGENERATED_BY_DAILY.get(name, "manual_or_external"),
-            "dashboard_consumes": name in DASHBOARD_CONSUMED,
-            "checksum": file_hash(p) if p.exists() else "missing",
-        })
+        rows.append(
+            {
+                "file": name,
+                "exists": p.exists(),
+                "rows": len(df),
+                "date_column": date_col(df) or "",
+                "latest_market_observation_date": market.date().isoformat() if pd.notna(market) else "missing",
+                "latest_artifact_date": latest.date().isoformat() if pd.notna(latest) else "missing",
+                "duplicate_date_or_date_ticker_rows": dup_dates(p),
+                "stale": stale,
+                "source_or_regenerator": REGENERATED_BY_DAILY.get(name, "manual_or_external"),
+                "dashboard_consumes": name in DASHBOARD_CONSUMED,
+                "checksum": file_hash(p) if p.exists() else "missing",
+            }
+        )
     out = pd.DataFrame(rows)
     out.to_csv("phase123_official_freshness_audit.csv", index=False)
     return out
@@ -177,15 +179,17 @@ def reconciliation() -> pd.DataFrame:
         "official_benchmark_daily": latest_date("growth_official_benchmark_daily.csv"),
         "dashboard_official_date": latest_date("growth_official_paper_performance.csv"),
     }
-    rows=[]
+    rows = []
     for stage, dt in checks.items():
-        rows.append({
-            "stage": stage,
-            "latest_date": dt.date().isoformat() if pd.notna(dt) else "missing",
-            "matches_latest_market_date": bool(pd.notna(market) and pd.notna(dt) and dt == market),
-        })
-    out=pd.DataFrame(rows)
-    dates=[v for k,v in checks.items() if k != "latest_market_date" and pd.notna(v)]
+        rows.append(
+            {
+                "stage": stage,
+                "latest_date": dt.date().isoformat() if pd.notna(dt) else "missing",
+                "matches_latest_market_date": bool(pd.notna(market) and pd.notna(dt) and dt == market),
+            }
+        )
+    out = pd.DataFrame(rows)
+    dates = [v for k, v in checks.items() if k != "latest_market_date" and pd.notna(v)]
     status = "FRESH" if pd.notna(market) and dates and all(v == market for v in dates[:]) else "STALE_OFFICIAL_STATE"
     if pd.isna(market):
         status = "DATA_ERROR"
@@ -195,20 +199,45 @@ def reconciliation() -> pd.DataFrame:
 
 
 def idempotency_audit() -> pd.DataFrame:
-    rows=[]
+    rows = []
     for f in IMPORTANT_FILES:
-        p=Path(f)
-        df=read_csv(p)
-        rows.append({
-            "file": f,
-            "exists": p.exists(),
-            "rows": len(df),
-            "duplicate_date_or_date_ticker_rows": dup_dates(p),
-            "checksum": file_hash(p) if p.exists() else "missing",
-            "idempotency_check": "PASS" if dup_dates(p) == 0 or f in {"forecast_history.csv", "current_growth_features.csv", "current_raw_target_features.csv", "growth_official_paper_state.csv", "growth_official_paper_actions.csv", "growth_official_paper_trades.csv", "growth_official_estimated_cost_ledger.csv"} else "WARNING",
-            "note": "multi-row per date expected" if f in {"forecast_history.csv", "current_growth_features.csv", "current_raw_target_features.csv", "growth_official_paper_state.csv", "growth_official_paper_actions.csv", "growth_official_paper_trades.csv", "growth_official_estimated_cost_ledger.csv"} else "one row per date expected",
-        })
-    out=pd.DataFrame(rows)
+        p = Path(f)
+        df = read_csv(p)
+        rows.append(
+            {
+                "file": f,
+                "exists": p.exists(),
+                "rows": len(df),
+                "duplicate_date_or_date_ticker_rows": dup_dates(p),
+                "checksum": file_hash(p) if p.exists() else "missing",
+                "idempotency_check": "PASS"
+                if dup_dates(p) == 0
+                or f
+                in {
+                    "forecast_history.csv",
+                    "current_growth_features.csv",
+                    "current_raw_target_features.csv",
+                    "growth_official_paper_state.csv",
+                    "growth_official_paper_actions.csv",
+                    "growth_official_paper_trades.csv",
+                    "growth_official_estimated_cost_ledger.csv",
+                }
+                else "WARNING",
+                "note": "multi-row per date expected"
+                if f
+                in {
+                    "forecast_history.csv",
+                    "current_growth_features.csv",
+                    "current_raw_target_features.csv",
+                    "growth_official_paper_state.csv",
+                    "growth_official_paper_actions.csv",
+                    "growth_official_paper_trades.csv",
+                    "growth_official_estimated_cost_ledger.csv",
+                }
+                else "one row per date expected",
+            }
+        )
+    out = pd.DataFrame(rows)
     out.to_csv("phase123_idempotency_audit.csv", index=False)
     return out
 
@@ -253,15 +282,15 @@ def write_report(fresh: pd.DataFrame, recon: pd.DataFrame, idem: pd.DataFrame) -
 
 
 def main() -> None:
-    t0=time.time()
-    fresh=audit_official_freshness()
-    recon=reconciliation()
-    idem=idempotency_audit()
-    status=write_report(fresh, recon, idem)
+    t0 = time.time()
+    fresh = audit_official_freshness()
+    recon = reconciliation()
+    idem = idempotency_audit()
+    status = write_report(fresh, recon, idem)
     print("===== PHASE 123 PIPELINE SYNC AUDIT =====")
     print(f"status: {status}")
     print(recon.to_string(index=False))
-    print(f"runtime_ms: {(time.time()-t0)*1000:.0f}")
+    print(f"runtime_ms: {(time.time() - t0) * 1000:.0f}")
 
 
 if __name__ == "__main__":

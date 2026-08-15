@@ -81,11 +81,14 @@ def selected_tickers() -> list[str]:
     return seen
 
 
-
-
 def expected_market_date(end: str) -> pd.Timestamp:
     candidates: list[pd.Timestamp] = []
-    for path in ["growth_official_paper_performance.csv", "growth_candidate_paper_performance.csv", "current_growth_candidate_allocation.csv", "forecast_history.csv"]:
+    for path in [
+        "growth_official_paper_performance.csv",
+        "growth_candidate_paper_performance.csv",
+        "current_growth_candidate_allocation.csv",
+        "forecast_history.csv",
+    ]:
         df = read_csv(path)
         if df.empty or "date" not in df.columns:
             continue
@@ -95,6 +98,7 @@ def expected_market_date(end: str) -> pd.Timestamp:
     if candidates:
         return max(candidates).normalize()
     return pd.Timestamp(end).normalize()
+
 
 def choose_provider() -> ProviderConfig:
     requested = os.getenv("SECONDARY_DATA_PROVIDER", "").strip().lower()
@@ -139,7 +143,7 @@ def url_read(url: str, timeout: int, retries: int) -> tuple[str, str]:
         except Exception as exc:  # noqa: BLE001
             last_err = str(exc)
             if attempt < retries:
-                time.sleep(min(2 ** attempt, 5))
+                time.sleep(min(2**attempt, 5))
     return "", last_err or "request_failed"
 
 
@@ -164,22 +168,26 @@ def load_yahoo(ticker: str) -> pd.DataFrame:
 
 def parse_polygon(raw: str) -> pd.DataFrame:
     import json
+
     js = json.loads(raw)
     rows = js.get("results", [])
     if not rows:
         return pd.DataFrame()
     df = pd.DataFrame(rows)
-    out = pd.DataFrame({
-        "date": pd.to_datetime(df.get("t"), unit="ms", errors="coerce").dt.normalize(),
-        "secondary_close": pd.to_numeric(df.get("c"), errors="coerce"),
-        "secondary_adj_close": pd.to_numeric(df.get("c"), errors="coerce"),
-        "secondary_volume": pd.to_numeric(df.get("v"), errors="coerce"),
-    })
+    out = pd.DataFrame(
+        {
+            "date": pd.to_datetime(df.get("t"), unit="ms", errors="coerce").dt.normalize(),
+            "secondary_close": pd.to_numeric(df.get("c"), errors="coerce"),
+            "secondary_adj_close": pd.to_numeric(df.get("c"), errors="coerce"),
+            "secondary_volume": pd.to_numeric(df.get("v"), errors="coerce"),
+        }
+    )
     return normalize_date(out)
 
 
 def parse_alpha_vantage(raw: str) -> tuple[pd.DataFrame, pd.DataFrame]:
     import json
+
     js = json.loads(raw)
     key = "Time Series (Daily)"
     if key not in js:
@@ -195,7 +203,15 @@ def parse_alpha_vantage(raw: str) -> tuple[pd.DataFrame, pd.DataFrame]:
         rows.append({"date": date, "secondary_close": close, "secondary_adj_close": adj, "secondary_volume": volume})
         try:
             if abs(float(dividend)) > 0 or abs(float(split) - 1.0) > 1e-9:
-                corp.append({"date": date, "event_type": "alpha_vantage_adjustment", "dividend": dividend, "split_coefficient": split, "resolved": True})
+                corp.append(
+                    {
+                        "date": date,
+                        "event_type": "alpha_vantage_adjustment",
+                        "dividend": dividend,
+                        "split_coefficient": split,
+                        "resolved": True,
+                    }
+                )
         except Exception:
             pass
     df = pd.DataFrame(rows)
@@ -219,16 +235,20 @@ def parse_stooq(raw: str) -> pd.DataFrame:
     df = pd.read_csv(io.StringIO(raw))
     if df.empty or "Date" not in df.columns:
         return pd.DataFrame()
-    out = pd.DataFrame({
-        "date": pd.to_datetime(df["Date"], errors="coerce").dt.normalize(),
-        "secondary_close": pd.to_numeric(df.get("Close"), errors="coerce"),
-        "secondary_adj_close": pd.to_numeric(df.get("Close"), errors="coerce"),
-        "secondary_volume": pd.to_numeric(df.get("Volume"), errors="coerce"),
-    })
+    out = pd.DataFrame(
+        {
+            "date": pd.to_datetime(df["Date"], errors="coerce").dt.normalize(),
+            "secondary_close": pd.to_numeric(df.get("Close"), errors="coerce"),
+            "secondary_adj_close": pd.to_numeric(df.get("Close"), errors="coerce"),
+            "secondary_volume": pd.to_numeric(df.get("Volume"), errors="coerce"),
+        }
+    )
     return normalize_date(out)
 
 
-def fetch_secondary(ticker: str, start: str, end: str, cfg: ProviderConfig, force: bool = False) -> tuple[pd.DataFrame, pd.DataFrame, dict[str, Any]]:
+def fetch_secondary(
+    ticker: str, start: str, end: str, cfg: ProviderConfig, force: bool = False
+) -> tuple[pd.DataFrame, pd.DataFrame, dict[str, Any]]:
     status: dict[str, Any] = {
         "ticker": ticker,
         "provider": cfg.provider,
@@ -247,7 +267,9 @@ def fetch_secondary(ticker: str, start: str, end: str, cfg: ProviderConfig, forc
     if cache.exists() and not force:
         df = read_csv(cache)
         corp = read_csv(corp_cache)
-        status.update({"fetch_attempted": False, "fetch_success": not df.empty, "fetch_error": "cache_used" if not df.empty else "empty_cache"})
+        status.update(
+            {"fetch_attempted": False, "fetch_success": not df.empty, "fetch_error": "cache_used" if not df.empty else "empty_cache"}
+        )
         return normalize_date(df), normalize_date(corp), status
     status["fetch_attempted"] = True
     raw = ""
@@ -285,7 +307,9 @@ def fetch_secondary(ticker: str, start: str, end: str, cfg: ProviderConfig, forc
 
 
 def pct_diff(a: pd.Series, b: pd.Series) -> pd.Series:
-    return (pd.to_numeric(a, errors="coerce") - pd.to_numeric(b, errors="coerce")).abs() / pd.to_numeric(b, errors="coerce").abs().replace(0, np.nan)
+    return (pd.to_numeric(a, errors="coerce") - pd.to_numeric(b, errors="coerce")).abs() / pd.to_numeric(b, errors="coerce").abs().replace(
+        0, np.nan
+    )
 
 
 def trading_day_gap(a: Any, b: Any) -> float:
@@ -295,23 +319,29 @@ def trading_day_gap(a: Any, b: Any) -> float:
     return float(len(pd.bdate_range(lo, hi)) - 1)
 
 
-def validate_ticker(ticker: str, start: str, end: str, cfg: ProviderConfig, force_fetch: bool = False, expected_date: pd.Timestamp | None = None) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, dict[str, Any]]:
+def validate_ticker(
+    ticker: str, start: str, end: str, cfg: ProviderConfig, force_fetch: bool = False, expected_date: pd.Timestamp | None = None
+) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, dict[str, Any]]:
     yahoo = load_yahoo(ticker)
     secondary, corp, provider_status = fetch_secondary(ticker, start, end, cfg, force_fetch)
     if yahoo.empty:
-        audit = pd.DataFrame([{
-            "ticker": ticker,
-            "date": "",
-            "primary_source": "Yahoo/yfinance_cache",
-            "secondary_provider": cfg.provider,
-            "yahoo_available": False,
-            "secondary_available": not secondary.empty,
-            "classification": "primary_data_blocked",
-            "paper_may_continue": False,
-            "block_new_rebalance": True,
-            "real_capital_blocked": True,
-            "reason": "primary_yahoo_missing",
-        }])
+        audit = pd.DataFrame(
+            [
+                {
+                    "ticker": ticker,
+                    "date": "",
+                    "primary_source": "Yahoo/yfinance_cache",
+                    "secondary_provider": cfg.provider,
+                    "yahoo_available": False,
+                    "secondary_available": not secondary.empty,
+                    "classification": "primary_data_blocked",
+                    "paper_may_continue": False,
+                    "block_new_rebalance": True,
+                    "real_capital_blocked": True,
+                    "reason": "primary_yahoo_missing",
+                }
+            ]
+        )
         return audit, corp, pd.DataFrame(), provider_status
     yahoo = yahoo[yahoo["date"].ge(pd.Timestamp(start).normalize()) & yahoo["date"].le(pd.Timestamp(end).normalize())].copy()
     latest_yahoo = yahoo["date"].max() if not yahoo.empty else pd.NaT
@@ -343,7 +373,11 @@ def validate_ticker(ticker: str, start: str, end: str, cfg: ProviderConfig, forc
         latest["paper_may_continue"] = False if yahoo_stale else True
         latest["block_new_rebalance"] = True if yahoo_stale else False
         latest["real_capital_blocked"] = True
-        latest["reason"] = np.where(yahoo_stale, "Yahoo primary cache stale versus expected market date", "Yahoo fresh but reliable secondary source unavailable; no false discrepancy marked")
+        latest["reason"] = np.where(
+            yahoo_stale,
+            "Yahoo primary cache stale versus expected market date",
+            "Yahoo fresh but reliable secondary source unavailable; no false discrepancy marked",
+        )
         canonical = latest[["date", "ticker", "yahoo_adj_close", "yahoo_close", "yahoo_volume", "classification"]].copy()
         canonical["canonical_close"] = canonical["yahoo_adj_close"]
         canonical["canonical_source"] = "yahoo_adj_close_single_source_warning"
@@ -357,7 +391,9 @@ def validate_ticker(ticker: str, start: str, end: str, cfg: ProviderConfig, forc
     merged["close_diff_pct"] = pct_diff(merged["yahoo_close"], merged["secondary_close"])
     merged["adj_close_diff_pct"] = pct_diff(merged["yahoo_adj_close"], merged["secondary_adj_close"])
     merged["volume_diff_pct"] = pct_diff(merged["yahoo_volume"], merged["secondary_volume"])
-    merged["price_difference_gt_0_5pct"] = (merged["close_diff_pct"] > PRICE_DIFF_THRESHOLD) | (merged["adj_close_diff_pct"] > PRICE_DIFF_THRESHOLD)
+    merged["price_difference_gt_0_5pct"] = (merged["close_diff_pct"] > PRICE_DIFF_THRESHOLD) | (
+        merged["adj_close_diff_pct"] > PRICE_DIFF_THRESHOLD
+    )
     merged["volume_difference_gt_20pct"] = merged["volume_diff_pct"] > VOLUME_DIFF_THRESHOLD
     date_gap = trading_day_gap(latest_yahoo, latest_secondary)
     yahoo_expected_gap = trading_day_gap(latest_yahoo, expected)
@@ -369,7 +405,12 @@ def validate_ticker(ticker: str, start: str, end: str, cfg: ProviderConfig, forc
         if "resolved" not in corp.columns:
             corp["resolved"] = False
         unresolved_corp = bool((~corp["resolved"].fillna(False).astype(bool)).any())
-    material_conflict = bool(merged["price_difference_gt_0_5pct"].fillna(False).any() or merged["volume_difference_gt_20pct"].fillna(False).any() or date_mismatch or unresolved_corp)
+    material_conflict = bool(
+        merged["price_difference_gt_0_5pct"].fillna(False).any()
+        or merged["volume_difference_gt_20pct"].fillna(False).any()
+        or date_mismatch
+        or unresolved_corp
+    )
     if yahoo_stale:
         classification = "primary_data_blocked"
     else:
@@ -387,18 +428,27 @@ def validate_ticker(ticker: str, start: str, end: str, cfg: ProviderConfig, forc
     merged["block_new_rebalance"] = classification in {"data_conflict_blocked", "primary_data_blocked"}
     merged["real_capital_blocked"] = classification != "multi_source_confirmed"
     merged["reason"] = np.where(
-        merged["price_difference_gt_0_5pct"].fillna(False), "material_adjusted_close_or_close_difference",
-        np.where(merged["volume_difference_gt_20pct"].fillna(False), "material_volume_difference", np.where(merged["yahoo_stale"], "Yahoo primary cache stale versus expected market date", "ok"))
+        merged["price_difference_gt_0_5pct"].fillna(False),
+        "material_adjusted_close_or_close_difference",
+        np.where(
+            merged["volume_difference_gt_20pct"].fillna(False),
+            "material_volume_difference",
+            np.where(merged["yahoo_stale"], "Yahoo primary cache stale versus expected market date", "ok"),
+        ),
     )
     canonical = merged[merged["yahoo_available"]].copy()
     canonical["canonical_close"] = canonical["yahoo_adj_close"]
-    canonical["canonical_source"] = np.where(classification == "data_conflict_blocked", "blocked_conflict_no_silent_merge", "yahoo_adj_close_multi_source_confirmed")
+    canonical["canonical_source"] = np.where(
+        classification == "data_conflict_blocked", "blocked_conflict_no_silent_merge", "yahoo_adj_close_multi_source_confirmed"
+    )
     if classification == "data_conflict_blocked":
         canonical["canonical_close"] = np.nan
     return merged, corp, canonical, provider_status
 
 
-def governance(audit: pd.DataFrame, corp: pd.DataFrame, provider_status: pd.DataFrame, tickers: list[str], cfg: ProviderConfig) -> pd.DataFrame:
+def governance(
+    audit: pd.DataFrame, corp: pd.DataFrame, provider_status: pd.DataFrame, tickers: list[str], cfg: ProviderConfig
+) -> pd.DataFrame:
     if audit.empty:
         classification = "primary_data_blocked"
         reason = "no audit rows"
@@ -421,26 +471,32 @@ def governance(audit: pd.DataFrame, corp: pd.DataFrame, provider_status: pd.Data
         reason = "; ".join(sorted(set(latest.get("reason", pd.Series(dtype=str)).dropna().astype(str))))
         latest_yahoo = ",".join(sorted(set(latest.get("latest_yahoo_date", pd.Series(dtype=str)).dropna().astype(str))))
         latest_secondary = ",".join(sorted(set(latest.get("latest_secondary_date", pd.Series(dtype=str)).dropna().astype(str))))
-    return pd.DataFrame([{
-        "validation_scope": "growth_paper_market_data_validation_only",
-        "classification": classification,
-        "secondary_provider": cfg.provider,
-        "provider_configured": cfg.configured,
-        "tickers_checked": len(tickers),
-        "tickers": ",".join(tickers),
-        "latest_yahoo_dates": latest_yahoo,
-        "latest_secondary_dates": latest_secondary,
-        "paper_may_continue": classification in {"single_source_warning", "multi_source_confirmed"},
-        "block_new_rebalance": classification == "data_conflict_blocked" or classification == "primary_data_blocked",
-        "retain_existing_holdings_until_review": classification == "data_conflict_blocked",
-        "real_capital_blocked": classification != "multi_source_confirmed",
-        "promotion_status": "blocked_without_reliable_second_source" if classification != "multi_source_confirmed" else "market_data_gate_passed_for_review_only",
-        "corporate_action_events": 0 if corp.empty else len(corp),
-        "reason": reason or cfg.reason,
-        "production_changed": False,
-        "paper_logic_changed": False,
-        "allocation_logic_changed": False,
-    }])
+    return pd.DataFrame(
+        [
+            {
+                "validation_scope": "growth_paper_market_data_validation_only",
+                "classification": classification,
+                "secondary_provider": cfg.provider,
+                "provider_configured": cfg.configured,
+                "tickers_checked": len(tickers),
+                "tickers": ",".join(tickers),
+                "latest_yahoo_dates": latest_yahoo,
+                "latest_secondary_dates": latest_secondary,
+                "paper_may_continue": classification in {"single_source_warning", "multi_source_confirmed"},
+                "block_new_rebalance": classification == "data_conflict_blocked" or classification == "primary_data_blocked",
+                "retain_existing_holdings_until_review": classification == "data_conflict_blocked",
+                "real_capital_blocked": classification != "multi_source_confirmed",
+                "promotion_status": "blocked_without_reliable_second_source"
+                if classification != "multi_source_confirmed"
+                else "market_data_gate_passed_for_review_only",
+                "corporate_action_events": 0 if corp.empty else len(corp),
+                "reason": reason or cfg.reason,
+                "production_changed": False,
+                "paper_logic_changed": False,
+                "allocation_logic_changed": False,
+            }
+        ]
+    )
 
 
 def main() -> None:
@@ -468,7 +524,11 @@ def main() -> None:
             canonicals.append(canonical)
         statuses.append(status)
     audit_df = pd.concat(audits, ignore_index=True, sort=False) if audits else pd.DataFrame()
-    corp_df = pd.concat(corps, ignore_index=True, sort=False) if corps else pd.DataFrame(columns=["date", "ticker", "event_type", "resolved", "reason"])
+    corp_df = (
+        pd.concat(corps, ignore_index=True, sort=False)
+        if corps
+        else pd.DataFrame(columns=["date", "ticker", "event_type", "resolved", "reason"])
+    )
     canonical_df = pd.concat(canonicals, ignore_index=True, sort=False) if canonicals else pd.DataFrame()
     status_df = pd.DataFrame(statuses)
     gov = governance(audit_df, corp_df, status_df, tickers, cfg)

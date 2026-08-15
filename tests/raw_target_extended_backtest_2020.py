@@ -257,12 +257,27 @@ def _robustness(raw_daily: pd.DataFrame, raw_trades: pd.DataFrame) -> pd.DataFra
     top_trades = set(trades.sort_values("trade_return", ascending=False).head(10).index)
     if top_trades:
         filtered = trades.drop(index=list(top_trades), errors="ignore")
-        rows.append({"check": "remove_best_10_trades", "hit_rate": float((filtered["trade_return"] > 0).mean()), "average_trade_return": float(filtered["trade_return"].mean()), "sample_size": len(filtered)})
+        rows.append(
+            {
+                "check": "remove_best_10_trades",
+                "hit_rate": float((filtered["trade_return"] > 0).mean()),
+                "average_trade_return": float(filtered["trade_return"].mean()),
+                "sample_size": len(filtered),
+            }
+        )
     if not trades.empty:
         ticker_perf = trades.groupby("ticker")["trade_return"].sum().sort_values(ascending=False)
         best_ticker = ticker_perf.index[0]
         filtered = trades[trades["ticker"] != best_ticker]
-        rows.append({"check": "remove_best_ticker", "removed_ticker": best_ticker, "average_trade_return": float(filtered["trade_return"].mean()), "hit_rate": float((filtered["trade_return"] > 0).mean()), "sample_size": len(filtered)})
+        rows.append(
+            {
+                "check": "remove_best_ticker",
+                "removed_ticker": best_ticker,
+                "average_trade_return": float(filtered["trade_return"].mean()),
+                "hit_rate": float((filtered["trade_return"] > 0).mean()),
+                "sample_size": len(filtered),
+            }
+        )
     rolling_vol = data["return"].rolling(20, min_periods=5).std()
     high_vol = data[rolling_vol >= rolling_vol.quantile(0.75)]
     rows.append({"check": "high_volatility_only", **_metrics("raw_target_research", high_vol)})
@@ -297,7 +312,9 @@ def _governance(results: pd.DataFrame, robustness: pd.DataFrame) -> pd.DataFrame
         else:
             classification = "research only"
             reasons.append("does not pass all growth candidate thresholds")
-    return pd.DataFrame([{"model": "raw_target_research", "classification": classification, "reason": "; ".join(reasons), "production_change": "none"}])
+    return pd.DataFrame(
+        [{"model": "raw_target_research", "classification": classification, "reason": "; ".join(reasons), "production_change": "none"}]
+    )
 
 
 def run_raw_target_extended_backtest_2020() -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]:
@@ -343,7 +360,11 @@ def run_raw_target_extended_backtest_2020() -> tuple[pd.DataFrame, pd.DataFrame,
     if str(actual_start) > START_DATE:
         print(f"\n[WARNING] requested start {START_DATE}, but available raw target data starts {actual_start}.")
     print("\n===== RAW TARGET 2020 STRESS TEST =====")
-    print(stress[stress["model"].eq("raw_target_research")][["stress_period", "actual_start_date", "end_date", "observations", "total_return", "Sharpe", "max_drawdown"]].to_string(index=False))
+    print(
+        stress[stress["model"].eq("raw_target_research")][
+            ["stress_period", "actual_start_date", "end_date", "observations", "total_return", "Sharpe", "max_drawdown"]
+        ].to_string(index=False)
+    )
     print("\n===== RAW TARGET 2020 GOVERNANCE =====")
     print(governance.to_string(index=False))
     print(f"\nSaved: {Path(RESULTS_FILE).resolve()}")

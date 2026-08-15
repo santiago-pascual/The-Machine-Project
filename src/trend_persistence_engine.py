@@ -312,28 +312,14 @@ def build_ema_trend_persistence_comparison(
 ) -> pd.DataFrame:
     tickers = list(trend_persistence_df.index)
     comparison = pd.DataFrame(index=tickers)
-    comparison["ema_timing_score"] = (
-        timing_df.get("ema_timing_score", pd.Series(dtype=float))
-        .reindex(tickers)
-        .astype(float)
-        .fillna(0.5)
-    )
+    comparison["ema_timing_score"] = timing_df.get("ema_timing_score", pd.Series(dtype=float)).reindex(tickers).astype(float).fillna(0.5)
     comparison["trend_persistence_score"] = (
-        trend_persistence_df.get("trend_persistence_score", pd.Series(dtype=float))
-        .reindex(tickers)
-        .astype(float)
-        .fillna(0.5)
+        trend_persistence_df.get("trend_persistence_score", pd.Series(dtype=float)).reindex(tickers).astype(float).fillna(0.5)
     )
     comparison["difference"] = comparison["trend_persistence_score"] - comparison["ema_timing_score"]
-    comparison["ema_action"] = (
-        timing_df.get("timing_action", pd.Series(dtype=object))
-        .reindex(tickers)
-        .fillna("unknown")
-    )
+    comparison["ema_action"] = timing_df.get("timing_action", pd.Series(dtype=object)).reindex(tickers).fillna("unknown")
     comparison["trend_persistence_action"] = (
-        trend_persistence_df.get("trend_persistence_action", pd.Series(dtype=object))
-        .reindex(tickers)
-        .fillna("unknown")
+        trend_persistence_df.get("trend_persistence_action", pd.Series(dtype=object)).reindex(tickers).fillna("unknown")
     )
     ema_score = comparison["ema_timing_score"].astype(float)
     trend_score = comparison["trend_persistence_score"].astype(float)

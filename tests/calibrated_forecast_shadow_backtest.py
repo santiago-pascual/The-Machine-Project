@@ -73,11 +73,15 @@ def _load_shadow_panel(config: CalibratedShadowConfig) -> pd.DataFrame:
     return calibrated
 
 
-def _score_and_select(group: pd.DataFrame, score_col: str, selected_count: int, cash_weight: float, candidate: str, config: CalibratedShadowConfig) -> pd.DataFrame:
+def _score_and_select(
+    group: pd.DataFrame, score_col: str, selected_count: int, cash_weight: float, candidate: str, config: CalibratedShadowConfig
+) -> pd.DataFrame:
     frame = group.copy()
     frame["ranking_score"] = _safe_numeric(frame[score_col], np.nan)
     if score_col.startswith("calibrated"):
-        frame["ranking_score"] = frame["ranking_score"] * _safe_numeric(frame.get("calibrated_target_confidence", pd.Series(1.0, index=frame.index)), 1.0)
+        frame["ranking_score"] = frame["ranking_score"] * _safe_numeric(
+            frame.get("calibrated_target_confidence", pd.Series(1.0, index=frame.index)), 1.0
+        )
     frame = frame.sort_values("ranking_score", ascending=False).head(max(1, int(selected_count))).copy()
     positive = frame["ranking_score"].clip(lower=0.0)
     investable = max(0.0, 1.0 - float(cash_weight))
@@ -136,8 +140,7 @@ def _build_shadow_trades(config: CalibratedShadowConfig) -> tuple[pd.DataFrame, 
         labels = _read_csv(config.triple_barrier_path)
         if not labels.empty:
             labels = labels[
-                labels.get("horizon", pd.Series(dtype=float)).eq(config.horizon)
-                & labels["model_mode"].astype(str).eq(config.model_mode)
+                labels.get("horizon", pd.Series(dtype=float)).eq(config.horizon) & labels["model_mode"].astype(str).eq(config.model_mode)
             ][["date", "ticker", "model_mode", "label"]].drop_duplicates(["date", "ticker", "model_mode"])
             trades = trades.merge(labels, on=["date", "ticker", "model_mode"], how="left")
     daily = pd.DataFrame(daily_rows)
@@ -151,7 +154,15 @@ def _build_shadow_trades(config: CalibratedShadowConfig) -> tuple[pd.DataFrame, 
 def _risk_metrics(returns: pd.Series) -> dict[str, float]:
     returns = pd.to_numeric(returns, errors="coerce").replace([np.inf, -np.inf], np.nan).dropna()
     if returns.empty:
-        return {"realized_return": np.nan, "volatility": np.nan, "Sharpe": np.nan, "Sortino": np.nan, "Calmar": np.nan, "max_drawdown": np.nan, "hit_rate": np.nan}
+        return {
+            "realized_return": np.nan,
+            "volatility": np.nan,
+            "Sharpe": np.nan,
+            "Sortino": np.nan,
+            "Calmar": np.nan,
+            "max_drawdown": np.nan,
+            "hit_rate": np.nan,
+        }
     equity = (1.0 + returns).cumprod()
     dd = equity / equity.cummax() - 1.0
     mean_ret = float(returns.mean())
@@ -263,7 +274,17 @@ def _print_report(results: pd.DataFrame) -> None:
 
     print("\n===== ORIGINAL VS CALIBRATED FORECASTS =====")
     if not results.empty:
-        cols = ["candidate", "forecast_MAE_before", "forecast_MAE_after", "forecast_RMSE_before", "forecast_RMSE_after", "forecast_bias_before", "forecast_bias_after", "forecast_IC_before", "forecast_IC_after"]
+        cols = [
+            "candidate",
+            "forecast_MAE_before",
+            "forecast_MAE_after",
+            "forecast_RMSE_before",
+            "forecast_RMSE_after",
+            "forecast_bias_before",
+            "forecast_bias_after",
+            "forecast_IC_before",
+            "forecast_IC_after",
+        ]
         print(results[[c for c in cols if c in results.columns]].drop_duplicates().to_string(index=False))
 
     print("\n===== CALIBRATED FORECAST GOVERNANCE =====")

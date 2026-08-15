@@ -72,7 +72,14 @@ def determine_exact_live_start() -> tuple[pd.Timestamp, pd.DataFrame]:
         merged["rebalance_due"] = False
 
     merged = merged.merge(q, on="date", how="left")
-    for col in ["raw_target_return_exact", "fresh_ohlcv", "current_filters_present", "fresh_volatility_calculation", "exact_rebalance_scheduler", "all_exact_inputs"]:
+    for col in [
+        "raw_target_return_exact",
+        "fresh_ohlcv",
+        "current_filters_present",
+        "fresh_volatility_calculation",
+        "exact_rebalance_scheduler",
+        "all_exact_inputs",
+    ]:
         if col in merged.columns:
             merged[col] = merged[col].astype(str).str.lower().isin(["true", "1", "yes"])
         else:
@@ -152,35 +159,43 @@ def start_reset_actions(start: pd.Timestamp, state_start: pd.DataFrame) -> pd.Da
     cash = state_start[state_start["ticker"].astype(str).eq("CASH")]
     for _, row in non_cash.iterrows():
         w = float(pd.to_numeric(pd.Series([row.get("paper_position_weight", 0.0)]), errors="coerce").fillna(0).iloc[0])
-        rows.append({
+        rows.append(
+            {
+                "date": start,
+                "ticker": row.get("ticker", ""),
+                "action": "BUY",
+                "old_weight": 0.0,
+                "new_weight": w,
+                "weight_change": w,
+                "old_position_value": 0.0,
+                "new_position_value": INITIAL_CAPITAL * w,
+                "estimated_trade_value": INITIAL_CAPITAL * w,
+                "reason": "official_forward_baseline_reset_initial_position",
+                "data_mode": "official_forward_paper_exact",
+                "growth_model_version": "growth_champion_final_v1_0_frozen",
+            }
+        )
+    cash_w = (
+        float(pd.to_numeric(cash.get("paper_position_weight", pd.Series([1.0])), errors="coerce").fillna(1.0).iloc[0])
+        if not cash.empty
+        else 1.0 - sum(r["new_weight"] for r in rows)
+    )
+    rows.append(
+        {
             "date": start,
-            "ticker": row.get("ticker", ""),
-            "action": "BUY",
-            "old_weight": 0.0,
-            "new_weight": w,
-            "weight_change": w,
-            "old_position_value": 0.0,
-            "new_position_value": INITIAL_CAPITAL * w,
-            "estimated_trade_value": INITIAL_CAPITAL * w,
-            "reason": "official_forward_baseline_reset_initial_position",
+            "ticker": "CASH",
+            "action": "CASH_CHANGE",
+            "old_weight": 1.0,
+            "new_weight": cash_w,
+            "weight_change": cash_w - 1.0,
+            "old_position_value": INITIAL_CAPITAL,
+            "new_position_value": INITIAL_CAPITAL * cash_w,
+            "estimated_trade_value": abs(cash_w - 1.0) * INITIAL_CAPITAL,
+            "reason": "official_forward_baseline_reset_cash",
             "data_mode": "official_forward_paper_exact",
             "growth_model_version": "growth_champion_final_v1_0_frozen",
-        })
-    cash_w = float(pd.to_numeric(cash.get("paper_position_weight", pd.Series([1.0])), errors="coerce").fillna(1.0).iloc[0]) if not cash.empty else 1.0 - sum(r["new_weight"] for r in rows)
-    rows.append({
-        "date": start,
-        "ticker": "CASH",
-        "action": "CASH_CHANGE",
-        "old_weight": 1.0,
-        "new_weight": cash_w,
-        "weight_change": cash_w - 1.0,
-        "old_position_value": INITIAL_CAPITAL,
-        "new_position_value": INITIAL_CAPITAL * cash_w,
-        "estimated_trade_value": abs(cash_w - 1.0) * INITIAL_CAPITAL,
-        "reason": "official_forward_baseline_reset_cash",
-        "data_mode": "official_forward_paper_exact",
-        "growth_model_version": "growth_champion_final_v1_0_frozen",
-    })
+        }
+    )
     return pd.DataFrame(rows)
 
 
@@ -206,7 +221,17 @@ def official_actions_and_trades(start: pd.Timestamp, official_state_df: pd.DataF
 
 def official_monitor(start: pd.Timestamp, official_perf: pd.DataFrame, official_state_df: pd.DataFrame) -> pd.DataFrame:
     monitor = dateify(read(SOURCE_FILES["monitor"]))
-    base_cols = ["date", "portfolio_value", "daily_return", "cumulative_return", "Sharpe", "max_drawdown", "cash_weight", "exposure", "turnover"]
+    base_cols = [
+        "date",
+        "portfolio_value",
+        "daily_return",
+        "cumulative_return",
+        "Sharpe",
+        "max_drawdown",
+        "cash_weight",
+        "exposure",
+        "turnover",
+    ]
     official = official_perf[[c for c in base_cols if c in official_perf.columns]].copy()
     if not monitor.empty:
         blocked = {"paper_cumulative_return", "paper_daily_return", "paper_sharpe", "paper_max_drawdown", "cash", "candidate"}
@@ -231,21 +256,25 @@ def official_tracking(official_perf: pd.DataFrame) -> pd.DataFrame:
         out = pd.DataFrame()
     else:
         latest = official_perf.iloc[-1]
-        out = pd.DataFrame([{
-            "date": latest["date"],
-            "model": "growth_champion_final",
-            "growth_model_version": "growth_champion_final_v1_0_frozen",
-            "data_mode": "official_forward_paper_exact",
-            "days_tracked": len(official_perf),
-            "portfolio_value": latest.get("portfolio_value", np.nan),
-            "cumulative_return": latest.get("cumulative_return", np.nan),
-            "current_drawdown": latest.get("max_drawdown", np.nan),
-            "exposure": latest.get("exposure", np.nan),
-            "cash": latest.get("cash_weight", np.nan),
-            "governance_status": "official_forward_warmup" if len(official_perf) < 20 else "official_forward_valid",
-            "promotion_status": "real_capital_blocked",
-            "reason": "official forward exact history only; no reconstruction/backfill",
-        }])
+        out = pd.DataFrame(
+            [
+                {
+                    "date": latest["date"],
+                    "model": "growth_champion_final",
+                    "growth_model_version": "growth_champion_final_v1_0_frozen",
+                    "data_mode": "official_forward_paper_exact",
+                    "days_tracked": len(official_perf),
+                    "portfolio_value": latest.get("portfolio_value", np.nan),
+                    "cumulative_return": latest.get("cumulative_return", np.nan),
+                    "current_drawdown": latest.get("max_drawdown", np.nan),
+                    "exposure": latest.get("exposure", np.nan),
+                    "cash": latest.get("cash_weight", np.nan),
+                    "governance_status": "official_forward_warmup" if len(official_perf) < 20 else "official_forward_valid",
+                    "promotion_status": "real_capital_blocked",
+                    "reason": "official forward exact history only; no reconstruction/backfill",
+                }
+            ]
+        )
     out.to_csv(OFFICIAL_TRACKING, index=False)
     return out
 
@@ -254,14 +283,16 @@ def compare_history(start: pd.Timestamp, debug_counts: dict[str, int], official_
     rows = []
     for name, path in SOURCE_FILES.items():
         src = dateify(read(path))
-        rows.append({
-            "source": name,
-            "source_rows": len(src),
-            "debug_archived_rows_before_start": debug_counts.get(name, 0),
-            "official_rows_from_start": len(src[src["date"].ge(start)]) if not src.empty else 0,
-            "official_start_date": start.strftime("%Y-%m-%d"),
-            "separation_rule": "debug before start; official exact forward from start only",
-        })
+        rows.append(
+            {
+                "source": name,
+                "source_rows": len(src),
+                "debug_archived_rows_before_start": debug_counts.get(name, 0),
+                "official_rows_from_start": len(src[src["date"].ge(start)]) if not src.empty else 0,
+                "official_start_date": start.strftime("%Y-%m-%d"),
+                "separation_rule": "debug before start; official exact forward from start only",
+            }
+        )
     out = pd.DataFrame(rows)
     out.to_csv(COMPARE, index=False)
     return out
@@ -271,7 +302,9 @@ def data_quality(start: pd.Timestamp, audit: pd.DataFrame) -> pd.DataFrame:
     out = audit.copy()
     out["exact_live_start_date"] = start.strftime("%Y-%m-%d")
     out["history_classification"] = np.where(out["date"].lt(start), "historical_debug_reconstruction", "official_forward_candidate")
-    out["governance"] = np.where(out["date"].eq(start), "official_forward_warmup_start", np.where(out["date"].gt(start), "official_forward_warmup", "debug_only"))
+    out["governance"] = np.where(
+        out["date"].eq(start), "official_forward_warmup_start", np.where(out["date"].gt(start), "official_forward_warmup", "debug_only")
+    )
     out.to_csv(DATA_QUALITY, index=False)
     return out
 

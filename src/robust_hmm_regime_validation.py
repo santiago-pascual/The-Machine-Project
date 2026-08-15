@@ -93,7 +93,9 @@ def log_gaussian_diag(x: np.ndarray, means: np.ndarray, variances: np.ndarray) -
     return out
 
 
-def forward_backward(log_emission: np.ndarray, startprob: np.ndarray, transmat: np.ndarray) -> tuple[np.ndarray, np.ndarray, np.ndarray, float]:
+def forward_backward(
+    log_emission: np.ndarray, startprob: np.ndarray, transmat: np.ndarray
+) -> tuple[np.ndarray, np.ndarray, np.ndarray, float]:
     t_len, k = log_emission.shape
     log_start = np.log(np.maximum(startprob, EPS))
     log_trans = np.log(np.maximum(transmat, EPS))
@@ -204,7 +206,11 @@ def best_fit_for_k(x: np.ndarray, n_states: int, seeds: int, max_iter: int, tol:
 
 def label_states(fit: HMMFit, feature_df: pd.DataFrame, mean: pd.Series, std: pd.Series) -> list[str]:
     original_means = pd.DataFrame(fit.means, columns=feature_df.columns) * std + mean
-    score = original_means["spy_return"].to_numpy() + 0.5 * original_means["qqq_return"].to_numpy() - 0.5 * original_means["spy_vol20"].to_numpy()
+    score = (
+        original_means["spy_return"].to_numpy()
+        + 0.5 * original_means["qqq_return"].to_numpy()
+        - 0.5 * original_means["spy_vol20"].to_numpy()
+    )
     vol = original_means["spy_vol20"].to_numpy()
     labels = ["neutral"] * fit.n_states
     risk_off = int(np.argmax(vol - score))
@@ -224,7 +230,9 @@ def decode_states(x: np.ndarray, fit: HMMFit) -> np.ndarray:
     return gamma.argmax(axis=1)
 
 
-def model_summary_rows(fits_by_k: dict[int, tuple[HMMFit, list[HMMFit]]], feature_df: pd.DataFrame, mean: pd.Series, std: pd.Series) -> list[dict[str, object]]:
+def model_summary_rows(
+    fits_by_k: dict[int, tuple[HMMFit, list[HMMFit]]], feature_df: pd.DataFrame, mean: pd.Series, std: pd.Series
+) -> list[dict[str, object]]:
     rows = []
     for k, (best, fits) in fits_by_k.items():
         labels = label_states(best, feature_df, mean, std)
@@ -254,7 +262,9 @@ def model_summary_rows(fits_by_k: dict[int, tuple[HMMFit, list[HMMFit]]], featur
     return rows
 
 
-def transition_rows(fits_by_k: dict[int, tuple[HMMFit, list[HMMFit]]], feature_df: pd.DataFrame, mean: pd.Series, std: pd.Series) -> list[dict[str, object]]:
+def transition_rows(
+    fits_by_k: dict[int, tuple[HMMFit, list[HMMFit]]], feature_df: pd.DataFrame, mean: pd.Series, std: pd.Series
+) -> list[dict[str, object]]:
     rows = []
     for k, (fit, _) in fits_by_k.items():
         labels = label_states(fit, feature_df, mean, std)
@@ -313,7 +323,9 @@ def regime_usefulness(feature_df: pd.DataFrame, fit: HMMFit, mean: pd.Series, st
                 "future_20d_vol": float(group["future_spy_vol20"].mean()),
                 "growth_avg_return": float(group["growth_return"].mean()) if "growth_return" in group.columns else np.nan,
                 "growth_hit_rate": float((group["growth_return"] > 0).mean()) if "growth_return" in group.columns else np.nan,
-                "incremental_alpha_beyond_dual_trend_proxy": float(group["growth_return"].mean() - out["growth_return"].mean()) if "growth_return" in group.columns else np.nan,
+                "incremental_alpha_beyond_dual_trend_proxy": float(group["growth_return"].mean() - out["growth_return"].mean())
+                if "growth_return" in group.columns
+                else np.nan,
             }
         )
     return pd.DataFrame(rows)
@@ -362,7 +374,17 @@ def out_of_sample_results(feature_df: pd.DataFrame, n_states: int, seeds: int, m
     return pd.DataFrame(rows)
 
 
-def bootstrap_stability(feature_df: pd.DataFrame, base_fit: HMMFit, mean: pd.Series, std: pd.Series, seeds: int, bootstraps: int, block_size: int, max_iter: int, tol: float) -> pd.DataFrame:
+def bootstrap_stability(
+    feature_df: pd.DataFrame,
+    base_fit: HMMFit,
+    mean: pd.Series,
+    std: pd.Series,
+    seeds: int,
+    bootstraps: int,
+    block_size: int,
+    max_iter: int,
+    tol: float,
+) -> pd.DataFrame:
     x, _, _ = standardize(feature_df)
     base_states = decode_states(x, base_fit)
     base_labels = label_states(base_fit, feature_df, mean, std)
@@ -408,7 +430,11 @@ def governance(model_cmp: pd.DataFrame, stability: pd.DataFrame, oos: pd.DataFra
     oos_best = oos.loc[oos["n_states"].eq(best_k)]
     oos_stability = float(oos_best["classification_stability_proxy"].mean()) if not oos_best.empty else np.nan
     useful = usefulness.loc[usefulness["n_states"].eq(best_k)]
-    alpha_spread = float(useful["incremental_alpha_beyond_dual_trend_proxy"].max() - useful["incremental_alpha_beyond_dual_trend_proxy"].min()) if "incremental_alpha_beyond_dual_trend_proxy" in useful.columns and not useful.empty else np.nan
+    alpha_spread = (
+        float(useful["incremental_alpha_beyond_dual_trend_proxy"].max() - useful["incremental_alpha_beyond_dual_trend_proxy"].min())
+        if "incremental_alpha_beyond_dual_trend_proxy" in useful.columns and not useful.empty
+        else np.nan
+    )
     if not np.isfinite(agreement) or agreement < 0.55:
         classification = "unstable"
         reason = f"bootstrap state agreement too low: {agreement}"
@@ -422,18 +448,20 @@ def governance(model_cmp: pd.DataFrame, stability: pd.DataFrame, oos: pd.DataFra
         classification = "diagnostic_only"
         reason = f"mixed usefulness/stability; best_k={best_k}; agreement={agreement}; oos_stability={oos_stability}"
     return pd.DataFrame(
-        [{
-            "classification": classification,
-            "best_n_states_by_BIC": best_k,
-            "best_n_states_by_AIC": int(model_cmp.sort_values("AIC").iloc[0]["n_states"]),
-            "bootstrap_assignment_agreement": agreement,
-            "oos_transition_persistence_proxy": oos_stability,
-            "incremental_alpha_spread_proxy": alpha_spread,
-            "production_changed": False,
-            "paper_changed": False,
-            "automatic_promotion": False,
-            "reason": reason,
-        }]
+        [
+            {
+                "classification": classification,
+                "best_n_states_by_BIC": best_k,
+                "best_n_states_by_AIC": int(model_cmp.sort_values("AIC").iloc[0]["n_states"]),
+                "bootstrap_assignment_agreement": agreement,
+                "oos_transition_persistence_proxy": oos_stability,
+                "incremental_alpha_spread_proxy": alpha_spread,
+                "production_changed": False,
+                "paper_changed": False,
+                "automatic_promotion": False,
+                "reason": reason,
+            }
+        ]
     )
 
 
@@ -470,7 +498,9 @@ def main() -> None:
     for k, (fit, _) in fits_by_k.items():
         useful_rows.append(regime_usefulness(feature_df, fit, mean, std))
         oos_rows.append(out_of_sample_results(feature_df, k, max(5, args.seeds // 4), args.max_iter, args.tol))
-        stability_rows.append(bootstrap_stability(feature_df, fit, mean, std, args.bootstrap_seeds, args.bootstrap_samples, 63, args.max_iter, args.tol))
+        stability_rows.append(
+            bootstrap_stability(feature_df, fit, mean, std, args.bootstrap_seeds, args.bootstrap_samples, 63, args.max_iter, args.tol)
+        )
     usefulness = pd.concat(useful_rows, ignore_index=True, sort=False) if useful_rows else pd.DataFrame()
     oos = pd.concat(oos_rows, ignore_index=True, sort=False) if oos_rows else pd.DataFrame()
     stability = pd.concat(stability_rows, ignore_index=True, sort=False) if stability_rows else pd.DataFrame()
@@ -488,9 +518,10 @@ def main() -> None:
     print(f"best_n_states_by_BIC: {gov.iloc[0]['best_n_states_by_BIC']}")
     print(f"classification: {gov.iloc[0]['classification']}")
     print(f"reason: {gov.iloc[0]['reason']}")
-    print("outputs: hmm_model_comparison.csv, hmm_transition_matrices.csv, hmm_state_stability.csv, hmm_out_of_sample_results.csv, hmm_governance.csv")
+    print(
+        "outputs: hmm_model_comparison.csv, hmm_transition_matrices.csv, hmm_state_stability.csv, hmm_out_of_sample_results.csv, hmm_governance.csv"
+    )
 
 
 if __name__ == "__main__":
     main()
-

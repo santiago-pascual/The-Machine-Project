@@ -99,17 +99,23 @@ def reconcile_growth_actions(
     previous_prices = pd.Series(previous_prices if previous_prices is not None else {}, dtype=float)
     current = current_allocation.copy() if current_allocation is not None else pd.DataFrame()
 
-    prev_positions = previous[previous.get("ticker", pd.Series(dtype=str)).astype(str).str.upper().ne("CASH")].copy() if not previous.empty else pd.DataFrame()
-    prev_weights = {
-        str(row["ticker"]).strip().upper(): _num(row.get("paper_position_weight", 0.0))
-        for _, row in prev_positions.iterrows()
-    }
+    prev_positions = (
+        previous[previous.get("ticker", pd.Series(dtype=str)).astype(str).str.upper().ne("CASH")].copy()
+        if not previous.empty
+        else pd.DataFrame()
+    )
+    prev_weights = {str(row["ticker"]).strip().upper(): _num(row.get("paper_position_weight", 0.0)) for _, row in prev_positions.iterrows()}
     prev_values = {
-        str(row["ticker"]).strip().upper(): _num(row.get("paper_position_value", np.nan), np.nan)
-        for _, row in prev_positions.iterrows()
+        str(row["ticker"]).strip().upper(): _num(row.get("paper_position_value", np.nan), np.nan) for _, row in prev_positions.iterrows()
     }
-    old_cash_rows = previous[previous.get("ticker", pd.Series(dtype=str)).astype(str).str.upper().eq("CASH")] if not previous.empty else pd.DataFrame()
-    old_cash = _num(old_cash_rows.iloc[-1].get("paper_position_weight", np.nan), 1.0 - sum(prev_weights.values())) if not old_cash_rows.empty else 1.0 - sum(prev_weights.values())
+    old_cash_rows = (
+        previous[previous.get("ticker", pd.Series(dtype=str)).astype(str).str.upper().eq("CASH")] if not previous.empty else pd.DataFrame()
+    )
+    old_cash = (
+        _num(old_cash_rows.iloc[-1].get("paper_position_weight", np.nan), 1.0 - sum(prev_weights.values()))
+        if not old_cash_rows.empty
+        else 1.0 - sum(prev_weights.values())
+    )
 
     if "ticker" in current.columns:
         current = current[current["ticker"].astype(str).str.upper().ne("CASH")].copy()
@@ -119,7 +125,11 @@ def reconcile_growth_actions(
         for _, row in current.iterrows()
         if str(row.get("ticker", "")).strip().upper() != "CASH"
     }
-    new_cash = _num(current["cash_weight"].dropna().iloc[0], 1.0 - sum(current_weights.values())) if "cash_weight" in current.columns and current["cash_weight"].notna().any() else 1.0 - sum(current_weights.values())
+    new_cash = (
+        _num(current["cash_weight"].dropna().iloc[0], 1.0 - sum(current_weights.values()))
+        if "cash_weight" in current.columns and current["cash_weight"].notna().any()
+        else 1.0 - sum(current_weights.values())
+    )
     metadata = _current_metadata(current)
 
     rows: list[dict[str, object]] = []
@@ -180,8 +190,7 @@ def reconcile_growth_actions(
     non_cash = signals[signals["ticker"].ne("CASH")].copy()
     turnover = float(non_cash["weight_change"].abs().sum()) if not non_cash.empty else 0.0
     reconstructed = all(
-        abs(_num(row.old_weight) + _num(row.weight_change) - _num(row.new_weight)) <= tolerance
-        for row in signals.itertuples(index=False)
+        abs(_num(row.old_weight) + _num(row.weight_change) - _num(row.new_weight)) <= tolerance for row in signals.itertuples(index=False)
     )
     turnover_matches = abs(turnover - float(non_cash["weight_change"].abs().sum())) <= tolerance
     reconciliation_passed = bool(reconstructed and turnover_matches)

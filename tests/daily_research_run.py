@@ -19,7 +19,6 @@ LOG_FILE = "daily_research_run_log.csv"
 PRICE_CACHE_DIR = Path("yahoo_ohlcv_price_cache")
 
 
-
 def _read_csv(path: str | Path) -> pd.DataFrame:
     file_path = Path(path)
     if not file_path.exists():
@@ -85,8 +84,6 @@ def _freshness_report(label: str) -> dict[str, pd.Timestamp | pd.NaT]:
     }
 
 
-
-
 def _growth_gate_tickers() -> list[str]:
     tickers: list[str] = []
     # Official freshness validates only tickers that can affect official state:
@@ -108,15 +105,19 @@ def _growth_gate_tickers() -> list[str]:
 
 def _official_market_data_gate(expected_date: pd.Timestamp | pd.NaT) -> dict[str, object]:
     if pd.isna(expected_date):
-        gov = pd.DataFrame([{
-            "expected_signal_date": "missing",
-            "classification": "STALE_DATA_BLOCKED",
-            "paper_may_run": False,
-            "block_new_rebalance": True,
-            "do_not_advance_official_paper": True,
-            "real_capital_blocked": True,
-            "reason": "missing forecast/signal date for official paper gate",
-        }])
+        gov = pd.DataFrame(
+            [
+                {
+                    "expected_signal_date": "missing",
+                    "classification": "STALE_DATA_BLOCKED",
+                    "paper_may_run": False,
+                    "block_new_rebalance": True,
+                    "do_not_advance_official_paper": True,
+                    "real_capital_blocked": True,
+                    "reason": "missing forecast/signal date for official paper gate",
+                }
+            ]
+        )
         gov.to_csv("official_market_data_governance.csv", index=False)
         return gov.iloc[0].to_dict()
     tickers = _growth_gate_tickers()
@@ -129,12 +130,17 @@ def _official_market_data_gate(expected_date: pd.Timestamp | pd.NaT) -> dict[str
     except Exception as exc:  # noqa: BLE001
         print(f"canonical refresh failed: {exc}")
     integrity, gov = validate_freshness(expected_date, tickers)
-    row = gov.iloc[0].to_dict() if not gov.empty else {"paper_may_run": False, "classification": "STALE_DATA_BLOCKED", "reason": "governance missing"}
+    row = (
+        gov.iloc[0].to_dict()
+        if not gov.empty
+        else {"paper_may_run": False, "classification": "STALE_DATA_BLOCKED", "reason": "governance missing"}
+    )
     print(f"market data classification: {row.get('classification')}")
     print(f"canonical market date: {row.get('canonical_market_date', 'missing')}")
     print(f"paper may run: {row.get('paper_may_run')}")
     print(f"reason: {row.get('reason')}")
     return row
+
 
 def _dashboard_value(metric: str, default: str = "missing") -> str:
     dashboard = _read_csv("research_dashboard_summary.csv")
@@ -210,9 +216,7 @@ def build_daily_env(args: argparse.Namespace) -> dict[str, str]:
             "USE_RAW_TARGET_RETURN": (
                 "1"
                 if (
-                    args.use_raw_target_return
-                    or args.model_mode == "raw_target_research"
-                    or args.paper_model_mode == "raw_target_research"
+                    args.use_raw_target_return or args.model_mode == "raw_target_research" or args.paper_model_mode == "raw_target_research"
                 )
                 else os.environ.get("USE_RAW_TARGET_RETURN", "0")
             ),
@@ -281,7 +285,9 @@ def run_daily_research(args: argparse.Namespace) -> dict[str, object]:
         system_status = "ok" if code == 0 else "error"
         if code != 0:
             errors.append(f"financial_data_system.py exited with code {code}")
-        forecast_rows_added = _extract_int(r"new rows added:\s*(\d+)", output, default=max(0, _row_count("forecast_history.csv") - before_forecast_rows))
+        forecast_rows_added = _extract_int(
+            r"new rows added:\s*(\d+)", output, default=max(0, _row_count("forecast_history.csv") - before_forecast_rows)
+        )
         duplicate_forecast_rows_skipped = _extract_int(r"duplicate rows skipped:\s*(\d+)", output, default=0)
         if "PAPER TRADING SIMULATION" in output and "already exists. Skipped" not in output:
             paper_updated = True
@@ -370,7 +376,9 @@ def run_daily_research(args: argparse.Namespace) -> dict[str, object]:
         else:
             if stale_growth_data:
                 print("\n===== GROWTH PAPER STALE DATA OVERRIDE =====")
-                print(f"forecast_history={_date_text(gate_forecast_latest)} < yahoo/cache={_date_text(gate_cache_latest)}; override enabled")
+                print(
+                    f"forecast_history={_date_text(gate_forecast_latest)} < yahoo/cache={_date_text(gate_cache_latest)}; override enabled"
+                )
             feature_args = [sys.executable, "current_growth_feature_generation.py"]
             if args.overwrite_same_day:
                 feature_args.append("--overwrite-same-day")
@@ -521,10 +529,24 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--use-raw-target-return", action="store_true")
     parser.add_argument("--walk-forward-calibrated-forecasts-file", default="walk_forward_calibrated_forecasts.csv")
     parser.add_argument("--overwrite-same-day", action="store_true")
-    parser.add_argument("--growth-paper", action="store_true", help="Run Growth Candidate v1 paper trading separately from defensive paper.")
-    parser.add_argument("--allow-growth-proxy-fallback", action="store_true", help="Allow growth paper to use forecast_history proxy if exact current growth features fail.")
-    parser.add_argument("--allow-stale-growth-data", action="store_true", help="Allow growth paper to run even if forecast_history is older than Yahoo/cache latest date.")
-    parser.add_argument("--allow-stale-growth-volatility", action="store_true", help="Allow growth paper to use stale volatility fallback if fresh OHLCV volatility cannot be computed.")
+    parser.add_argument(
+        "--growth-paper", action="store_true", help="Run Growth Candidate v1 paper trading separately from defensive paper."
+    )
+    parser.add_argument(
+        "--allow-growth-proxy-fallback",
+        action="store_true",
+        help="Allow growth paper to use forecast_history proxy if exact current growth features fail.",
+    )
+    parser.add_argument(
+        "--allow-stale-growth-data",
+        action="store_true",
+        help="Allow growth paper to run even if forecast_history is older than Yahoo/cache latest date.",
+    )
+    parser.add_argument(
+        "--allow-stale-growth-volatility",
+        action="store_true",
+        help="Allow growth paper to use stale volatility fallback if fresh OHLCV volatility cannot be computed.",
+    )
     parser.add_argument("--skip-system", action="store_true", help="Only refresh dashboard/monitor/log; do not run main system.")
     parser.add_argument("--no-paper", dest="paper_trading_enabled", action="store_false")
     parser.add_argument("--no-dashboard", dest="run_dashboard", action="store_false")

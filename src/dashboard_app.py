@@ -122,24 +122,49 @@ def render_executive(st, data: dict[str, pd.DataFrame], scope: str) -> None:
     curve = benchmark_curve_for_scope(data, scope)
     latest_curve = curve.iloc[-1] if not curve.empty else pd.Series(dtype=object)
     cols = st.columns(5)
-    with cols[0]: metric_card(st, "Gross Portfolio Value", fmt_money(row.get("gross_portfolio_value", row.get("portfolio_value", np.nan))), "official gross" if scope == "Official Forward Paper" else scope)
-    with cols[1]: metric_card(st, "Estimated Net Value", fmt_money(row.get("estimated_net_portfolio_value", np.nan)), "cost-adjusted estimate")
-    with cols[2]: metric_card(st, "Gross Cum Return", fmt_pct(row.get("gross_cumulative_return", np.nan)), "paper gross")
-    with cols[3]: metric_card(st, "Estimated Net Cum", fmt_pct(row.get("estimated_net_cumulative_return", np.nan)), "paper net estimate")
-    with cols[4]: metric_card(st, "Current Drawdown", fmt_pct(row.get("current_drawdown", row.get("max_drawdown", np.nan))), "gross equity")
+    with cols[0]:
+        metric_card(
+            st,
+            "Gross Portfolio Value",
+            fmt_money(row.get("gross_portfolio_value", row.get("portfolio_value", np.nan))),
+            "official gross" if scope == "Official Forward Paper" else scope,
+        )
+    with cols[1]:
+        metric_card(st, "Estimated Net Value", fmt_money(row.get("estimated_net_portfolio_value", np.nan)), "cost-adjusted estimate")
+    with cols[2]:
+        metric_card(st, "Gross Cum Return", fmt_pct(row.get("gross_cumulative_return", np.nan)), "paper gross")
+    with cols[3]:
+        metric_card(st, "Estimated Net Cum", fmt_pct(row.get("estimated_net_cumulative_return", np.nan)), "paper net estimate")
+    with cols[4]:
+        metric_card(st, "Current Drawdown", fmt_pct(row.get("current_drawdown", row.get("max_drawdown", np.nan))), "gross equity")
     cols = st.columns(5)
-    with cols[0]: metric_card(st, "SPY Cumulative", fmt_pct_points(latest_curve.get("SPY", np.nan)), "same official dates")
-    with cols[1]: metric_card(st, "QQQ Cumulative", fmt_pct_points(latest_curve.get("QQQ", np.nan)), "same official dates")
-    with cols[2]: metric_card(st, "Exposure", fmt_pct(row.get("exposure", np.nan)), "final exposure")
-    with cols[3]: metric_card(st, "Cash", fmt_pct(row.get("cash_weight", row.get("cash", np.nan))), "cash weight")
+    with cols[0]:
+        metric_card(st, "SPY Cumulative", fmt_pct_points(latest_curve.get("SPY", np.nan)), "same official dates")
+    with cols[1]:
+        metric_card(st, "QQQ Cumulative", fmt_pct_points(latest_curve.get("QQQ", np.nan)), "same official dates")
+    with cols[2]:
+        metric_card(st, "Exposure", fmt_pct(row.get("exposure", np.nan)), "final exposure")
+    with cols[3]:
+        metric_card(st, "Cash", fmt_pct(row.get("cash_weight", row.get("cash", np.nan))), "cash weight")
     reb = latest(data.get("official_daily_status", pd.DataFrame()))
-    with cols[4]: metric_card(st, "Next Rebalance", next_rebalance_date(data), "5-session cadence")
+    with cols[4]:
+        metric_card(st, "Next Rebalance", next_rebalance_date(data), "5-session cadence")
 
     st.markdown("#### Growth vs SPY vs QQQ")
     if scope == "Official Forward Paper":
         st.caption(f"Official Forward Paper — start date: {official_start_date(data)}")
-    line_chart(st, curve, "date", [c for c in ["Growth Gross", "Growth Estimated Net", "Growth Champion Final", "SPY", "QQQ"] if c in curve.columns], "Growth gross/net vs SPY/QQQ — cumulative return %")
-    source_caption(st, "growth_official_benchmark_equity.csv" if scope == "Official Forward Paper" else "selected scope benchmark files", get_scope_namespace(scope))
+    line_chart(
+        st,
+        curve,
+        "date",
+        [c for c in ["Growth Gross", "Growth Estimated Net", "Growth Champion Final", "SPY", "QQQ"] if c in curve.columns],
+        "Growth gross/net vs SPY/QQQ — cumulative return %",
+    )
+    source_caption(
+        st,
+        "growth_official_benchmark_equity.csv" if scope == "Official Forward Paper" else "selected scope benchmark files",
+        get_scope_namespace(scope),
+    )
 
     scoped = scope_data(data, scope)
     perf = equity_from_performance(scoped.get("performance", pd.DataFrame()))
@@ -167,16 +192,53 @@ def render_portfolio(st, data: dict[str, pd.DataFrame], scope: str) -> None:
     for _, row in non_cash.iterrows():
         cols = st.columns([1.2, 1, 1, 1, 1, 1])
         ticker = str(row.get("ticker", "n/a"))
-        with cols[0]: st.markdown(f"<div class='holding-card'><div class='holding-ticker'>{ticker}</div><span class='badge'>{row.get('holding_quality_classification', row.get('action', 'holding'))}</span><div class='small-muted'>{row.get('holding_risk_notes', '')}</div></div>", unsafe_allow_html=True)
-        with cols[1]: metric_card(st, "Weight", fmt_pct(row.get("paper_position_weight", row.get("weight", np.nan))))
-        with cols[2]: metric_card(st, "Position Value", fmt_money(row.get("paper_position_value", row.get("position_value", np.nan))))
-        with cols[3]: metric_card(st, "Current Price", fmt_money(row.get("current_price", np.nan)))
-        with cols[4]: metric_card(st, "Day PnL", fmt_money(row.get("position_pnl_today", np.nan)), fmt_pct(row.get("day_return_pct", np.nan)))
-        with cols[5]: metric_card(st, "Unrealized PnL", fmt_money(row.get("position_unrealized_pnl", np.nan)), fmt_pct(row.get("unrealized_return", np.nan)))
-    show_cols = [c for c in ["date", "ticker", "action", "paper_position_weight", "paper_position_value", "entry_price", "current_price", "day_return_pct", "position_pnl_today", "unrealized_return", "position_unrealized_pnl", "raw_target_rank", "raw_target_return_exact", "holding_quality_classification", "holding_risk_notes"] if c in holdings.columns]
+        with cols[0]:
+            st.markdown(
+                f"<div class='holding-card'><div class='holding-ticker'>{ticker}</div><span class='badge'>{row.get('holding_quality_classification', row.get('action', 'holding'))}</span><div class='small-muted'>{row.get('holding_risk_notes', '')}</div></div>",
+                unsafe_allow_html=True,
+            )
+        with cols[1]:
+            metric_card(st, "Weight", fmt_pct(row.get("paper_position_weight", row.get("weight", np.nan))))
+        with cols[2]:
+            metric_card(st, "Position Value", fmt_money(row.get("paper_position_value", row.get("position_value", np.nan))))
+        with cols[3]:
+            metric_card(st, "Current Price", fmt_money(row.get("current_price", np.nan)))
+        with cols[4]:
+            metric_card(st, "Day PnL", fmt_money(row.get("position_pnl_today", np.nan)), fmt_pct(row.get("day_return_pct", np.nan)))
+        with cols[5]:
+            metric_card(
+                st, "Unrealized PnL", fmt_money(row.get("position_unrealized_pnl", np.nan)), fmt_pct(row.get("unrealized_return", np.nan))
+            )
+    show_cols = [
+        c
+        for c in [
+            "date",
+            "ticker",
+            "action",
+            "paper_position_weight",
+            "paper_position_value",
+            "entry_price",
+            "current_price",
+            "day_return_pct",
+            "position_pnl_today",
+            "unrealized_return",
+            "position_unrealized_pnl",
+            "raw_target_rank",
+            "raw_target_return_exact",
+            "holding_quality_classification",
+            "holding_risk_notes",
+        ]
+        if c in holdings.columns
+    ]
     with st.expander("Detailed holdings table"):
         st.dataframe(holdings[show_cols] if show_cols else holdings, width="stretch")
-    source_caption(st, "growth_official_paper_state.csv + growth_official_position_pnl.csv" if scope == "Official Forward Paper" else "selected scope state", get_scope_namespace(scope))
+    source_caption(
+        st,
+        "growth_official_paper_state.csv + growth_official_position_pnl.csv"
+        if scope == "Official Forward Paper"
+        else "selected scope state",
+        get_scope_namespace(scope),
+    )
 
 
 def render_rebalance(st, data: dict[str, pd.DataFrame], scope: str) -> None:
@@ -190,11 +252,16 @@ def render_rebalance(st, data: dict[str, pd.DataFrame], scope: str) -> None:
     latest_actions = latest(actions)
     latest_report = latest(report)
     cols = st.columns(5)
-    with cols[0]: metric_card(st, "Latest Date", str(latest_actions.iloc[-1].get("date", "n/a"))[:10])
-    with cols[1]: metric_card(st, "Turnover", fmt_pct(latest_report.iloc[-1].get("turnover", np.nan)) if not latest_report.empty else "n/a")
-    with cols[2]: metric_card(st, "BUY", str(int((latest_actions.get("action", pd.Series()).astype(str).str.upper() == "BUY").sum())))
-    with cols[3]: metric_card(st, "SELL", str(int((latest_actions.get("action", pd.Series()).astype(str).str.upper() == "SELL").sum())))
-    with cols[4]: metric_card(st, "Recon", str(latest_report.iloc[-1].get("reconciliation_passed", "n/a")) if not latest_report.empty else "n/a")
+    with cols[0]:
+        metric_card(st, "Latest Date", str(latest_actions.iloc[-1].get("date", "n/a"))[:10])
+    with cols[1]:
+        metric_card(st, "Turnover", fmt_pct(latest_report.iloc[-1].get("turnover", np.nan)) if not latest_report.empty else "n/a")
+    with cols[2]:
+        metric_card(st, "BUY", str(int((latest_actions.get("action", pd.Series()).astype(str).str.upper() == "BUY").sum())))
+    with cols[3]:
+        metric_card(st, "SELL", str(int((latest_actions.get("action", pd.Series()).astype(str).str.upper() == "SELL").sum())))
+    with cols[4]:
+        metric_card(st, "Recon", str(latest_report.iloc[-1].get("reconciliation_passed", "n/a")) if not latest_report.empty else "n/a")
     counts = action_counts(actions)
     bar_chart(st, counts, "date", "count", "Actions by Day", color="action")
     if not report.empty and "turnover" in report.columns:
@@ -210,13 +277,23 @@ def render_performance(st, data: dict[str, pd.DataFrame], scope: str) -> None:
     perf = scoped.get("performance", pd.DataFrame())
     curve = benchmark_curve_for_scope(data, scope)
     st.subheader("Performance")
-    line_chart(st, curve, "date", [c for c in ["Growth Gross", "Growth Estimated Net", "Growth Champion Final", "SPY", "QQQ"] if c in curve.columns], "Growth gross/net vs SPY/QQQ")
+    line_chart(
+        st,
+        curve,
+        "date",
+        [c for c in ["Growth Gross", "Growth Estimated Net", "Growth Champion Final", "SPY", "QQQ"] if c in curve.columns],
+        "Growth gross/net vs SPY/QQQ",
+    )
     eq = equity_from_performance(perf)
     line_chart(st, eq, "date", [c for c in ["Gross Equity", "Estimated Net Equity"] if c in eq.columns], "Gross vs Estimated-Net Equity")
     if not perf.empty and "gross_daily_return" in perf.columns:
         out = perf.sort_values("date").copy()
         out["rolling_return"] = (1 + numeric(out["gross_daily_return"]).fillna(0)).rolling(20, min_periods=2).apply(np.prod, raw=True) - 1
-        out["rolling_sharpe"] = numeric(out["gross_daily_return"]).rolling(20, min_periods=2).mean() / numeric(out["gross_daily_return"]).rolling(20, min_periods=2).std(ddof=0).replace(0, np.nan) * np.sqrt(252)
+        out["rolling_sharpe"] = (
+            numeric(out["gross_daily_return"]).rolling(20, min_periods=2).mean()
+            / numeric(out["gross_daily_return"]).rolling(20, min_periods=2).std(ddof=0).replace(0, np.nan)
+            * np.sqrt(252)
+        )
         line_chart(st, out, "date", ["rolling_return", "rolling_sharpe"], "Rolling Return / Sharpe")
     dd = drawdown_frame(perf)
     line_chart(st, dd, "date", "drawdown", "Drawdown")
@@ -234,17 +311,27 @@ def render_risk(st, data: dict[str, pd.DataFrame], scope: str) -> None:
     perf = scoped.get("performance", pd.DataFrame())
     vol = data.get("vol_fresh", pd.DataFrame())
     if not vol.empty:
-        cols = [c for c in ["estimated_portfolio_vol", "target_vol", "uncapped_exposure", "final_exposure", "dual_trend_cap", "exposure_cap_60"] if c in vol.columns]
+        cols = [
+            c
+            for c in ["estimated_portfolio_vol", "target_vol", "uncapped_exposure", "final_exposure", "dual_trend_cap", "exposure_cap_60"]
+            if c in vol.columns
+        ]
         line_chart(st, vol, "date", cols, "Volatility Targeting: Estimated Vol / Exposure Stack")
         source_caption(st, "growth_volatility_targeting_fresh.csv", "official diagnostic")
     holdings = current_holdings(data, scope)
-    non_cash = holdings[~holdings.get("ticker", pd.Series(dtype=str)).astype(str).str.upper().eq("CASH")] if not holdings.empty else pd.DataFrame()
+    non_cash = (
+        holdings[~holdings.get("ticker", pd.Series(dtype=str)).astype(str).str.upper().eq("CASH")] if not holdings.empty else pd.DataFrame()
+    )
     weights = numeric(non_cash.get("paper_position_weight", pd.Series(dtype=float))) if not non_cash.empty else pd.Series(dtype=float)
     cols = st.columns(4)
-    with cols[0]: metric_card(st, "Concentration HHI", fmt_num(float((weights ** 2).sum()) if not weights.empty else np.nan))
-    with cols[1]: metric_card(st, "Top Weight", fmt_pct(float(weights.max()) if not weights.empty else np.nan))
-    with cols[2]: metric_card(st, "Current DD", fmt_pct(latest_value(drawdown_frame(perf), "drawdown")))
-    with cols[3]: metric_card(st, "Position Count", str(len(non_cash)))
+    with cols[0]:
+        metric_card(st, "Concentration HHI", fmt_num(float((weights**2).sum()) if not weights.empty else np.nan))
+    with cols[1]:
+        metric_card(st, "Top Weight", fmt_pct(float(weights.max()) if not weights.empty else np.nan))
+    with cols[2]:
+        metric_card(st, "Current DD", fmt_pct(latest_value(drawdown_frame(perf), "drawdown")))
+    with cols[3]:
+        metric_card(st, "Position Count", str(len(non_cash)))
     tickers = non_cash.get("ticker", pd.Series(dtype=str)).astype(str).tolist() if not non_cash.empty else []
     prices = read_price_cache(tickers, lookback=126)
     if not prices.empty:
@@ -260,19 +347,45 @@ def render_risk(st, data: dict[str, pd.DataFrame], scope: str) -> None:
 
 def render_costs(st, data: dict[str, pd.DataFrame], scope: str) -> None:
     st.subheader("Costs & Capacity")
-    ledger = data.get("official_cost_ledger", pd.DataFrame()) if scope == "Official Forward Paper" else data.get("advanced_costs", pd.DataFrame())
+    ledger = (
+        data.get("official_cost_ledger", pd.DataFrame())
+        if scope == "Official Forward Paper"
+        else data.get("advanced_costs", pd.DataFrame())
+    )
     if ledger.empty:
         st.warning("Cost ledger unavailable for selected scope.")
     else:
         cols = st.columns(4)
-        with cols[0]: metric_card(st, "Cumulative Costs", fmt_money(numeric(ledger.get("estimated_total_cost", ledger.get("total_cost", pd.Series(dtype=float)))).sum()))
-        with cols[1]: metric_card(st, "Orders", str(len(ledger)))
-        with cols[2]: metric_card(st, "Avg Cost / Order", fmt_money(numeric(ledger.get("estimated_total_cost", ledger.get("total_cost", pd.Series(dtype=float)))).mean()))
-        with cols[3]: metric_card(st, "Official Cost Mode", "Reporting Only" if scope == "Official Forward Paper" else "Research")
+        with cols[0]:
+            metric_card(
+                st,
+                "Cumulative Costs",
+                fmt_money(numeric(ledger.get("estimated_total_cost", ledger.get("total_cost", pd.Series(dtype=float)))).sum()),
+            )
+        with cols[1]:
+            metric_card(st, "Orders", str(len(ledger)))
+        with cols[2]:
+            metric_card(
+                st,
+                "Avg Cost / Order",
+                fmt_money(numeric(ledger.get("estimated_total_cost", ledger.get("total_cost", pd.Series(dtype=float)))).mean()),
+            )
+        with cols[3]:
+            metric_card(st, "Official Cost Mode", "Reporting Only" if scope == "Official Forward Paper" else "Research")
         date_cost = ledger.copy()
-        cost_col = "daily_estimated_cost" if "daily_estimated_cost" in date_cost.columns else "total_cost" if "total_cost" in date_cost.columns else None
+        cost_col = (
+            "daily_estimated_cost"
+            if "daily_estimated_cost" in date_cost.columns
+            else "total_cost"
+            if "total_cost" in date_cost.columns
+            else None
+        )
         if cost_col:
-            daily = date_cost.groupby("date", dropna=False)[cost_col].sum().reset_index(name="cost") if "date" in date_cost.columns else pd.DataFrame()
+            daily = (
+                date_cost.groupby("date", dropna=False)[cost_col].sum().reset_index(name="cost")
+                if "date" in date_cost.columns
+                else pd.DataFrame()
+            )
             bar_chart(st, daily, "date", "cost", "Costs by Date")
         if "ticker" in ledger.columns and cost_col:
             ticker_cost = ledger.groupby("ticker")[cost_col].sum().reset_index(name="cost").sort_values("cost", ascending=False)
@@ -280,7 +393,9 @@ def render_costs(st, data: dict[str, pd.DataFrame], scope: str) -> None:
         with st.expander("Official cost ledger / execution detail"):
             st.dataframe(ledger, width="stretch")
     perf = equity_from_performance(scope_data(data, scope).get("performance", pd.DataFrame()))
-    line_chart(st, perf, "date", [c for c in ["Gross Equity", "Estimated Net Equity"] if c in perf.columns], "Gross vs Estimated-Net Equity")
+    line_chart(
+        st, perf, "date", [c for c in ["Gross Equity", "Estimated Net Equity"] if c in perf.columns], "Gross vs Estimated-Net Equity"
+    )
     cap = data.get("capacity", pd.DataFrame())
     if cap.empty:
         cap = data.get("growth_capacity", pd.DataFrame())
@@ -295,14 +410,23 @@ def render_costs(st, data: dict[str, pd.DataFrame], scope: str) -> None:
 
 def render_live(st, data: dict[str, pd.DataFrame], scope: str) -> None:
     st.subheader("Live Validation")
-    health = latest(data.get("official_monitor", pd.DataFrame())) if scope == "Official Forward Paper" else latest(data.get("debug_monitor", pd.DataFrame()))
+    health = (
+        latest(data.get("official_monitor", pd.DataFrame()))
+        if scope == "Official Forward Paper"
+        else latest(data.get("debug_monitor", pd.DataFrame()))
+    )
     row = health.iloc[-1] if not health.empty else pd.Series(dtype=object)
     cols = st.columns(5)
-    with cols[0]: metric_card(st, "Status", str(row.get("governance_status", "WARMUP")))
-    with cols[1]: metric_card(st, "Data Status", str(row.get("data_status", "n/a")))
-    with cols[2]: metric_card(st, "Integrity", str(row.get("integrity_status", "n/a")))
-    with cols[3]: metric_card(st, "Promotion", str(row.get("promotion_status", "real_capital_blocked")))
-    with cols[4]: metric_card(st, "Risk Flags", str(row.get("risk_flags", "n/a")))
+    with cols[0]:
+        metric_card(st, "Status", str(row.get("governance_status", "WARMUP")))
+    with cols[1]:
+        metric_card(st, "Data Status", str(row.get("data_status", "n/a")))
+    with cols[2]:
+        metric_card(st, "Integrity", str(row.get("integrity_status", "n/a")))
+    with cols[3]:
+        metric_card(st, "Promotion", str(row.get("promotion_status", "real_capital_blocked")))
+    with cols[4]:
+        metric_card(st, "Risk Flags", str(row.get("risk_flags", "n/a")))
     tracking = data.get("official_tracking", pd.DataFrame())
     if not tracking.empty:
         st.dataframe(tracking.tail(10), width="stretch")
@@ -316,11 +440,20 @@ def render_market_data(st, data: dict[str, pd.DataFrame]) -> None:
     cols = st.columns(4)
     gov = latest(data.get("official_market_data_governance", pd.DataFrame()))
     row = gov.iloc[-1] if not gov.empty else pd.Series(dtype=object)
-    with cols[0]: metric_card(st, "Primary Source", "Yahoo/yfinance")
-    with cols[1]: metric_card(st, "Secondary Status", str(row.get("classification", row.get("governance", "single_source_warning"))))
-    with cols[2]: metric_card(st, "Latest Date", latest_market_date(data))
-    with cols[3]: metric_card(st, "Real Capital", "Blocked", "requires reliable second source")
-    for key, title in [("official_market_data_integrity", "Official Market Data Integrity"), ("secondary_provider_status", "Secondary Provider Status"), ("multi_source_price_audit", "Multi-Source Price Audit"), ("market_data_governance", "Market Data Governance")]:
+    with cols[0]:
+        metric_card(st, "Primary Source", "Yahoo/yfinance")
+    with cols[1]:
+        metric_card(st, "Secondary Status", str(row.get("classification", row.get("governance", "single_source_warning"))))
+    with cols[2]:
+        metric_card(st, "Latest Date", latest_market_date(data))
+    with cols[3]:
+        metric_card(st, "Real Capital", "Blocked", "requires reliable second source")
+    for key, title in [
+        ("official_market_data_integrity", "Official Market Data Integrity"),
+        ("secondary_provider_status", "Secondary Provider Status"),
+        ("multi_source_price_audit", "Multi-Source Price Audit"),
+        ("market_data_governance", "Market Data Governance"),
+    ]:
         df = data.get(key, pd.DataFrame())
         if not df.empty:
             with st.expander(title):
@@ -331,7 +464,13 @@ def render_diagnostics(st, data: dict[str, pd.DataFrame], diag: pd.DataFrame, sc
     st.subheader("Diagnostics")
     st.caption("Data loading and namespace audit. This page is read-only.")
     st.dataframe(diag, width="stretch")
-    for key in ["benchmark_chart_audit", "benchmark_chart_reconciliation", "official_integrity", "official_daily_status", "official_version_history"]:
+    for key in [
+        "benchmark_chart_audit",
+        "benchmark_chart_reconciliation",
+        "official_integrity",
+        "official_daily_status",
+        "official_version_history",
+    ]:
         df = data.get(key, pd.DataFrame())
         if not df.empty:
             with st.expander(key):
@@ -433,7 +572,7 @@ def fallback_cli() -> None:
 
 
 def main() -> None:
-    if has_module("streamlit") and any("streamlit" in arg.lower() for arg in sys.argv) or has_module("streamlit"):
+    if (has_module("streamlit") and any("streamlit" in arg.lower() for arg in sys.argv)) or has_module("streamlit"):
         render_streamlit()
     else:
         fallback_cli()

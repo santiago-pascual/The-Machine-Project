@@ -81,7 +81,9 @@ def _forecast_metrics(frame: pd.DataFrame, forecast_col: str, realized_col: str)
         "MAPE": float((error.abs() / denom).replace([np.inf, -np.inf], np.nan).mean()),
         "bias": float(error.mean()),
         "forecast_dispersion": float(data[forecast_col].std(ddof=0)),
-        "pearson_corr": float(data[forecast_col].corr(data[realized_col])) if data[forecast_col].nunique() > 1 and data[realized_col].nunique() > 1 else np.nan,
+        "pearson_corr": float(data[forecast_col].corr(data[realized_col]))
+        if data[forecast_col].nunique() > 1 and data[realized_col].nunique() > 1
+        else np.nan,
         "spearman_ic": _spearman_no_scipy(data[forecast_col], data[realized_col]),
         "calibration_slope": _calibration_slope(data[forecast_col], data[realized_col]),
     }
@@ -149,7 +151,15 @@ def _attribution(base: pd.DataFrame, group_col: str, config: TargetAuditConfig) 
             continue
         for group, frame in base.groupby(group_col, dropna=False):
             metrics = _forecast_metrics(frame, "forecast_return", realized_col)
-            rows.append({"group_type": group_col, "group": str(group), "horizon": f"{horizon}D", **metrics, "bias_type": _bias_type(metrics.get("bias", np.nan))})
+            rows.append(
+                {
+                    "group_type": group_col,
+                    "group": str(group),
+                    "horizon": f"{horizon}D",
+                    **metrics,
+                    "bias_type": _bias_type(metrics.get("bias", np.nan)),
+                }
+            )
     return pd.DataFrame(rows)
 
 
@@ -228,7 +238,20 @@ def run_target_engineering_audit(config: TargetAuditConfig | None = None) -> dic
     by_volatility = _quintile_attribution(base, vol_source, "volatility_quintile", config)
     signal_quintile = _quintile_attribution(base, "signal_strength", "signal_strength_quintile", config)
     expected_quintile = _quintile_attribution(base, "forecast_return", "expected_return_quintile", config)
-    error_attribution = pd.concat([df for df in [by_regime.assign(output="regime"), by_ticker.assign(output="ticker"), by_volatility.assign(output="volatility"), signal_quintile.assign(output="signal_strength"), expected_quintile.assign(output="expected_return")] if not df.empty], ignore_index=True)
+    error_attribution = pd.concat(
+        [
+            df
+            for df in [
+                by_regime.assign(output="regime"),
+                by_ticker.assign(output="ticker"),
+                by_volatility.assign(output="volatility"),
+                signal_quintile.assign(output="signal_strength"),
+                expected_quintile.assign(output="expected_return"),
+            ]
+            if not df.empty
+        ],
+        ignore_index=True,
+    )
     confidence = _confidence_audit(base, config)
 
     audit.to_csv(OUTPUT_AUDIT, index=False)
@@ -239,13 +262,28 @@ def run_target_engineering_audit(config: TargetAuditConfig | None = None) -> dic
     return {"audit": audit, "regime": by_regime, "ticker": by_ticker, "volatility": by_volatility, "confidence": confidence}
 
 
-def _print_report(audit: pd.DataFrame, attribution: pd.DataFrame, by_ticker: pd.DataFrame, by_regime: pd.DataFrame, confidence: pd.DataFrame) -> None:
+def _print_report(
+    audit: pd.DataFrame, attribution: pd.DataFrame, by_ticker: pd.DataFrame, by_regime: pd.DataFrame, confidence: pd.DataFrame
+) -> None:
     print("\n===== TARGET ENGINEERING AUDIT =====")
     print("research only: True")
     print("production behavior changed: False")
 
     print("\n===== FORECAST ERROR ANALYSIS =====")
-    cols = ["horizon", "forecast_source", "sample_size", "MAE", "RMSE", "MAPE", "bias", "forecast_dispersion", "pearson_corr", "spearman_ic", "calibration_slope", "bias_type"]
+    cols = [
+        "horizon",
+        "forecast_source",
+        "sample_size",
+        "MAE",
+        "RMSE",
+        "MAPE",
+        "bias",
+        "forecast_dispersion",
+        "pearson_corr",
+        "spearman_ic",
+        "calibration_slope",
+        "bias_type",
+    ]
     print(audit[[c for c in cols if c in audit.columns]].to_string(index=False) if not audit.empty else "No audit rows.")
 
     print("\n===== ERROR ATTRIBUTION =====")

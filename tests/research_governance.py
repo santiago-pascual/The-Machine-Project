@@ -108,9 +108,8 @@ def register_experiment(
     timestamp = datetime.now(timezone.utc).isoformat(timespec="seconds")
     duplicate_mask = pd.Series(False, index=registry.index)
     if not registry.empty and {"experiment_name", "parameter_set_hash"}.issubset(registry.columns):
-        duplicate_mask = (
-            registry["experiment_name"].astype(str).eq(str(experiment_name))
-            & registry["parameter_set_hash"].astype(str).eq(parameter_hash)
+        duplicate_mask = registry["experiment_name"].astype(str).eq(str(experiment_name)) & registry["parameter_set_hash"].astype(str).eq(
+            parameter_hash
         )
     duplicate_existing = bool(duplicate_mask.any()) if not registry.empty else False
     experiment_id = f"{datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S')}_{parameter_hash}"
@@ -142,12 +141,14 @@ def trial_budget_report(
 ) -> pd.DataFrame:
     registry = _read_csv(registry_path)
     if registry.empty:
-        rows = [{
-            "metric": "registry_rows",
-            "value": 0,
-            "limit": np.nan,
-            "status": "ok",
-        }]
+        rows = [
+            {
+                "metric": "registry_rows",
+                "value": 0,
+                "limit": np.nan,
+                "status": "ok",
+            }
+        ]
         return pd.DataFrame(rows)
     timestamps = pd.to_datetime(registry.get("timestamp"), errors="coerce", utc=True)
     today = datetime.now(timezone.utc).date()
@@ -252,12 +253,37 @@ def promotion_checklist(config: GovernanceConfig = GovernanceConfig()) -> pd.Dat
     tp_sl_issue = _tp_sl_issue()
     single_window = _single_window_dependency()
     checklist = [
-        ("sample_size_above_threshold", sample_size, config.min_sample_size_for_promotion, sample_size >= config.min_sample_size_for_promotion),
-        ("multiple_oos_windows", oos_windows, config.min_out_of_sample_windows_for_promotion, oos_windows >= config.min_out_of_sample_windows_for_promotion),
-        ("deflated_sharpe_above_threshold", dsr["deflated_sharpe_estimate"], config.min_deflated_sharpe_for_promotion, float(dsr["deflated_sharpe_estimate"]) >= config.min_deflated_sharpe_for_promotion),
+        (
+            "sample_size_above_threshold",
+            sample_size,
+            config.min_sample_size_for_promotion,
+            sample_size >= config.min_sample_size_for_promotion,
+        ),
+        (
+            "multiple_oos_windows",
+            oos_windows,
+            config.min_out_of_sample_windows_for_promotion,
+            oos_windows >= config.min_out_of_sample_windows_for_promotion,
+        ),
+        (
+            "deflated_sharpe_above_threshold",
+            dsr["deflated_sharpe_estimate"],
+            config.min_deflated_sharpe_for_promotion,
+            float(dsr["deflated_sharpe_estimate"]) >= config.min_deflated_sharpe_for_promotion,
+        ),
         ("pbo_below_threshold", pbo["pbo_proxy"], config.max_pbo_for_promotion, float(pbo["pbo_proxy"]) <= config.max_pbo_for_promotion),
-        ("robustness_score_above_threshold", robustness_score, config.min_robustness_score_for_promotion, robustness_score >= config.min_robustness_score_for_promotion),
-        ("turnover_not_extreme", turnover, config.max_turnover_for_promotion, np.isfinite(turnover) and turnover <= config.max_turnover_for_promotion),
+        (
+            "robustness_score_above_threshold",
+            robustness_score,
+            config.min_robustness_score_for_promotion,
+            robustness_score >= config.min_robustness_score_for_promotion,
+        ),
+        (
+            "turnover_not_extreme",
+            turnover,
+            config.max_turnover_for_promotion,
+            np.isfinite(turnover) and turnover <= config.max_turnover_for_promotion,
+        ),
         ("no_tp_below_sl_issue", int(tp_sl_issue), 0, not tp_sl_issue),
         ("no_single_window_dependency", int(single_window), 0, not single_window),
     ]
@@ -330,7 +356,7 @@ def run_research_governance_report(
     print("\n===== STRATEGY PROMOTION CHECKLIST =====")
     print(checklist.to_string(index=False))
     if not promotion_allowed:
-        print('\nResearch allowed, production promotion blocked.')
+        print("\nResearch allowed, production promotion blocked.")
     else:
         print("\nPromotion checklist passed for research review only. No auto-promotion performed.")
     print(f"\nSaved: {Path(EXPERIMENT_REGISTRY_FILE).resolve()}")
