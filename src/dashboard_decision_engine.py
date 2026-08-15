@@ -116,22 +116,22 @@ def _sankey_and_funnel(st, bundle) -> None:
                 data=[
                     go.Sankey(
                         arrangement="snap",
-                        node=dict(
-                            label=nodes["label"].astype(str).tolist(),
-                            pad=18,
-                            thickness=18,
-                            color=[DECISION_SEQUENCE[i % len(DECISION_SEQUENCE)] for i in range(len(nodes))],
-                            customdata=nodes[["stage", "count", "retained_pct", "source_file"]].astype(str).values,
-                            hovertemplate="%{customdata[0]}<br>count=%{customdata[1]}<br>retained=%{customdata[2]}<br>source=%{customdata[3]}<extra></extra>",
-                        ),
-                        link=dict(
-                            source=links["source"].astype(int).tolist(),
-                            target=links["target"].astype(int).tolist(),
-                            value=links["value"].astype(float).clip(lower=0.01).tolist(),
-                            color="rgba(255,138,42,0.30)",
-                            customdata=links[["stage", "excluded_count", "retained_pct", "reason_summary"]].astype(str).values,
-                            hovertemplate="%{customdata[0]}<br>flow=%{value}<br>excluded=%{customdata[1]}<br>retained=%{customdata[2]}<br>reasons=%{customdata[3]}<extra></extra>",
-                        ),
+                        node={
+                            "label": nodes["label"].astype(str).tolist(),
+                            "pad": 18,
+                            "thickness": 18,
+                            "color": [DECISION_SEQUENCE[i % len(DECISION_SEQUENCE)] for i in range(len(nodes))],
+                            "customdata": nodes[["stage", "count", "retained_pct", "source_file"]].astype(str).values,
+                            "hovertemplate": "%{customdata[0]}<br>count=%{customdata[1]}<br>retained=%{customdata[2]}<br>source=%{customdata[3]}<extra></extra>",
+                        },
+                        link={
+                            "source": links["source"].astype(int).tolist(),
+                            "target": links["target"].astype(int).tolist(),
+                            "value": links["value"].astype(float).clip(lower=0.01).tolist(),
+                            "color": "rgba(255,138,42,0.30)",
+                            "customdata": links[["stage", "excluded_count", "retained_pct", "reason_summary"]].astype(str).values,
+                            "hovertemplate": "%{customdata[0]}<br>flow=%{value}<br>excluded=%{customdata[1]}<br>retained=%{customdata[2]}<br>reasons=%{customdata[3]}<extra></extra>",
+                        },
                     )
                 ]
             )
@@ -394,7 +394,7 @@ def _history_attrition_dna(st, bundle) -> None:
                 line_color=CHART_COLORS.get("orange", "#FF8A2A"),
             )
         )
-        fig.update_layout(polar=dict(radialaxis=dict(visible=True, range=[0, 1])))
+        fig.update_layout(polar={"radialaxis": {"visible": True, "range": [0, 1]}})
         _safe_chart(st, fig, 430)
         st.dataframe(_safe_df(dna), width="stretch", hide_index=True)
 

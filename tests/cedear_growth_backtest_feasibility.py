@@ -226,7 +226,7 @@ def _discover_cedear_file(explicit: str | None = None) -> Path | None:
     candidates = [p for p in candidates if p.name not in {CEDEAR_UNIVERSE_FILE, MODEL_MAP_FILE, CEDEAR_GROWTH_UNIVERSE_FILE}]
     if not candidates:
         return None
-    return sorted(candidates, key=lambda p: p.stat().st_mtime, reverse=True)[0]
+    return max(candidates, key=lambda p: p.stat().st_mtime)
 
 
 def _parse_txt_cedear_file(path: Path) -> pd.DataFrame:

@@ -60,18 +60,17 @@ def get_current_prices(
     for start in range(0, len(ticker_list), max(1, int(chunk_size))):
         chunk = ticker_list[start : start + max(1, int(chunk_size))]
         try:
-            with _temporary_disable_proxies():
-                with redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
-                    raw_data = yf.download(
-                        chunk,
-                        period="1d",
-                        interval="1m",
-                        progress=False,
-                        auto_adjust=False,
-                        group_by="ticker",
-                        threads=False,
-                        timeout=20,
-                    )
+            with _temporary_disable_proxies(), redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
+                raw_data = yf.download(
+                    chunk,
+                    period="1d",
+                    interval="1m",
+                    progress=False,
+                    auto_adjust=False,
+                    group_by="ticker",
+                    threads=False,
+                    timeout=20,
+                )
         except Exception:
             continue
 

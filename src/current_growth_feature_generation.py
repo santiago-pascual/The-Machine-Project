@@ -228,11 +228,10 @@ def _fresh_portfolio_volatility(selected_tickers: list[str], date: pd.Timestamp)
         prices = _load_cached_price(ticker)
         hist = prices[prices.index <= date].dropna() if not prices.empty else pd.Series(dtype=float)
         snap_price = snapshot_prices.get(ticker, np.nan)
-        if np.isfinite(snap_price) and snap_price > 0:
-            if hist.empty or hist.index[-1].normalize() < date.normalize():
-                hist = pd.concat([hist, pd.Series([float(snap_price)], index=[date.normalize()], name=ticker)]).sort_index()
-                hist = hist[~hist.index.duplicated(keep="last")]
-                used_snapshot.append(ticker)
+        if np.isfinite(snap_price) and snap_price > 0 and (hist.empty or hist.index[-1].normalize() < date.normalize()):
+            hist = pd.concat([hist, pd.Series([float(snap_price)], index=[date.normalize()], name=ticker)]).sort_index()
+            hist = hist[~hist.index.duplicated(keep="last")]
+            used_snapshot.append(ticker)
         if len(hist) < VOL_LOOKBACK_DAYS + 1 or hist.index[-1].normalize() < date.normalize():
             missing.append(ticker)
             continue

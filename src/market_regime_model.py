@@ -40,17 +40,16 @@ def _safe_tanh(value: float) -> float:
 
 def _download_close_series(ticker: str, period: str = "12mo") -> pd.Series:
     try:
-        with _temporary_disable_proxies():
-            with redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
-                data = yf.download(
-                    ticker,
-                    period=period,
-                    interval="1d",
-                    progress=False,
-                    auto_adjust=False,
-                    threads=False,
-                    timeout=20,
-                )
+        with _temporary_disable_proxies(), redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
+            data = yf.download(
+                ticker,
+                period=period,
+                interval="1d",
+                progress=False,
+                auto_adjust=False,
+                threads=False,
+                timeout=20,
+            )
     except Exception:
         return pd.Series(dtype=float)
     if data.empty or "Close" not in data.columns:

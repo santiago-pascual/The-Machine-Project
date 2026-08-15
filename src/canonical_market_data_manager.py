@@ -106,7 +106,7 @@ def _trading_gap(a: Any, b: Any) -> float:
 def _download_yfinance(ticker: str, start: pd.Timestamp | None, end: pd.Timestamp, timeout_retries: int = 2) -> tuple[pd.DataFrame, str]:
     try:
         import yfinance as yf  # type: ignore
-    except Exception as exc:  # noqa: BLE001
+    except Exception as exc:
         return pd.DataFrame(), f"yfinance_import_failed: {exc}"
     try:
         yf_cache = Path(".yfinance_cache")
@@ -135,7 +135,7 @@ def _download_yfinance(ticker: str, start: pd.Timestamp | None, end: pd.Timestam
                 if not norm.empty:
                     return norm, "yfinance_live"
                 last_error = "unexpected_yfinance_schema"
-        except Exception as exc:  # noqa: BLE001
+        except Exception as exc:
             last_error = str(exc)
         if attempt < timeout_retries:
             time.sleep(min(2**attempt, 5))

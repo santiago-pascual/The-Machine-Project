@@ -183,7 +183,7 @@ def _download_one(yf, ticker: str) -> dict[str, object]:
     try:
         data = yf.download(ticker, start="2001-01-01", progress=False, auto_adjust=False, actions=False, threads=False, timeout=20)
         return _coverage_from_df(ticker, _flatten_download(data, ticker))
-    except Exception as exc:  # noqa: BLE001
+    except Exception as exc:
         return _empty_row(ticker, "error", str(exc))
 
 

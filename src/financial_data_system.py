@@ -282,29 +282,28 @@ def download_close_prices(
 
     for ticker in ticker_list:
         try:
-            with _temporary_disable_proxies():
-                with redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
-                    if period:
-                        raw_data = yf.download(
-                            ticker,
-                            period=period,
-                            interval="1d",
-                            progress=False,
-                            auto_adjust=False,
-                            threads=False,
-                            timeout=20,
-                        )
-                    else:
-                        raw_data = yf.download(
-                            ticker,
-                            start=start_date,
-                            end=end_date,
-                            interval="1d",
-                            progress=False,
-                            auto_adjust=False,
-                            threads=False,
-                            timeout=20,
-                        )
+            with _temporary_disable_proxies(), redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
+                if period:
+                    raw_data = yf.download(
+                        ticker,
+                        period=period,
+                        interval="1d",
+                        progress=False,
+                        auto_adjust=False,
+                        threads=False,
+                        timeout=20,
+                    )
+                else:
+                    raw_data = yf.download(
+                        ticker,
+                        start=start_date,
+                        end=end_date,
+                        interval="1d",
+                        progress=False,
+                        auto_adjust=False,
+                        threads=False,
+                        timeout=20,
+                    )
             close_prices = _extract_close_series(raw_data, ticker)
             if effective_lookback is not None:
                 close_prices = close_prices.tail(effective_lookback)

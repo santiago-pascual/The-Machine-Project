@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import itertools
 from pathlib import Path
 
 import numpy as np
@@ -211,7 +212,7 @@ def _stage_attribution(stages: pd.DataFrame) -> pd.DataFrame:
 def _gain_loss(attribution: pd.DataFrame) -> pd.DataFrame:
     rows: list[dict[str, object]] = []
     ordered = attribution["stage"].tolist()
-    for prev, curr in zip(ordered[:-1], ordered[1:]):
+    for prev, curr in itertools.pairwise(ordered):
         a = attribution[attribution["stage"].eq(prev)].iloc[0]
         b = attribution[attribution["stage"].eq(curr)].iloc[0]
         ic_delta = float(b.get("rank_ic_20d", np.nan) - a.get("rank_ic_20d", np.nan))

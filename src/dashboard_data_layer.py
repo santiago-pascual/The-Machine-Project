@@ -120,7 +120,6 @@ CSV_FILES: dict[str, str] = {
     "phase111_report": "phase111_research_terminal_report.txt",
     "growth_paper_governance_history": "growth_paper_governance_history.csv",
     "canonical_price_history": "canonical_price_history.csv",
-    "garch_model_comparison": "garch_model_comparison.csv",
     "quant_lab_source_audit": "quant_lab_source_audit.csv",
     "quant_lab_surface_integrity": "quant_lab_surface_integrity.csv",
     "quant_lab_performance_audit": "quant_lab_performance_audit.csv",
@@ -243,7 +242,7 @@ def load_csv(path: str) -> tuple[pd.DataFrame, dict[str, Any]]:
             meta["start_date"] = str(dates.min().date()) if dates.notna().any() else ""
             meta["end_date"] = str(dates.max().date()) if dates.notna().any() else ""
         return df, meta
-    except Exception as exc:  # noqa: BLE001
+    except Exception as exc:
         meta["error"] = str(exc)
         return pd.DataFrame(), meta
 
@@ -522,10 +521,8 @@ def benchmark_curve_for_scope(data: dict[str, pd.DataFrame], scope: str) -> pd.D
         "growth_estimated_net_return": "Growth Estimated Net",
         "spy_daily_return": "SPY",
         "SPY_return": "SPY",
-        "spy_daily_return": "SPY",
         "qqq_daily_return": "QQQ",
         "QQQ_return": "QQQ",
-        "qqq_daily_return": "QQQ",
     }
     for raw, label in daily_map.items():
         if raw in daily.columns and label not in out.columns:

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import itertools
 from pathlib import Path
 
 import numpy as np
@@ -215,7 +216,7 @@ def bai_perron_style_breaks(values: np.ndarray, max_breaks: int = 2) -> tuple[li
     def rss_for(cuts: list[int]) -> float:
         pts = [0] + cuts + [n]
         rss = 0.0
-        for a, b in zip(pts[:-1], pts[1:]):
+        for a, b in itertools.pairwise(pts):
             seg = y[a:b]
             if len(seg) == 0:
                 continue

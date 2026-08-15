@@ -319,10 +319,9 @@ def governance(results: pd.DataFrame, stability: pd.DataFrame, data_mode: str, e
                 reason = (
                     f"{best_variant} passes paired median Sharpe/DD/turnover gates on reconstructed OOS folds; shadow-only review required"
                 )
-    if data_mode != "canonical_exact" or exact_rows < 250:
-        if cls in {"incremental_candidate", "eligible_for_shadow"}:
-            cls = "incremental_candidate"
-            reason += "; exact canonical live history is too short, so no paper/production promotion"
+    if (data_mode != "canonical_exact" or exact_rows < 250) and cls in {"incremental_candidate", "eligible_for_shadow"}:
+        cls = "incremental_candidate"
+        reason += "; exact canonical live history is too short, so no paper/production promotion"
     return pd.DataFrame(
         [
             {

@@ -58,16 +58,7 @@ def _count_mode_columns(df: pd.DataFrame) -> int:
     mode_like = [
         col
         for col in df.columns
-        if col
-        in {
-            "baseline",
-            "full_quant_research",
-            "regime_gated_full_quant",
-            "ema",
-            "trend_persistence",
-        }
-        or col.endswith("_sharpe")
-        or col.endswith("_return")
+        if col in {"baseline", "full_quant_research", "regime_gated_full_quant", "ema", "trend_persistence"} or col.endswith(("_sharpe", "_return"))
     ]
     return max(1, len(set(mode_like)))
 

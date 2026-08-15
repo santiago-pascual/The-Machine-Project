@@ -219,11 +219,11 @@ def _parameter(st, bundle) -> None:
                     y=[row.get("target_vol")],
                     z=[row.get(metric)],
                     mode="markers",
-                    marker=dict(size=8, color=RED),
+                    marker={"size": 8, "color": RED},
                     name="active config",
                 )
             )
-        fig.update_layout(scene=dict(xaxis_title="Exposure cap", yaxis_title="Target vol", zaxis_title=metric))
+        fig.update_layout(scene={"xaxis_title": "Exposure cap", "yaxis_title": "Target vol", "zaxis_title": metric})
         st.plotly_chart(apply_plotly_layout(fig, "Parameter robustness surface"), width="stretch")
     heat_cols = ["min_exposure", "vol_lookback_days", "dual_trend_caps", "Sharpe"]
     _safe_df(
@@ -291,7 +291,7 @@ def _registry_lifecycle(st, bundle) -> None:
                 mode="lines+markers+text",
                 text=stages,
                 textposition="top center",
-                marker=dict(size=16, color=RESEARCH_COLORS[: len(stages)]),
+                marker={"size": 16, "color": RESEARCH_COLORS[: len(stages)]},
             )
         )
         fig.update_yaxes(visible=False)

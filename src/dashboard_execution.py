@@ -209,7 +209,7 @@ def _gross_vs_net(st, equity: pd.DataFrame) -> None:
                 y=equity["gross_equity_display"],
                 mode="lines+markers",
                 name="Gross equity",
-                line=dict(color=CHART_COLORS["growth"]),
+                line={"color": CHART_COLORS["growth"]},
             )
         )
     if "estimated_net_equity_display" in equity.columns:
@@ -219,7 +219,7 @@ def _gross_vs_net(st, equity: pd.DataFrame) -> None:
                 y=equity["estimated_net_equity_display"],
                 mode="lines+markers",
                 name="Estimated net equity",
-                line=dict(color=CHART_COLORS["growth_net"]),
+                line={"color": CHART_COLORS["growth_net"]},
             )
         )
     if "cumulative_cost_drag" in equity.columns:
@@ -233,7 +233,7 @@ def _gross_vs_net(st, equity: pd.DataFrame) -> None:
                 opacity=0.35,
             )
         )
-        fig.update_layout(yaxis2=dict(overlaying="y", side="right", title="Cost drag"))
+        fig.update_layout(yaxis2={"overlaying": "y", "side": "right", "title": "Cost drag"})
     st.plotly_chart(apply_plotly_layout(fig, "Official gross vs estimated net equity"), width="stretch")
     _safe_df(
         st, equity, ["date", "gross_equity_display", "estimated_net_equity_display", "cumulative_cost_drag", "estimated_execution_cost"]

@@ -170,7 +170,7 @@ def build_execution_lag_audit(perf: pd.DataFrame, actions: pd.DataFrame) -> pd.D
 
 
 def build_cost_duplication_audit(perf: pd.DataFrame, actions: pd.DataFrame, trades: pd.DataFrame, costs: pd.DataFrame) -> pd.DataFrame:
-    dates = sorted(set(pd.to_datetime(df.get("date", pd.Series(dtype=str)), errors="coerce").dropna().dt.normalize().tolist() for df in []))
+    dates = sorted({pd.to_datetime(df.get("date", pd.Series(dtype=str)), errors="coerce").dropna().dt.normalize().tolist() for df in []})
     all_dates = set()
     for df in [perf, actions, trades, costs]:
         if not df.empty and "date" in df.columns:

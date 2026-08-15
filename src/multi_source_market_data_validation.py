@@ -140,7 +140,7 @@ def url_read(url: str, timeout: int, retries: int) -> tuple[str, str]:
             req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
             with urllib.request.urlopen(req, timeout=timeout) as resp:
                 return resp.read().decode("utf-8", errors="replace"), "ok"
-        except Exception as exc:  # noqa: BLE001
+        except Exception as exc:
             last_err = str(exc)
             if attempt < retries:
                 time.sleep(min(2**attempt, 5))
@@ -370,8 +370,8 @@ def validate_ticker(
         latest["date_mismatch_gt_1_session"] = False
         latest["corporate_action_unresolved"] = False
         latest["classification"] = "primary_data_blocked" if yahoo_stale else "single_source_warning"
-        latest["paper_may_continue"] = False if yahoo_stale else True
-        latest["block_new_rebalance"] = True if yahoo_stale else False
+        latest["paper_may_continue"] = not yahoo_stale
+        latest["block_new_rebalance"] = bool(yahoo_stale)
         latest["real_capital_blocked"] = True
         latest["reason"] = np.where(
             yahoo_stale,

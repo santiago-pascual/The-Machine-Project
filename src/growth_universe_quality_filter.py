@@ -75,7 +75,7 @@ def _is_suspicious_symbol(ticker: str) -> bool:
         return True
     # Compact warrant/unit/right symbols are usually longer suffix variants; keep this
     # narrow so ordinary 3-5 letter equity symbols are not falsely excluded.
-    return len(t) >= 6 and (t.endswith("WS") or t.endswith("WT"))
+    return len(t) >= 6 and (t.endswith(("WS", "WT")))
 
 
 def ensure_blacklist() -> pd.DataFrame:

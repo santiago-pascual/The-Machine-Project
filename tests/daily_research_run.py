@@ -127,7 +127,7 @@ def _official_market_data_gate(expected_date: pd.Timestamp | pd.NaT) -> dict[str
     try:
         refresh = refresh_tickers(tickers, expected_date)
         print(f"canonical refresh attempted rows: {len(refresh)}")
-    except Exception as exc:  # noqa: BLE001
+    except Exception as exc:
         print(f"canonical refresh failed: {exc}")
     integrity, gov = validate_freshness(expected_date, tickers)
     row = (
@@ -222,19 +222,7 @@ def build_daily_env(args: argparse.Namespace) -> dict[str, str]:
             ),
             "WALK_FORWARD_CALIBRATED_FORECASTS_FILE": args.walk_forward_calibrated_forecasts_file,
             "COMPACT_REPORT_MODE": "1",
-            "REPORT_SECTIONS_TO_SHOW": ",".join(
-                [
-                    "MODEL_MODE",
-                    "CALIBRATED_FORECAST_RESEARCH",
-                    "RAW_TARGET_RESEARCH",
-                    "FINAL_ALLOCATION",
-                    "ACTION_SIGNALS",
-                    "PAPER_META_FILTER",
-                    "PAPER_TRADING",
-                    "FORECAST_CALIBRATION",
-                    "INFORMATION_COEFFICIENT",
-                ]
-            ),
+            "REPORT_SECTIONS_TO_SHOW": "MODEL_MODE,CALIBRATED_FORECAST_RESEARCH,RAW_TARGET_RESEARCH,FINAL_ALLOCATION,ACTION_SIGNALS,PAPER_META_FILTER,PAPER_TRADING,FORECAST_CALIBRATION,INFORMATION_COEFFICIENT",
         }
     )
     return env

@@ -214,7 +214,7 @@ def _system_map_resources_checklist(st, bundle: dict[str, Any]) -> None:
                 x=x,
                 y=[0] * len(nodes),
                 mode="markers+text",
-                marker=dict(size=34, color=colors),
+                marker={"size": 34, "color": colors},
                 text=nodes,
                 textposition="bottom center",
                 hovertext=grid["status"].astype(str),
@@ -222,7 +222,7 @@ def _system_map_resources_checklist(st, bundle: dict[str, Any]) -> None:
             )
         )
         for i in range(len(nodes) - 1):
-            fig.add_shape(type="line", x0=i, y0=0, x1=i + 1, y1=0, line=dict(color="rgba(255,138,42,0.35)", width=2))
+            fig.add_shape(type="line", x0=i, y0=0, x1=i + 1, y1=0, line={"color": "rgba(255,138,42,0.35)", "width": 2})
         fig.update_yaxes(visible=False)
         fig.update_xaxes(visible=False)
         _plot(st, fig, 260, "System Dependency Map")

@@ -160,9 +160,8 @@ def _governed_pbo_proxy(df: pd.DataFrame, *, total_trials: int, sample_size: int
     trial_penalty = min(0.15, log(max(1, total_trials)) / 20.0)
     sample_penalty = 0.05 if sample_size >= 150 else 0.25
     consistency_penalty = 0.0
-    if {"TP_rate", "SL_rate"}.issubset(df.columns):
-        if bool((df["TP_rate"] < df["SL_rate"]).fillna(False).any()):
-            consistency_penalty += 0.20
+    if {"TP_rate", "SL_rate"}.issubset(df.columns) and bool((df["TP_rate"] < df["SL_rate"]).fillna(False).any()):
+        consistency_penalty += 0.20
     if "Sharpe" in df.columns and df["Sharpe"].dropna().std() > 0.75:
         consistency_penalty += 0.10
     return float(np.clip(0.10 + trial_penalty + sample_penalty + consistency_penalty, 0.0, 1.0))

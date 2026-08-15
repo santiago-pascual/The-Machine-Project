@@ -52,7 +52,7 @@ def _row(df: pd.DataFrame) -> pd.Series:
 
 def _source_warning(st, data: dict[str, pd.DataFrame]) -> list[str]:
     missing = []
-    for key, filename in OFFICIAL_SOURCES.items():
+    for key in OFFICIAL_SOURCES:
         if data.get(f"official_{key}", pd.DataFrame()).empty and key not in data:
             pass
     explicit = {

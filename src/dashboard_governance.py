@@ -115,7 +115,7 @@ def _lifecycle_version(st, bundle) -> None:
                 mode="lines+markers+text",
                 text=life["stage"],
                 textposition="top center",
-                marker=dict(size=[22 if x else 14 for x in life["current"]], color=[ORANGE if x else "#6B7280" for x in life["current"]]),
+                marker={"size": [22 if x else 14 for x in life["current"]], "color": [ORANGE if x else "#6B7280" for x in life["current"]]},
             )
         )
         fig.update_yaxes(visible=False)
@@ -131,7 +131,7 @@ def _pipeline(st, bundle) -> None:
     if not pipe.empty:
         fig = go.Figure()
         xs = list(range(len(pipe)))
-        fig.add_trace(go.Scatter(x=xs, y=[1] * len(pipe), mode="lines", line=dict(color="rgba(255,122,0,.35)", width=3), showlegend=False))
+        fig.add_trace(go.Scatter(x=xs, y=[1] * len(pipe), mode="lines", line={"color": "rgba(255,122,0,.35)", "width": 3}, showlegend=False))
         fig.add_trace(
             go.Scatter(
                 x=xs,
@@ -139,7 +139,7 @@ def _pipeline(st, bundle) -> None:
                 mode="markers+text",
                 text=pipe["node"],
                 textposition="top center",
-                marker=dict(size=22, color=[STATUS_COLORS.get(s, "#6B7280") for s in pipe["status"]]),
+                marker={"size": 22, "color": [STATUS_COLORS.get(s, "#6B7280") for s in pipe["status"]]},
                 showlegend=False,
             )
         )

@@ -88,7 +88,7 @@ def _source_rows(data: dict[str, pd.DataFrame]) -> pd.DataFrame:
                 "loaded": not df.empty,
                 "row_count": len(df),
                 "latest_date": _safe_date(df),
-                "scope": "official" if key.startswith("official") or key.startswith("current") or key == "vol_fresh" else "diagnostic",
+                "scope": "official" if key.startswith(("official", "current")) or key == "vol_fresh" else "diagnostic",
                 "active_model_impact": "active"
                 if key in {"official_state", "current_features", "current_raw_target_features", "vol_fresh"}
                 else "diagnostic only",

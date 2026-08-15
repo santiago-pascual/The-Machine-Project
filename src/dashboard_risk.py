@@ -153,7 +153,7 @@ def _surface(st, matrix: pd.DataFrame, title: str) -> None:
     fig = go.Figure(
         data=[go.Surface(z=matrix.values, x=list(range(len(matrix.columns))), y=list(range(len(matrix.index))), colorscale="Oranges")]
     )
-    fig.update_layout(scene=dict(xaxis_title="Asset", yaxis_title="Asset", zaxis_title="Value"))
+    fig.update_layout(scene={"xaxis_title": "Asset", "yaxis_title": "Asset", "zaxis_title": "Value"})
     st.plotly_chart(apply_plotly_layout(fig, title), width="stretch")
 
 
@@ -180,7 +180,7 @@ def _network_graph(st, corr: pd.DataFrame, contrib: pd.DataFrame) -> None:
                     x=[x0, x1],
                     y=[y0, y1],
                     mode="lines",
-                    line=dict(width=max(1, abs(val) * 7), color=f"rgba(255,132,44,{0.15 + abs(val) * 0.55})"),
+                    line={"width": max(1, abs(val) * 7), "color": f"rgba(255,132,44,{0.15 + abs(val) * 0.55})"},
                     hoverinfo="text",
                     text=f"{a}-{b}: corr {val:.2f}",
                     showlegend=False,
@@ -193,11 +193,11 @@ def _network_graph(st, corr: pd.DataFrame, contrib: pd.DataFrame) -> None:
             mode="markers+text",
             text=tickers,
             textposition="top center",
-            marker=dict(
-                size=[18 + 45 * float(risk_map.get(t, 0.05)) for t in tickers],
-                color=CHART_COLORS["growth"],
-                line=dict(color="#ffd29a", width=1),
-            ),
+            marker={
+                "size": [18 + 45 * float(risk_map.get(t, 0.05)) for t in tickers],
+                "color": CHART_COLORS["growth"],
+                "line": {"color": "#ffd29a", "width": 1},
+            },
             showlegend=False,
         )
     )

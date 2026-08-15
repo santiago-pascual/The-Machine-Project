@@ -60,11 +60,11 @@ def latest_date(df: pd.DataFrame) -> str:
 
 
 def namespace_for_file(path: str) -> str:
-    if path.startswith("growth_official_") or path.startswith("official_"):
+    if path.startswith(("growth_official_", "official_")):
         return "official_forward"
-    if path.startswith("growth_candidate_") or path.startswith("growth_paper_") or path.startswith("paper_"):
+    if path.startswith(("growth_candidate_", "growth_paper_", "paper_")):
         return "historical_debug"
-    if path.startswith("reconstructed_") or path.startswith("growth_final_"):
+    if path.startswith(("reconstructed_", "growth_final_")):
         return "reconstructed_stress"
     return "unknown"
 

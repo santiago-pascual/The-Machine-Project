@@ -308,7 +308,7 @@ def run_feature_selection_engine(config: FeatureSelectionConfig | None = None) -
         report["base_feature_score"] - report["redundancy_penalty"] - report["meta_degradation_penalty"] - report["structural_penalty"]
     ).clip(0.0, 1.0)
 
-    sample_columns = [c for c in report.columns if c.endswith("sample_size") or c.endswith("sample_rows")]
+    sample_columns = [c for c in report.columns if c.endswith(("sample_size", "sample_rows"))]
     report["max_sample_size"] = report[sample_columns].max(axis=1) if sample_columns else 0
     classifications = report.apply(lambda row: _classify(row, config), axis=1)
     report["classification"] = [item[0] for item in classifications]
