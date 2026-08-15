@@ -10,8 +10,14 @@ import numpy as np
 import pandas as pd
 
 from dashboard_alert_engine import build_alert_engine
-from dashboard_data_layer import MODEL_NAME, MODEL_VERSION, VARIANT, CSV_FILES, latest, latest_market_date, next_rebalance_date, numeric
-from dashboard_report_assets import fmt_money, fmt_num, fmt_pct, fmt_pct_points
+from dashboard_data_layer import (
+    CSV_FILES,
+    latest,
+    latest_market_date,
+    next_rebalance_date,
+    numeric,
+)
+from dashboard_report_assets import fmt_money, fmt_pct, fmt_pct_points
 
 
 @dataclass

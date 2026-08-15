@@ -10,11 +10,9 @@ from anti_overfitting_framework import (
     _best_observed_sharpe,
     _return_distribution_stats,
     _robustness_score,
-    _top_config_isolated,
     deflated_sharpe_diagnostic,
     pbo_approximation,
 )
-
 
 DASHBOARD_SUMMARY_FILE = "research_dashboard_summary.csv"
 DASHBOARD_REPORT_FILE = "research_dashboard_report.txt"

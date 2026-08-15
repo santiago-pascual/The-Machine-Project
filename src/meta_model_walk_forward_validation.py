@@ -7,12 +7,16 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-
 try:
     from sklearn.ensemble import GradientBoostingClassifier
     from sklearn.isotonic import IsotonicRegression
     from sklearn.linear_model import LogisticRegression
-    from sklearn.metrics import brier_score_loss, precision_score, recall_score, roc_auc_score
+    from sklearn.metrics import (
+        brier_score_loss,
+        precision_score,
+        recall_score,
+        roc_auc_score,
+    )
     from sklearn.preprocessing import StandardScaler
 
     SKLEARN_AVAILABLE = True
@@ -137,7 +141,7 @@ def _risk_metrics(returns: pd.Series, labels: pd.Series) -> dict[str, float]:
     max_dd = float((equity / equity.cummax() - 1.0).min()) if len(equity) else 0.0
     ann = np.sqrt(252 / 20)
     return {
-        "trades": int(len(returns)),
+        "trades": len(returns),
         "average_return": mean_ret,
         "Sharpe": float(mean_ret / std_ret * ann) if std_ret > 0 else 0.0,
         "Sortino": float(mean_ret / downside_std * ann) if downside_std > 0 else 0.0,
@@ -257,9 +261,9 @@ def run_meta_model_walk_forward_validation(config: WalkForwardMetaConfig | None 
                 "calibration_end": cal["date"].max(),
                 "test_start": test["date"].min(),
                 "test_end": test["date"].max(),
-                "train_size": int(len(train)),
-                "calibration_size": int(len(cal)),
-                "test_size": int(len(test)),
+                "train_size": len(train),
+                "calibration_size": len(cal),
+                "test_size": len(test),
                 "features": ", ".join(features),
                 "no_lookahead": True,
             }

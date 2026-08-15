@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-import os
 import builtins
-from contextlib import contextmanager, nullcontext, redirect_stderr, redirect_stdout
 import io
+import os
 import sys
+from collections.abc import Iterable
+from contextlib import contextmanager, nullcontext, redirect_stderr, redirect_stdout
 from datetime import datetime, timedelta
-from typing import Iterable
 
 import numpy as np
 import pandas as pd
@@ -21,15 +21,25 @@ from calibrated_forecast_research import (
     apply_walk_forward_calibrated_forecasts,
     print_calibrated_forecast_research_report,
 )
-from covariance_estimation import calculate_covariance, covariance_method_metadata, print_covariance_diagnostics
-from ema_timing_model import apply_timing_to_expected_returns, compute_asset_timing, compute_spy_ema_regime
+from covariance_estimation import (
+    calculate_covariance,
+    covariance_method_metadata,
+    print_covariance_diagnostics,
+)
+from ema_timing_model import (
+    apply_timing_to_expected_returns,
+    compute_asset_timing,
+    compute_spy_ema_regime,
+)
 from expected_returns_model import compute_expected_returns
 from exposure_control import compute_net_exposure
 from factor_attribution import print_factor_attribution
 from forecast_calibration import save_and_evaluate_forecasts
-from full_quant_regime_gate import average_entropy_from_diagnostics, average_trend_score, evaluate_full_quant_regime_gate
-from heuristic_calibration_diagnostics import print_heuristic_calibration_diagnostics
+from full_quant_regime_gate import (
+    evaluate_full_quant_regime_gate,
+)
 from heuristic_audit import print_heuristic_audit_report
+from heuristic_calibration_diagnostics import print_heuristic_calibration_diagnostics
 from information_coefficient import print_information_coefficient_report
 from market_regime_model import compute_market_regime_model
 from portfolio_optimizer import PortfolioOptimizer
@@ -40,7 +50,6 @@ from trend_persistence_engine import (
     build_ema_trend_persistence_comparison,
     compute_trend_persistence,
 )
-
 
 lookback_days = 252
 
@@ -1454,7 +1463,10 @@ def main() -> None:
     try:
         prices_df = download_close_prices(tickers=tickers, period=period, days=days)
         if should_run_walk_forward_backtest:
-            from walk_forward_backtester import WalkForwardConfig, run_walk_forward_backtest
+            from walk_forward_backtester import (
+                WalkForwardConfig,
+                run_walk_forward_backtest,
+            )
 
             run_walk_forward_backtest(
                 prices_df,
@@ -1467,17 +1479,23 @@ def main() -> None:
             generate_triple_barrier_labels(prices_df=prices_df)
             return
         if run_triple_barrier_feature_validation_flag:
-            from triple_barrier_feature_validation import run_triple_barrier_feature_validation
+            from triple_barrier_feature_validation import (
+                run_triple_barrier_feature_validation,
+            )
 
             run_triple_barrier_feature_validation()
             return
         if run_regime_performance_attribution_flag:
-            from regime_performance_attribution import run_regime_performance_attribution
+            from regime_performance_attribution import (
+                run_regime_performance_attribution,
+            )
 
             run_regime_performance_attribution()
             return
         if run_barrier_parameter_optimization_flag:
-            from barrier_parameter_optimization import run_barrier_parameter_optimization
+            from barrier_parameter_optimization import (
+                run_barrier_parameter_optimization,
+            )
 
             run_barrier_parameter_optimization(prices_df=prices_df)
             return
@@ -1497,7 +1515,9 @@ def main() -> None:
             run_research_governance_report()
             return
         if run_research_dashboard:
-            from research_dashboard import run_research_dashboard as _run_research_dashboard
+            from research_dashboard import (
+                run_research_dashboard as _run_research_dashboard,
+            )
 
             _run_research_dashboard(compact=compact_report_mode)
             return
@@ -1522,7 +1542,9 @@ def main() -> None:
             run_paper_trading_monitor()
             return
         if run_model_mode_comparison:
-            from model_mode_comparison import run_model_mode_comparison as _run_model_mode_comparison
+            from model_mode_comparison import (
+                run_model_mode_comparison as _run_model_mode_comparison,
+            )
 
             _run_model_mode_comparison(prices_df=prices_df)
             return
@@ -1903,7 +1925,7 @@ def main() -> None:
         calibrated_forecast_report = pd.DataFrame()
         calibrated_forecast_metadata: dict[str, object] = {
             "calibrated_forecasts_used": 0,
-            "fallback_original_forecasts": int(len(expected_daily_returns)),
+            "fallback_original_forecasts": len(expected_daily_returns),
             "calibrated_confidence_used": 0,
             "average_calibration_adjustment": 0.0,
             "failure_reason": "disabled",

@@ -6,7 +6,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-
 OUTPUT_COEFFICIENTS = "forecast_calibration_coefficients.csv"
 OUTPUT_DIAGNOSTICS = "calibrated_forecast_diagnostics.csv"
 OUTPUT_CONFIDENCE = "calibrated_confidence_diagnostics.csv"
@@ -79,7 +78,7 @@ def _prepare_base(config: ForecastCalibrationConfig) -> pd.DataFrame:
 def _fit_linear_calibration(frame: pd.DataFrame, forecast_col: str, realized_col: str) -> dict[str, float]:
     data = frame[[forecast_col, realized_col]].apply(pd.to_numeric, errors="coerce").replace([np.inf, -np.inf], np.nan).dropna()
     if len(data) < 20 or data[forecast_col].nunique() < 2:
-        return {"alpha": 0.0, "beta": 1.0, "r2": 0.0, "sample_size": int(len(data))}
+        return {"alpha": 0.0, "beta": 1.0, "r2": 0.0, "sample_size": len(data)}
     x = data[forecast_col].to_numpy(dtype=float)
     y = data[realized_col].to_numpy(dtype=float)
     x_mean = float(x.mean())
@@ -90,7 +89,7 @@ def _fit_linear_calibration(frame: pd.DataFrame, forecast_col: str, realized_col
     ss_res = float(np.sum(np.square(y - pred)))
     ss_tot = float(np.sum(np.square(y - y_mean)))
     r2 = 1.0 - ss_res / ss_tot if ss_tot > 1e-12 else 0.0
-    return {"alpha": alpha, "beta": beta, "r2": float(r2), "sample_size": int(len(data))}
+    return {"alpha": alpha, "beta": beta, "r2": float(r2), "sample_size": len(data)}
 
 
 def _error_metrics(forecast: pd.Series, realized: pd.Series) -> dict[str, float]:
@@ -241,7 +240,7 @@ def _confidence_diagnostics(calibrated: pd.DataFrame, config: ForecastCalibratio
                 {
                     "horizon": f"{horizon}D",
                     "confidence_bucket": str(bucket),
-                    "sample_size": int(len(group)),
+                    "sample_size": len(group),
                     "avg_confidence": float(group["calibrated_target_confidence"].mean()),
                     "avg_abs_error": float(group["abs_error"].mean(skipna=True)),
                     "success_rate": float(group["success"].mean(skipna=True)),

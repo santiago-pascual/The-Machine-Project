@@ -1,18 +1,23 @@
 from __future__ import annotations
 
+from collections.abc import Iterable
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Iterable
 
 import numpy as np
 import pandas as pd
 
-
 try:
     from sklearn.ensemble import GradientBoostingClassifier, RandomForestClassifier
-    from sklearn.linear_model import LogisticRegression
-    from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score, roc_auc_score
     from sklearn.feature_selection import mutual_info_classif
+    from sklearn.linear_model import LogisticRegression
+    from sklearn.metrics import (
+        accuracy_score,
+        f1_score,
+        precision_score,
+        recall_score,
+        roc_auc_score,
+    )
     from sklearn.preprocessing import StandardScaler
 
     SKLEARN_AVAILABLE = True
@@ -379,8 +384,8 @@ def train_meta_model_benchmark(dataset: pd.DataFrame, config: MetaLabelingConfig
                     "test_recall": metrics["recall"],
                     "test_f1": metrics["f1"],
                     "test_roc_auc": metrics["roc_auc"],
-                    "train_size": int(len(y_train)),
-                    "test_size": int(len(y_test)),
+                    "train_size": len(y_train),
+                    "test_size": len(y_test),
                     "status": "ok_numpy_fallback",
                 },
                 {
@@ -434,8 +439,8 @@ def train_meta_model_benchmark(dataset: pd.DataFrame, config: MetaLabelingConfig
                     "model": name,
                     **{f"train_{k}": v for k, v in train_metrics.items()},
                     **{f"test_{k}": v for k, v in test_metrics.items()},
-                    "train_size": int(len(y_train)),
-                    "test_size": int(len(y_test)),
+                    "train_size": len(y_train),
+                    "test_size": len(y_test),
                     "status": "ok",
                 }
             )
@@ -480,7 +485,7 @@ def _performance_metrics(returns: pd.Series, labels: pd.Series | None = None) ->
     calmar = mean_ret * (252 / 20) / abs(max_dd) if max_dd < 0 else 0.0
     label_series = pd.to_numeric(labels, errors="coerce") if labels is not None else pd.Series(dtype=float)
     return {
-        "sample_size": int(len(returns)),
+        "sample_size": len(returns),
         "average_return": mean_ret,
         "Sharpe": float(sharpe),
         "Sortino": float(sortino),

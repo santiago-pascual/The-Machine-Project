@@ -2,16 +2,12 @@ from __future__ import annotations
 
 import importlib.util
 import sys
-from pathlib import Path
-from typing import Any
 
 import numpy as np
 import pandas as pd
 
-from dashboard_mission_control import render_mission_control
 from dashboard_alert_engine import render_alert_center
-from dashboard_notifications import render_live_status_bar
-from dashboard_quant_lab import render_quant_lab
+from dashboard_alpha_attribution import render_alpha_attribution
 from dashboard_components import (
     action_counts,
     bar_chart,
@@ -27,16 +23,6 @@ from dashboard_components import (
     monthly_return_table,
     source_caption,
 )
-from dashboard_executive import build_executive_audits, render_executive_terminal
-from dashboard_execution import render_execution_terminal
-from dashboard_governance import render_governance_terminal
-from dashboard_historical_replay import render_historical_replay
-from dashboard_portfolio import build_portfolio_terminal_audits, render_portfolio_terminal
-from dashboard_risk import render_risk_terminal
-from dashboard_research import render_research_terminal
-from dashboard_report_generator import render_report_generator
-from dashboard_alpha_attribution import render_alpha_attribution
-from dashboard_decision_engine import render_decision_engine
 from dashboard_data_layer import (
     MODEL_NAME,
     MODEL_VERSION,
@@ -47,15 +33,31 @@ from dashboard_data_layer import (
     get_scope_namespace,
     latest,
     latest_market_date,
-    next_rebalance_date,
     load_all,
+    next_rebalance_date,
     numeric,
     official_start_date,
     read_price_cache,
     scope_data,
 )
-from dashboard_theme import CSS, apply_plotly_layout
-from dashboard_layout import hero as layout_hero, page_header as layout_page_header, sidebar as layout_sidebar
+from dashboard_decision_engine import render_decision_engine
+from dashboard_execution import render_execution_terminal
+from dashboard_executive import render_executive_terminal
+from dashboard_governance import render_governance_terminal
+from dashboard_historical_replay import render_historical_replay
+from dashboard_layout import hero as layout_hero
+from dashboard_layout import page_header as layout_page_header
+from dashboard_layout import sidebar as layout_sidebar
+from dashboard_mission_control import render_mission_control
+from dashboard_notifications import render_live_status_bar
+from dashboard_portfolio import (
+    render_portfolio_terminal,
+)
+from dashboard_quant_lab import render_quant_lab
+from dashboard_report_generator import render_report_generator
+from dashboard_research import render_research_terminal
+from dashboard_risk import render_risk_terminal
+from dashboard_theme import CSS
 
 
 def has_module(name: str) -> bool:
@@ -431,9 +433,7 @@ def fallback_cli() -> None:
 
 
 def main() -> None:
-    if has_module("streamlit") and any("streamlit" in arg.lower() for arg in sys.argv):
-        render_streamlit()
-    elif has_module("streamlit"):
+    if has_module("streamlit") and any("streamlit" in arg.lower() for arg in sys.argv) or has_module("streamlit"):
         render_streamlit()
     else:
         fallback_cli()

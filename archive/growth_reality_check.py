@@ -5,7 +5,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-
 DAILY_FILE = "production_parity_growth_daily_returns.csv"
 TRADES_FILE = "production_parity_growth_trades.csv"
 RESULTS_FILE = "production_parity_growth_results.csv"
@@ -79,7 +78,7 @@ def _metrics(name: str, daily: pd.DataFrame, return_col: str = "return") -> dict
         "candidate": name,
         "start_date": data["date"].min().date().isoformat(),
         "end_date": data["date"].max().date().isoformat(),
-        "observations": int(len(r)),
+        "observations": len(r),
         "total_return": total,
         "CAGR": cagr,
         "volatility": vol,
@@ -220,7 +219,7 @@ def _liquidity_audit() -> pd.DataFrame:
         max_weight = float(_num(group["weight"]).max())
         row = {
             "ticker": ticker,
-            "trade_count": int(len(group)),
+            "trade_count": len(group),
             "avg_weight": avg_weight,
             "max_weight": max_weight,
             "average_daily_dollar_volume": np.nan,

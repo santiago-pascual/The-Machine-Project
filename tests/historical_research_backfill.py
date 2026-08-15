@@ -5,7 +5,6 @@ import io
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Iterable
 
 import numpy as np
 import pandas as pd
@@ -14,8 +13,11 @@ import yfinance as yf
 from risk_metrics import compute_return_risk_metrics
 from trend_vs_ema_backtest import _temporary_disable_proxies
 from triple_barrier_labeling import generate_triple_barrier_labels
-from walk_forward_backtester import DEFAULT_REDUCED_UNIVERSE, WalkForwardConfig, run_walk_forward_backtest
-
+from walk_forward_backtester import (
+    DEFAULT_REDUCED_UNIVERSE,
+    WalkForwardConfig,
+    run_walk_forward_backtest,
+)
 
 OUTPUTS = {
     "feature_store": "historical_feature_store.csv",
@@ -99,7 +101,10 @@ def _download_prices(config: HistoricalBackfillConfig) -> pd.DataFrame:
         tickers = DEFAULT_REDUCED_UNIVERSE
     else:
         try:
-            from financial_data_system import NASDAQ_DEFAULT_LIMIT, build_trading_universe
+            from financial_data_system import (
+                NASDAQ_DEFAULT_LIMIT,
+                build_trading_universe,
+            )
 
             tickers = build_trading_universe(include_full_nasdaq=True, nasdaq_limit=NASDAQ_DEFAULT_LIMIT)
         except Exception as exc:
@@ -265,7 +270,7 @@ def _metrics_for_mode(portfolio: pd.DataFrame, labels: pd.DataFrame, mode: str) 
     valid = pd.concat([expected, pd.to_numeric(subset.get("realized_portfolio_return_5d", pd.Series(dtype=float)), errors="coerce")], axis=1).dropna()
     return {
         "model_mode": mode,
-        "sample_size": int(len(subset)),
+        "sample_size": len(subset),
         "realized_return": float((1.0 + returns).prod() - 1.0) if not returns.empty else np.nan,
         "volatility": float(risk["annualized_volatility"]),
         "Sharpe": float(risk["annualized_return_estimate"] / risk["annualized_volatility"]) if risk["annualized_volatility"] > 0 else 0.0,
@@ -320,9 +325,9 @@ def _summary_report(
             "number_of_decision_dates": int(snapshots["date"].nunique()) if not snapshots.empty else 0,
             "number_of_tickers": int(snapshots["ticker"].nunique()) if not snapshots.empty else 0,
             "model_modes_processed": ", ".join(config.model_modes),
-            "total_prediction_rows": int(len(snapshots)),
-            "total_selected_rows": int(len(selected_rows)),
-            "selected_only_sample_size": int(len(selected_rows)),
+            "total_prediction_rows": len(snapshots),
+            "total_selected_rows": len(selected_rows),
+            "selected_only_sample_size": len(selected_rows),
             "sample_gte_150": bool(len(selected_rows) >= 150),
             "sample_gte_500": bool(len(selected_rows) >= 500),
             "sample_gte_1000": bool(len(selected_rows) >= 1000),

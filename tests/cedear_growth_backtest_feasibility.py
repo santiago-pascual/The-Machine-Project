@@ -3,12 +3,11 @@ from __future__ import annotations
 import argparse
 import ast
 import re
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Iterable
 
 import numpy as np
 import pandas as pd
-
 
 CEDEAR_UNIVERSE_FILE = "cedear_universe.csv"
 MODEL_MAP_FILE = "model_ticker_to_cedear_map.csv"
@@ -582,8 +581,8 @@ def _cedear_filtered_candidate_metrics(candidate: pd.DataFrame, model_map: pd.Da
         "status": "cedear_post_selection_filtered_not_reoptimized",
         "start_date": candidate["date"].min().strftime("%Y-%m-%d"),
         "end_date": candidate["date"].max().strftime("%Y-%m-%d"),
-        "observations": int(len(candidate)),
-        "cedear_available_tickers": int(len(cedear_tickers)),
+        "observations": len(candidate),
+        "cedear_available_tickers": len(cedear_tickers),
         "average_cedear_selected_count": float(np.mean(selected_counts)) if selected_counts else 0.0,
         "average_cash": float(np.mean(cash_values)) if cash_values else 1.0,
         "realized_return_observations_used": int(coverage_hits),
@@ -613,7 +612,7 @@ def run_extended_backtest_if_feasible(feasibility: pd.DataFrame, model_map: pd.D
             metrics = _metrics_from_returns(_num(candidate[ret_col]))
             start = candidate["date"].min().strftime("%Y-%m-%d")
             end = candidate["date"].max().strftime("%Y-%m-%d")
-            base_row = {**{"model": "growth_champion_v2", "status": "reference_only_existing_non_cedear_filtered_series", "start_date": start, "end_date": end, "observations": len(candidate)}, **metrics}
+            base_row = {"model": "growth_champion_v2", "status": "reference_only_existing_non_cedear_filtered_series", "start_date": start, "end_date": end, "observations": len(candidate), **metrics}
             result_rows = [base_row]
             if model_map is not None:
                 filtered_row = _cedear_filtered_candidate_metrics(candidate, model_map)

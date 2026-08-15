@@ -8,10 +8,8 @@ import numpy as np
 import pandas as pd
 
 from canonical_market_data_manager import get_price_history
-
-from growth_universe_quality_filter import apply_growth_universe_quality_filter
 from final_selected_holdings_sanity_check import audit_and_filter_selected_holdings
-
+from growth_universe_quality_filter import apply_growth_universe_quality_filter
 
 FORECAST_HISTORY_FILE = "forecast_history.csv"
 GROWTH_DAILY_FILE = "growth_volatility_targeting_daily_returns.csv"
@@ -647,7 +645,7 @@ def generate_current_growth_features(overwrite_same_day: bool = True, allow_stal
         print("sanity replacements:")
         print(holdings_replacements.to_string(index=False))
     print(f"selected tickers: {', '.join(selected_tickers)}")
-    print(f"growth paper model: {str(_growth_paper_config().get('active_growth_paper_model', 'growth_champion_final'))}")
+    print(f"growth paper model: {_growth_paper_config().get('active_growth_paper_model', 'growth_champion_final')!s}")
     print(f"exposure cap 60: {exposure_cap:.6f}")
     print(f"SPY close / 200D MA / below: {dual_trend['spy_close']:.4f} / {dual_trend['spy_ma_200']:.4f} / {dual_trend['spy_below_200d']}")
     print(f"QQQ close / 200D MA / below: {dual_trend['qqq_close']:.4f} / {dual_trend['qqq_ma_200']:.4f} / {dual_trend['qqq_below_200d']}")

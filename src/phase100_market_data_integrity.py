@@ -10,7 +10,6 @@ import pandas as pd
 
 from canonical_market_data_manager import (
     CANONICAL_CACHE_DIR,
-    get_latest_market_date,
     get_price_history,
     latest_dates_summary,
     refresh_tickers,
@@ -308,7 +307,7 @@ def main() -> None:
     final_gov.to_csv("official_market_data_governance.csv", index=False)
     lines = [
         "===== PHASE 100 MARKET DATA INTEGRITY REPORT =====",
-        f"cause_of_mismatch: official/forecast dates advanced beyond canonical yahoo cache; latest canonical date before refresh was stale relative to official signal date",
+        "cause_of_mismatch: official/forecast dates advanced beyond canonical yahoo cache; latest canonical date before refresh was stale relative to official signal date",
         f"canonical_cache_path: {CANONICAL_CACHE_DIR.resolve()}",
         f"expected_signal_date: {expected}",
         f"latest_valid_market_date: {canonical_latest}",

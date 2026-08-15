@@ -1,17 +1,19 @@
 from __future__ import annotations
 
-from pathlib import Path
 import contextlib
 import io
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
-import yfinance as yf
 
 from trend_vs_ema_backtest import _download_reduced_prices
 from triple_barrier_labeling import generate_triple_barrier_labels
-from walk_forward_backtester import DEFAULT_REDUCED_UNIVERSE, WalkForwardConfig, run_walk_forward_backtest
-
+from walk_forward_backtester import (
+    DEFAULT_REDUCED_UNIVERSE,
+    WalkForwardConfig,
+    run_walk_forward_backtest,
+)
 
 DEFAULT_OUTPUT_FILE = "model_mode_comparison.csv"
 REGIME_GATED_OUTPUT_FILE = "regime_gated_full_quant_comparison.csv"

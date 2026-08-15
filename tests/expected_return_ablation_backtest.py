@@ -5,7 +5,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-
 HARMFUL_FILE = "expected_return_harmful_transformations.csv"
 STAGE_ATTRIBUTION_FILE = "expected_return_stage_attribution.csv"
 SNAPSHOTS_FILE = "historical_forecast_snapshots.csv"
@@ -158,7 +157,7 @@ def _select_variant(data: pd.DataFrame, variant: str, score_col: str) -> pd.Data
     selected_rows: list[pd.DataFrame] = []
     for date, group in data.groupby("date", sort=True):
         current_selected = group[_bool(group.get("selected", pd.Series(False, index=group.index)))]
-        selected_count = int(len(current_selected)) if len(current_selected) else 4
+        selected_count = len(current_selected) if len(current_selected) else 4
         selected_count = min(4, max(2, selected_count))
         candidates = group[_num(group[score_col]).gt(0)].copy()
         if candidates.empty:
@@ -234,7 +233,7 @@ def _metrics(data: pd.DataFrame, selected: pd.DataFrame, daily: pd.DataFrame, va
         "average_cash": float(_num(daily.get("cash_proxy", pd.Series(dtype=float))).mean()) if not daily.empty else np.nan,
         "selected_count": float(_num(daily.get("selected_count", pd.Series(dtype=float))).mean()) if not daily.empty else np.nan,
         "turnover": float(_num(daily.get("turnover", pd.Series(dtype=float))).mean()) if not daily.empty else np.nan,
-        "sample_size": int(len(selected)),
+        "sample_size": len(selected),
     }
     result.update(_tp_sl(selected))
     return result

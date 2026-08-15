@@ -2,13 +2,20 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Iterable
 
 import pandas as pd
 
-from dashboard_report_assets import BLACK, BRIGHT_ORANGE, MUTED, ORANGE, esc, fmt_num, fmt_pct, fmt_pct_points, simple_svg_line, table_html
+from dashboard_report_assets import (
+    BLACK,
+    BRIGHT_ORANGE,
+    MUTED,
+    esc,
+    fmt_num,
+    fmt_pct,
+    simple_svg_line,
+    table_html,
+)
 from dashboard_report_templates import ReportBundle
-
 
 
 def _df_to_markdown(df: pd.DataFrame, max_rows: int = 40) -> str:

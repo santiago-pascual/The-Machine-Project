@@ -7,7 +7,14 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 
-from dashboard_components import alert_box, fmt_num, fmt_pct, metric_card, section_header, source_caption
+from dashboard_components import (
+    alert_box,
+    fmt_num,
+    fmt_pct,
+    metric_card,
+    section_header,
+    source_caption,
+)
 from dashboard_risk_calculations import (
     MAX_EXPOSURE,
     MIN_EXPOSURE,
@@ -15,7 +22,18 @@ from dashboard_risk_calculations import (
     build_risk_bundle,
     risk_commentary,
 )
-from dashboard_theme import AMBER, BRIGHT_ORANGE, CHART_COLORS, CYAN, GREEN, INFO, MUTED_ORANGE, ORANGE, RED, apply_plotly_layout
+from dashboard_theme import (
+    AMBER,
+    BRIGHT_ORANGE,
+    CHART_COLORS,
+    CYAN,
+    GREEN,
+    INFO,
+    MUTED_ORANGE,
+    ORANGE,
+    RED,
+    apply_plotly_layout,
+)
 
 RISK_COLOR_SEQUENCE = [ORANGE, BRIGHT_ORANGE, AMBER, MUTED_ORANGE, INFO, CYAN, GREEN, RED]
 
@@ -43,7 +61,7 @@ def _arrow_safe_frame(df: pd.DataFrame) -> pd.DataFrame:
             non_null = series.dropna()
             sample = non_null.head(200).tolist()
             type_names = {type(v).__name__ for v in sample}
-            has_text_like = any(name in type_names for name in {"str", "dict", "list", "tuple"})
+            has_text_like = any(name in type_names for name in ("str", "dict", "list", "tuple"))
             if len(type_names) > 1 or has_text_like:
                 out[col] = series.map(lambda v: "" if pd.isna(v) else str(v))
     return out

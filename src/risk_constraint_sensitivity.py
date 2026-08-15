@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+
 import pandas as pd
 
 from risk_sensitivity_analysis import frontier_tables, run_grid

@@ -1,11 +1,9 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
-
 
 EMBARGO_DAYS = 30
 MAX_FORECAST_HORIZON_DAYS = 30
@@ -208,8 +206,7 @@ def build_purged_walk_forward(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFr
         purge_start = train_end - pd.Timedelta(days=MAX_FORECAST_HORIZON_DAYS)
         if test_start > max_date:
             break
-        if test_end > max_date:
-            test_end = max_date
+        test_end = min(test_end, max_date)
         train = df[(df["date"] >= train_start) & (df["date"] <= purge_start)]
         validation = df[(df["date"] >= validation_start) & (df["date"] <= validation_end)]
         test = df[(df["date"] >= test_start) & (df["date"] <= test_end)]
@@ -321,7 +318,7 @@ def compute_ic_decay() -> pd.DataFrame:
                 {
                     "horizon": f"{horizon}d",
                     "subset": subset_name,
-                    "dates": int(len(pdf)),
+                    "dates": len(pdf),
                     "mean_spearman_rank_ic": float(pdf["spearman_ic"].mean()) if not pdf.empty else np.nan,
                     "median_spearman_rank_ic": float(pdf["spearman_ic"].median()) if not pdf.empty else np.nan,
                     "positive_rank_ic_rate": float((pdf["spearman_ic"] > 0).mean()) if not pdf.empty else np.nan,

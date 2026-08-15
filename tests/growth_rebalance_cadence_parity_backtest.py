@@ -1,10 +1,14 @@
 from __future__ import annotations
 
 from pathlib import Path
+
 import numpy as np
 import pandas as pd
 
-from growth_rebalance_scheduler import build_rebalance_schedule, audit_backtest_semantics
+from growth_rebalance_scheduler import (
+    audit_backtest_semantics,
+    build_rebalance_schedule,
+)
 
 ORIG_DAILY = "reconstructed_growth_long_horizon_daily_returns.csv"
 ORIG_TRADES = "reconstructed_growth_long_horizon_trades.csv"

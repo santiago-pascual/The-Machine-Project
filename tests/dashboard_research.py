@@ -3,14 +3,30 @@ from __future__ import annotations
 
 from typing import Any
 
-import numpy as np
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 
-from dashboard_components import alert_box, fmt_num, fmt_pct, metric_card, section_header, source_caption
+from dashboard_components import (
+    alert_box,
+    fmt_num,
+    fmt_pct,
+    metric_card,
+    section_header,
+    source_caption,
+)
 from dashboard_research_calculations import build_research_bundle
-from dashboard_theme import AMBER, BRIGHT_ORANGE, CHART_COLORS, CYAN, GREEN, INFO, MUTED_ORANGE, ORANGE, RED, apply_plotly_layout
+from dashboard_theme import (
+    AMBER,
+    BRIGHT_ORANGE,
+    CYAN,
+    GREEN,
+    INFO,
+    MUTED_ORANGE,
+    ORANGE,
+    RED,
+    apply_plotly_layout,
+)
 
 RESEARCH_COLORS = [ORANGE, BRIGHT_ORANGE, AMBER, MUTED_ORANGE, INFO, CYAN, GREEN, RED]
 
@@ -24,7 +40,7 @@ def _arrow_safe_frame(df: pd.DataFrame) -> pd.DataFrame:
         if pd.api.types.is_object_dtype(s):
             sample = s.dropna().head(200).tolist()
             types = {type(v).__name__ for v in sample}
-            if len(types) > 1 or any(t in types for t in {"str", "dict", "list", "tuple"}):
+            if len(types) > 1 or any(t in types for t in ("str", "dict", "list", "tuple")):
                 out[col] = s.map(lambda v: "" if pd.isna(v) else str(v))
     return out
 

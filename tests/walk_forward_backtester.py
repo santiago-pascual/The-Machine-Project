@@ -3,7 +3,6 @@ from __future__ import annotations
 import contextlib
 import io
 from dataclasses import dataclass
-from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -12,13 +11,19 @@ from covariance_estimation import calculate_covariance
 from ema_timing_model import apply_timing_to_expected_returns, compute_asset_timing
 from expected_returns_model import compute_expected_returns
 from exposure_control import compute_net_exposure
-from full_quant_regime_gate import average_entropy_from_diagnostics, average_trend_score, evaluate_full_quant_regime_gate
+from full_quant_regime_gate import (
+    average_entropy_from_diagnostics,
+    average_trend_score,
+    evaluate_full_quant_regime_gate,
+)
 from market_regime_model import compute_market_regime_model
 from portfolio_optimizer import PortfolioOptimizer
 from quant_target_model import generate_quant_targets
 from risk_metrics import compute_return_risk_metrics
-from trend_persistence_engine import apply_trend_persistence_to_expected_returns, compute_trend_persistence
-
+from trend_persistence_engine import (
+    apply_trend_persistence_to_expected_returns,
+    compute_trend_persistence,
+)
 
 DEFAULT_REDUCED_UNIVERSE = [
     "AAPL",
@@ -367,7 +372,7 @@ def _build_summary(
     rows = {
         "test_start": str(portfolio_df["date"].iloc[0]) if not portfolio_df.empty else "",
         "test_end": str(portfolio_df["date"].iloc[-1]) if not portfolio_df.empty else "",
-        "number_of_test_dates": int(len(portfolio_df)),
+        "number_of_test_dates": len(portfolio_df),
         "average_cash": float(portfolio_df["cash_weight"].mean()) if not portfolio_df.empty else 0.0,
         "average_selected_count": float(portfolio_df["selected_count"].mean()) if not portfolio_df.empty else 0.0,
         "realized_return": float((1.0 + realized_1d).prod() - 1.0) if not realized_1d.empty else 0.0,
@@ -500,7 +505,7 @@ def run_walk_forward_backtest(
             "date": date.strftime("%Y-%m-%d"),
             "realized_portfolio_return_1d": _portfolio_forward_return(data, weights, t_pos, 1),
             "cash_weight": float(result["cash_weight"]),
-            "selected_count": int(len(selected_assets)),
+            "selected_count": len(selected_assets),
             "turnover": float(turnover),
             "max_weight": float(weights.max()) if len(weights) else 0.0,
             "portfolio_expected_return": float(result["portfolio_expected_return"]),

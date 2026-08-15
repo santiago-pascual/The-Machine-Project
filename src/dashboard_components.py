@@ -8,7 +8,10 @@ import plotly.express as px
 import plotly.graph_objects as go
 
 from dashboard_data_layer import numeric
-from dashboard_theme import AMBER, BRIGHT_ORANGE, CHART_COLORS, CYAN, GREEN, INFO, ORANGE, RED, apply_plotly_layout
+from dashboard_theme import (
+    CHART_COLORS,
+    apply_plotly_layout,
+)
 
 
 def fmt_pct(x: Any, d: int = 2) -> str:

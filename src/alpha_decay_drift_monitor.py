@@ -1,11 +1,9 @@
 from __future__ import annotations
 
-import math
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
-
 
 ROLLING_WINDOWS = [5, 20, 60, 126, 252]
 HORIZONS = [1, 5, 10, 20, 40, 60]
@@ -121,7 +119,7 @@ def alpha_decay_curve(df: pd.DataFrame) -> pd.DataFrame:
                     "feature": canonical,
                     "source_column": feature,
                     "horizon": f"{horizon}d",
-                    "dates": int(len(per_date)),
+                    "dates": len(per_date),
                     "mean_rank_ic": float(per_date["ic"].mean()) if not per_date.empty else np.nan,
                     "median_rank_ic": float(per_date["ic"].median()) if not per_date.empty else np.nan,
                     "positive_ic_rate": float((per_date["ic"] > 0).mean()) if not per_date.empty else np.nan,
@@ -185,7 +183,7 @@ def structural_breaks(df: pd.DataFrame) -> pd.DataFrame:
             {
                 "feature": canonical,
                 "source_column": feature,
-                "dates": int(len(ic)),
+                "dates": len(ic),
                 "first_period_mean_ic": float(first.mean()) if len(first) else np.nan,
                 "recent_period_mean_ic": float(second.mean()) if len(second) else np.nan,
                 "mean_ic_change": mean_diff,
@@ -253,7 +251,7 @@ def distribution_drift(df: pd.DataFrame) -> pd.DataFrame:
     numeric = [c for c in resolved.values() if c]
     corr_early = early[numeric].apply(pd.to_numeric, errors="coerce").corr(method="spearman") if numeric else pd.DataFrame()
     corr_recent = recent[numeric].apply(pd.to_numeric, errors="coerce").corr(method="spearman") if numeric else pd.DataFrame()
-    redundancy_delta = float((corr_recent.abs().mean().mean() - corr_early.abs().mean().mean())) if not corr_early.empty and not corr_recent.empty else np.nan
+    redundancy_delta = float(corr_recent.abs().mean().mean() - corr_early.abs().mean().mean()) if not corr_early.empty and not corr_recent.empty else np.nan
     for canonical, feature in resolved.items():
         if not feature:
             rows.append({"feature": canonical, "source_column": "", "status": "missing"})
@@ -296,7 +294,7 @@ def regime_alpha(df: pd.DataFrame) -> pd.DataFrame:
                 {
                     "group_type": col,
                     "group": str(val),
-                    "observations": int(len(group)),
+                    "observations": len(group),
                     "rank_ic_20d": spearman_ic(group, feature, target),
                     "avg_realized_return_20d": float(pd.to_numeric(group[target], errors="coerce").mean()),
                 }

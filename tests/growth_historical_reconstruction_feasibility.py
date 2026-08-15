@@ -5,7 +5,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-
 SNAPSHOTS_FILE = "historical_forecast_snapshots.csv"
 REALIZED_FILE = "historical_realized_returns.csv"
 FEATURE_STORE_FILE = "historical_feature_store.csv"
@@ -217,7 +216,7 @@ def historical_data_coverage() -> pd.DataFrame:
         all_dates = snap_t["date"] if not snap_t.empty else pd.Series(dtype="datetime64[ns]")
         first_date = all_dates.min() if not all_dates.empty else pd.NaT
         last_date = all_dates.max() if not all_dates.empty else pd.NaT
-        obs = int(len(all_dates))
+        obs = len(all_dates)
         expected_obs = int(snapshots["date"].nunique()) if not snapshots.empty and "date" in snapshots.columns else obs
         missing_pct = float(max(0, expected_obs - obs) / expected_obs) if expected_obs else np.nan
         rows.append(
@@ -226,7 +225,7 @@ def historical_data_coverage() -> pd.DataFrame:
                 "first_available_snapshot_date": first_date.strftime("%Y-%m-%d") if pd.notna(first_date) else "",
                 "last_available_snapshot_date": last_date.strftime("%Y-%m-%d") if pd.notna(last_date) else "",
                 "snapshot_observations": obs,
-                "realized_return_observations": int(len(real_t)),
+                "realized_return_observations": len(real_t),
                 "missing_data_pct_vs_snapshot_calendar": missing_pct,
                 "sufficient_history_for_2022_replay": bool(pd.notna(first_date) and first_date <= pd.Timestamp("2022-01-03")),
                 "sufficient_history_for_2020": bool(pd.notna(first_date) and first_date <= pd.Timestamp("2020-01-01")),

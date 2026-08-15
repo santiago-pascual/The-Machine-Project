@@ -19,7 +19,6 @@ from market_regime_model import compute_market_regime_model
 from portfolio_optimizer import PortfolioOptimizer
 from quant_target_model import generate_quant_targets
 
-
 TEST_TICKERS = ["AAPL", "NVDA", "MSTR", "MSFT", "AMZN", "GOOGL", "META", "TSLA", "SPY", "QQQ"]
 LOOKBACK_DAYS = 252
 OPTIMIZER_TEST_GENERATIONS = 75

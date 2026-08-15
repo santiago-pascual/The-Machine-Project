@@ -2,11 +2,10 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from pathlib import Path
-from typing import Any
 
 import numpy as np
 import pandas as pd
+
 try:
     import streamlit as _streamlit
     _cache_data = _streamlit.cache_data
@@ -17,6 +16,7 @@ except Exception:
         return deco
 
 import plotly.express as px
+
 try:
     import streamlit as _streamlit
     _cache_data = _streamlit.cache_data
@@ -28,9 +28,23 @@ except Exception:
 
 import plotly.graph_objects as go
 
-from dashboard_components import alert_box, fmt_num, fmt_pct, metric_card, source_caption
+from dashboard_components import (
+    alert_box,
+    fmt_num,
+    fmt_pct,
+    metric_card,
+    source_caption,
+)
 from dashboard_data_layer import current_holdings, latest, numeric, read_price_cache
-from dashboard_theme import AMBER, BRIGHT_ORANGE, CHART_COLORS, CYAN, GREEN, ORANGE, RED, apply_plotly_layout
+from dashboard_theme import (
+    AMBER,
+    BRIGHT_ORANGE,
+    CYAN,
+    GREEN,
+    ORANGE,
+    RED,
+    apply_plotly_layout,
+)
 
 COLORWAY = [ORANGE, BRIGHT_ORANGE, AMBER, CYAN, GREEN, RED]
 

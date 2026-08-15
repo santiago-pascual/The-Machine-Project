@@ -5,7 +5,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-
 TRADES_FILE = "production_parity_growth_trades.csv"
 DAILY_FILE = "production_parity_growth_daily_returns.csv"
 REALITY_RESULTS_FILE = "growth_reality_check_results.csv"
@@ -72,7 +71,7 @@ def _metrics(name: str, daily: pd.DataFrame, return_col: str = "return") -> dict
     max_dd = float((equity / equity.cummax() - 1.0).min())
     return {
         "scenario": name,
-        "observations": int(len(r)),
+        "observations": len(r),
         "total_return": total,
         "CAGR": cagr,
         "volatility": vol,
@@ -161,7 +160,7 @@ def _availability_audit() -> pd.DataFrame:
                     "ticker": ticker,
                     "first_available_price_date": "",
                     "last_available_price_date": "",
-                    "trade_count": int(len(tgroup)),
+                    "trade_count": len(tgroup),
                     "trades_with_available_snapshot": 0,
                     "ticker_existed_on_trade_dates": False,
                     "suspicious_gap_count": np.nan,
@@ -191,7 +190,7 @@ def _availability_audit() -> pd.DataFrame:
                 "ticker": ticker,
                 "first_available_price_date": first_available.date().isoformat(),
                 "last_available_price_date": pd.Timestamp(s["date"].max()).date().isoformat(),
-                "trade_count": int(len(tgroup)),
+                "trade_count": len(tgroup),
                 "trades_with_available_snapshot": trades_available,
                 "ticker_existed_on_trade_dates": bool(trades_available == len(tgroup)),
                 "suspicious_gap_count": suspicious_gaps,
@@ -217,7 +216,7 @@ def _liquidity_data() -> pd.DataFrame:
         ticker = str(ticker)
         row = {
             "ticker": ticker,
-            "trade_count": int(len(group)),
+            "trade_count": len(group),
             "volume_available": bool(volume_col or dollar_col),
             "volume_missing_pct": 1.0,
             "average_daily_volume": np.nan,

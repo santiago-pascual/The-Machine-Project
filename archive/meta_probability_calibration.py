@@ -7,7 +7,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-
 try:
     from sklearn.ensemble import GradientBoostingClassifier, RandomForestClassifier
     from sklearn.isotonic import IsotonicRegression
@@ -194,7 +193,7 @@ def _bucket_rows(model: str, method: str, y_true: pd.Series, prob: np.ndarray) -
                 "model": model,
                 "calibration_method": method,
                 "predicted_probability_bucket": str(bucket),
-                "sample_size": int(len(group)),
+                "sample_size": len(group),
                 "avg_predicted_probability": float(group["p"].mean()),
                 "actual_positive_rate": float(group["y"].mean()),
                 "bucket_calibration_error": float(abs(group["p"].mean() - group["y"].mean())),
@@ -213,7 +212,7 @@ def _return_metrics(returns: pd.Series, labels: pd.Series) -> dict[str, float]:
     equity = (1.0 + returns).cumprod()
     max_dd = float((equity / equity.cummax() - 1.0).min()) if len(equity) else 0.0
     return {
-        "trades_kept": int(len(returns)),
+        "trades_kept": len(returns),
         "TP_rate": float(labels.eq(1).mean()) if labels.notna().any() else np.nan,
         "SL_rate": float(labels.eq(-1).mean()) if labels.notna().any() else np.nan,
         "hit_rate": float(returns.gt(0).mean()),
@@ -272,9 +271,9 @@ def run_meta_probability_calibration(config: ProbabilityCalibrationConfig | None
                     "model": model_name,
                     "calibration_method": method_name,
                     "features_used": ", ".join(features),
-                    "train_size": int(len(split["y_train"])),
-                    "calibration_size": int(len(split["y_cal"])),
-                    "test_size": int(len(split["y_test"])),
+                    "train_size": len(split["y_train"]),
+                    "calibration_size": len(split["y_cal"]),
+                    "test_size": len(split["y_test"]),
                     **metric,
                 }
             )

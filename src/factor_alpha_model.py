@@ -5,7 +5,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-
 ALPHA_REPORT_FILE = "alpha_attribution_report.csv"
 IC_RANKING_FILE = "factor_ic_ranking.csv"
 INCREMENTAL_FILE = "factor_incremental_alpha.csv"
@@ -231,7 +230,7 @@ def _select_by_candidate(data: pd.DataFrame, score_col: str) -> pd.DataFrame:
     selected_rows: list[pd.DataFrame] = []
     for date, group in data.groupby("date", sort=True):
         current_selected = group[_bool(group.get("selected", pd.Series(False, index=group.index)))]
-        selected_count = int(len(current_selected)) if len(current_selected) else 4
+        selected_count = len(current_selected) if len(current_selected) else 4
         selected_count = min(4, max(2, selected_count))
         candidates = group[_num(group["expected_daily_return"]).gt(0)].copy()
         if candidates.empty:
@@ -278,7 +277,7 @@ def _portfolio_metrics(selected: pd.DataFrame, candidate: str) -> dict[str, obje
         "average_selected_count": float(daily["selected_count"].mean()) if not daily.empty else np.nan,
         "average_cash_proxy": float(daily["cash_proxy"].mean()) if not daily.empty else np.nan,
         "turnover": float(daily["turnover"].mean()) if not daily.empty else np.nan,
-        "sample_size": int(len(selected)),
+        "sample_size": len(selected),
     }, daily
 
 

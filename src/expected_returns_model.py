@@ -10,7 +10,6 @@ import yfinance as yf
 
 from quant_research_features import compute_asset_quant_features
 
-
 TRADING_DAYS_PER_YEAR = 252
 
 

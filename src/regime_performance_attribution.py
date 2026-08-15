@@ -7,7 +7,6 @@ import pandas as pd
 
 from risk_metrics import compute_return_risk_metrics
 
-
 DEFAULT_OUTPUT_FILE = "regime_performance_attribution.csv"
 
 
@@ -58,7 +57,7 @@ def _portfolio_metrics_by_regime(portfolio_df: pd.DataFrame, regime_by_date: pd.
         risk = compute_return_risk_metrics(returns_1d)
         row = {
             "regime": regime,
-            "portfolio_observations": int(len(group)),
+            "portfolio_observations": len(group),
             "portfolio_return_5d": _safe_mean(group, "realized_portfolio_return_5d"),
             "portfolio_return_10d": _safe_mean(group, "realized_portfolio_return_10d"),
             "portfolio_return_20d": _safe_mean(group, "realized_portfolio_return_20d"),
@@ -106,7 +105,7 @@ def _signal_metrics_by_regime(predictions_df: pd.DataFrame, labels_df: pd.DataFr
         expected = pd.to_numeric(group.get("expected_daily_return", pd.Series(dtype=float)), errors="coerce")
         row = {
             "regime": regime,
-            "signal_observations": int(len(group)),
+            "signal_observations": len(group),
             "regime_label_source": regime_source,
             "TP_rate": float((first_touch == "take_profit").mean()) if len(group) else np.nan,
             "SL_rate": float((first_touch == "stop_loss").mean()) if len(group) else np.nan,

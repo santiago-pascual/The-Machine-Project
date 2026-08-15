@@ -4,7 +4,6 @@ from pathlib import Path
 
 import pandas as pd
 
-
 PAPER_FILE = Path("growth_candidate_paper_performance.csv")
 CACHE_DIR = Path("yahoo_ohlcv_price_cache")
 RETURNS_OUT = Path("benchmark_daily_returns.csv")

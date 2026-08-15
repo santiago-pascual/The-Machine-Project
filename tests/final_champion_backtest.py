@@ -5,7 +5,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-
 SNAPSHOTS_FILE = "historical_forecast_snapshots.csv"
 REALIZED_FILE = "historical_realized_returns.csv"
 LABELS_FILE = "historical_triple_barrier_labels.csv"
@@ -166,7 +165,7 @@ def _metrics(daily: pd.DataFrame, trades: pd.DataFrame) -> pd.DataFrame:
         "average_selected_count": float(_num(daily["selected_count"]).mean()),
         "turnover": float(_num(daily["turnover"]).mean()),
         "direction_accuracy": float((returns > 0).mean()),
-        "sample_size": int(len(trades)),
+        "sample_size": len(trades),
         "best_period_date": best["date"],
         "best_period_return": float(best["realized_portfolio_return_1d"]),
         "worst_period_date": worst["date"],
@@ -185,7 +184,7 @@ def _group_metrics(daily: pd.DataFrame, group_col: str, section: str) -> pd.Data
             {
                 "section": section,
                 "group": key,
-                "observations": int(len(group)),
+                "observations": len(group),
                 "realized_return": float((1.0 + returns).prod() - 1.0) if not returns.empty else np.nan,
                 "volatility": float(returns.std(ddof=0) * np.sqrt(TRADING_DAYS)) if len(returns) > 1 else np.nan,
                 "Sharpe": _sharpe(returns),

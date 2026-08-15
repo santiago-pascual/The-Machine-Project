@@ -6,7 +6,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-
 OUTPUT_RESULTS = "calibrated_forecast_shadow_backtest_results.csv"
 OUTPUT_DAILY = "calibrated_forecast_shadow_daily_returns.csv"
 OUTPUT_TRADES = "calibrated_forecast_shadow_trades.csv"
@@ -126,7 +125,7 @@ def _build_shadow_trades(config: CalibratedShadowConfig) -> tuple[pd.DataFrame, 
                     "date": date,
                     "candidate": candidate,
                     "cash_weight": cash,
-                    "selected_count": int(len(selected)),
+                    "selected_count": len(selected),
                     "turnover": turnover,
                     f"realized_portfolio_return_{config.horizon}d": portfolio_return,
                 }

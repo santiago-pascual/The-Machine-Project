@@ -3,7 +3,15 @@ from __future__ import annotations
 import pandas as pd
 
 from dashboard_components import status_badge
-from dashboard_data_layer import MODEL_NAME, MODEL_VERSION, VARIANT, get_scope_namespace, latest, latest_market_date, next_rebalance_date, official_start_date
+from dashboard_data_layer import (
+    MODEL_VERSION,
+    VARIANT,
+    get_scope_namespace,
+    latest,
+    latest_market_date,
+    next_rebalance_date,
+    official_start_date,
+)
 
 NAV_ITEMS = [
     "Mission Control",

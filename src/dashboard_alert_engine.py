@@ -9,10 +9,9 @@ import plotly.express as px
 
 from dashboard_alert_history import update_alert_history
 from dashboard_alert_rules import SEVERITY_ORDER, generate_alerts, health_score
-from dashboard_components import fmt_num, metric_card, status_badge
-from dashboard_data_layer import CSV_FILES, latest, latest_market_date
+from dashboard_components import metric_card
+from dashboard_data_layer import CSV_FILES, latest_market_date
 from dashboard_theme import apply_plotly_layout
-
 
 OUTPUTS = {
     "alert_engine_source_audit": "alert_engine_source_audit.csv",

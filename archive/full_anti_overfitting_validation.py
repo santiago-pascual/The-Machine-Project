@@ -2,15 +2,13 @@ from __future__ import annotations
 
 import hashlib
 import itertools
-import json
 import math
+from collections.abc import Iterable
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Iterable
 
 import numpy as np
 import pandas as pd
-
 
 TRADING_DAYS = 252
 OUTPUTS = {
@@ -141,7 +139,7 @@ def discover_strategy_return_matrix() -> tuple[pd.DataFrame, pd.DataFrame]:
                 "source_file": source.path,
                 "loaded": True,
                 "strategies": int(pivot.shape[1]),
-                "rows": int(len(tmp)),
+                "rows": len(tmp),
                 "date_min": str(pivot.index.min().date()) if not pivot.empty else "",
                 "date_max": str(pivot.index.max().date()) if not pivot.empty else "",
                 "return_column": return_col,
@@ -235,7 +233,7 @@ def cscv_for_s(return_matrix: pd.DataFrame, s_blocks: int) -> tuple[pd.DataFrame
         pbo_rows.append(
             {
                 "S": s_blocks,
-                "folds": int(len(fold_df)),
+                "folds": len(fold_df),
                 "PBO": float(fold_df["overfit_fold"].mean()),
                 "median_lambda": float(fold_df["lambda_logit"].median()),
                 "mean_is_sharpe": float(fold_df["is_sharpe"].mean()),
@@ -290,7 +288,7 @@ def exact_dsr(return_matrix: pd.DataFrame, effective_trials: int) -> pd.DataFram
         rows.append(
             {
                 "strategy": strategy,
-                "sample_size": int(len(r)),
+                "sample_size": len(r),
                 "observed_sharpe": float(sr),
                 "skewness": skew,
                 "kurtosis": kurt,
@@ -354,7 +352,7 @@ def build_registries(return_registry: pd.DataFrame, effective_df: pd.DataFrame) 
             "notes": "Preserved for all-time overfitting warning; not mixed with frozen champion evaluation.",
         }
     )
-    governed_count = int(exp["counted_as_new_independent_trial"].astype(str).str.lower().eq("true").sum()) if not exp.empty and "counted_as_new_independent_trial" in exp.columns else int(len(exp))
+    governed_count = int(exp["counted_as_new_independent_trial"].astype(str).str.lower().eq("true").sum()) if not exp.empty and "counted_as_new_independent_trial" in exp.columns else len(exp)
     rows.append(
         {
             "registry_name": "governed_research_registry",

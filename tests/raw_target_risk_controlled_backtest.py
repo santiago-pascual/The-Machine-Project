@@ -5,7 +5,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-
 RAW_RESULTS_FILE = "raw_target_research_backtest_results.csv"
 RAW_TRADES_FILE = "expected_return_ablation_trades.csv"
 RAW_DAILY_FILE = "expected_return_ablation_daily_returns.csv"

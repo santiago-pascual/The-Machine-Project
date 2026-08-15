@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import numpy as np
 import pandas as pd
+
 try:
     import streamlit as _streamlit
     _cache_data = _streamlit.cache_data
@@ -13,6 +14,7 @@ except Exception:
         return deco
 
 import plotly.express as px
+
 try:
     import streamlit as _streamlit
     _cache_data = _streamlit.cache_data
@@ -24,7 +26,13 @@ except Exception:
 
 import plotly.graph_objects as go
 
-from dashboard_components import alert_box, fmt_money, fmt_pct, metric_card, source_caption
+from dashboard_components import (
+    alert_box,
+    fmt_money,
+    fmt_pct,
+    metric_card,
+    source_caption,
+)
 from dashboard_data_layer import current_holdings, numeric, read_price_cache
 from dashboard_theme import apply_plotly_layout
 

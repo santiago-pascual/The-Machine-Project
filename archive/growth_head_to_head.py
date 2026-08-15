@@ -5,7 +5,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-
 DAILY_FILE = "production_parity_growth_daily_returns.csv"
 TRADES_FILE = "production_parity_growth_trades.csv"
 LABELS_FILE = "historical_triple_barrier_labels.csv"
@@ -80,7 +79,7 @@ def _metrics(name: str, daily: pd.DataFrame) -> dict[str, object]:
         "candidate": name,
         "start_date": data["date"].min().date().isoformat(),
         "end_date": data["date"].max().date().isoformat(),
-        "observations": int(len(r)),
+        "observations": len(r),
         "total_return": total,
         "CAGR": cagr,
         "volatility": vol,

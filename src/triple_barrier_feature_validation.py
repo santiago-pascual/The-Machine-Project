@@ -5,7 +5,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-
 DEFAULT_OUTPUT_FILE = "triple_barrier_feature_validation.csv"
 EXCLUDE_COLUMNS = {
     "date",
@@ -110,7 +109,7 @@ def _analyze_subset(df: pd.DataFrame, subset_name: str) -> pd.DataFrame:
                     "subset": subset_name,
                     "feature": feature,
                     "horizon": int(horizon),
-                    "sample_size": int(len(valid)),
+                    "sample_size": len(valid),
                     "spearman_label_corr": spearman,
                     "pearson_label_corr": pearson,
                     "avg_feature_TP": avg_tp,

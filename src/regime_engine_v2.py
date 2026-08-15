@@ -5,7 +5,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-
 FEATURE_STORE_FILE = "historical_feature_store.csv"
 SNAPSHOTS_FILE = "historical_forecast_snapshots.csv"
 REALIZED_FILE = "historical_realized_returns.csv"
@@ -328,7 +327,7 @@ def _comparison(old_perf: pd.DataFrame, new_perf: pd.DataFrame) -> pd.DataFrame:
         weighted_sharpe = np.average(frame["Sharpe"].fillna(0.0), weights=frame["sample_size"].clip(lower=1))
         return {
             "system": system,
-            "regime_count": int(len(frame)),
+            "regime_count": len(frame),
             "tiny_regime_count": tiny,
             "largest_regime_share": float(frame["sample_size"].max() / max(1, frame["sample_size"].sum())),
             "weighted_average_return": float(weighted_return),
@@ -413,7 +412,7 @@ def run_regime_engine_v2() -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     print("\n===== REGIME ENGINE V2 =====")
     print(f"dates: {len(daily_state)}")
     print(f"tickers in snapshots: {snapshots['ticker'].nunique()}")
-    print(f"production change: none")
+    print("production change: none")
 
     print("\n===== REGIME V2 DISTRIBUTION =====")
     distribution = daily_state["regime_v2_label"].value_counts(dropna=False)

@@ -10,8 +10,11 @@ import pandas as pd
 
 from trend_vs_ema_backtest import _download_reduced_prices
 from triple_barrier_labeling import generate_triple_barrier_labels
-from walk_forward_backtester import DEFAULT_REDUCED_UNIVERSE, WalkForwardConfig, run_walk_forward_backtest
-
+from walk_forward_backtester import (
+    DEFAULT_REDUCED_UNIVERSE,
+    WalkForwardConfig,
+    run_walk_forward_backtest,
+)
 
 BASELINE_OUTPUT = "larger_walk_forward_baseline.csv"
 GATED_OUTPUT = "larger_walk_forward_regime_gated.csv"
@@ -35,7 +38,7 @@ def _metrics_from_outputs(summary: pd.DataFrame, labels: pd.DataFrame, mode: str
         timeout_rate = np.nan
         selected_sample_size = 0
     else:
-        selected_sample_size = int(len(selected))
+        selected_sample_size = len(selected)
         tp_rate = float(selected["first_touch_type"].eq("take_profit").mean())
         sl_rate = float(selected["first_touch_type"].eq("stop_loss").mean())
         timeout_rate = float(selected["first_touch_type"].eq("vertical_timeout").mean())

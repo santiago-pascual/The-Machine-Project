@@ -6,7 +6,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-
 EPS = 1e-12
 
 KALMAN_FEATURES = [
@@ -290,7 +289,7 @@ def _prepare_model_frame(dataset: pd.DataFrame, features: list[str]) -> tuple[pd
 def _model_auc(dataset: pd.DataFrame, features: list[str], config: KalmanStateSpaceConfig) -> dict[str, float]:
     available = [c for c in features if c in dataset.columns]
     if len(dataset) < 50 or len(available) == 0 or dataset["meta_label"].nunique() < 2:
-        return {"auc": np.nan, "accuracy": np.nan, "sample_size": int(len(dataset))}
+        return {"auc": np.nan, "accuracy": np.nan, "sample_size": len(dataset)}
     dataset = dataset.sort_values("date").copy()
     split_idx = max(1, min(len(dataset) - 1, int(len(dataset) * (1.0 - config.test_size))))
     train = dataset.iloc[:split_idx]
@@ -302,7 +301,7 @@ def _model_auc(dataset: pd.DataFrame, features: list[str], config: KalmanStateSp
     return {
         "auc": _manual_auc(y_test.reset_index(drop=True), pd.Series(test_prob)),
         "accuracy": float((pred.to_numpy() == y_test.to_numpy()).mean()),
-        "sample_size": int(len(test)),
+        "sample_size": len(test),
     }
 
 

@@ -1,13 +1,12 @@
 from __future__ import annotations
 
+from collections.abc import Iterable
 from dataclasses import dataclass
 from itertools import product
 from pathlib import Path
-from typing import Iterable
 
 import numpy as np
 import pandas as pd
-
 
 DEFAULT_OUTPUT_FILE = "threshold_optimization.csv"
 
@@ -224,7 +223,7 @@ def _evaluate_config(data: pd.DataFrame, config: ThresholdConfig, horizon: int) 
     return {
         **config.__dict__,
         "horizon": int(horizon),
-        "sample_size": int(len(selected)),
+        "sample_size": len(selected),
         "test_dates": int(selected["date"].nunique()) if not selected.empty else 0,
         "average_realized_return": float(asset_returns.mean()) if not asset_returns.empty else np.nan,
         "average_portfolio_return": float(period_returns.mean()) if not period_returns.empty else np.nan,

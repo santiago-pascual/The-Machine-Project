@@ -10,7 +10,6 @@ import pandas as pd
 
 from advanced_target_model import generate_targets_advanced
 
-
 COVERAGE_FILE = "yahoo_historical_ohlcv_coverage.csv"
 PRODUCTION_PARITY_FILE = "production_parity_growth_daily_returns.csv"
 PRICE_CACHE_DIR = Path("yahoo_ohlcv_price_cache")
@@ -195,7 +194,7 @@ def _metrics(name: str, df: pd.DataFrame, return_col: str = "return") -> dict[st
         "model": name,
         "start_date": data["date"].min().strftime("%Y-%m-%d"),
         "end_date": data["date"].max().strftime("%Y-%m-%d"),
-        "observations": int(len(returns)),
+        "observations": len(returns),
         "total_return": total,
         "CAGR": cagr,
         "volatility": vol,

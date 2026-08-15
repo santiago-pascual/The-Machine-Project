@@ -2,7 +2,10 @@ from __future__ import annotations
 
 import argparse
 
-from historical_research_backfill import HistoricalBackfillConfig, run_historical_research_backfill
+from historical_research_backfill import (
+    HistoricalBackfillConfig,
+    run_historical_research_backfill,
+)
 
 
 def parse_args() -> argparse.Namespace:

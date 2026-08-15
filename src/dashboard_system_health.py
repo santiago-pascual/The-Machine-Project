@@ -1,14 +1,14 @@
 
 from __future__ import annotations
 
+import time
 from pathlib import Path
 from typing import Any
-import time
 
 import numpy as np
 import pandas as pd
 
-from dashboard_data_layer import CSV_FILES, latest, numeric
+from dashboard_data_layer import CSV_FILES, latest
 
 STATUS_ORDER = {"PASS": 1, "GREEN": 1, "HEALTHY": 1, "WARNING": 2, "AMBER": 2, "WARMUP": 2, "RUNNING": 2, "BLOCKED": 3, "FAIL": 4, "FAILED": 4, "RED": 4}
 

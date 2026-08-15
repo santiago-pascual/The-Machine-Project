@@ -5,7 +5,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-
 SNAPSHOTS_FILE = "historical_forecast_snapshots.csv"
 REALIZED_FILE = "historical_realized_returns.csv"
 LABELS_FILE = "historical_triple_barrier_labels.csv"
@@ -111,7 +110,7 @@ def _metrics(name: str, daily: pd.DataFrame, return_col: str = "return") -> dict
         "model": name,
         "start_date": data["date"].min().date().isoformat(),
         "end_date": data["date"].max().date().isoformat(),
-        "observations": int(len(r)),
+        "observations": len(r),
         "total_return": total,
         "CAGR": cagr,
         "volatility": vol,

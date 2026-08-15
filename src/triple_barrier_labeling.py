@@ -5,7 +5,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-
 DEFAULT_HORIZONS = (5, 10, 20)
 DEFAULT_OUTPUT_FILE = "triple_barrier_labels.csv"
 

@@ -5,7 +5,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-
 STATE_FILE = "growth_candidate_paper_state.csv"
 ACTION_SIGNALS_FILE = "growth_candidate_action_signals.csv"
 REBALANCE_REPORT_FILE = "growth_candidate_rebalance_report.csv"

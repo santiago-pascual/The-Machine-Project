@@ -5,7 +5,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-
 RAW_DAILY_FILE = "raw_target_2020_daily_returns.csv"
 RAW_TRADES_FILE = "raw_target_research_backtest_trades.csv"
 SNAPSHOTS_FILE = "historical_forecast_snapshots.csv"
@@ -88,7 +87,7 @@ def _metrics(name: str, daily: pd.DataFrame, return_col: str = "return") -> dict
         "variant": name,
         "start_date": data["date"].min().date().isoformat(),
         "end_date": data["date"].max().date().isoformat(),
-        "observations": int(len(r)),
+        "observations": len(r),
         "total_return": total,
         "CAGR": float((1.0 + total) ** (1.0 / years) - 1.0),
         "volatility": vol,

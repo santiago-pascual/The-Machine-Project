@@ -5,7 +5,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-
 SNAPSHOTS_FILE = "historical_forecast_snapshots.csv"
 REALIZED_FILE = "historical_realized_returns.csv"
 CALIBRATED_FILE = "walk_forward_calibrated_forecasts.csv"
@@ -149,7 +148,7 @@ def _merge_realized_returns(frame: pd.DataFrame, realized: pd.DataFrame) -> pd.D
 def _build_calibrated_mode(calibrated: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame, dict[str, object]]:
     data = calibrated[calibrated["model_mode"].astype(str).eq("regime_gated_full_quant")].copy()
     metadata = {
-        "calibrated_rows": int(len(data)),
+        "calibrated_rows": len(data),
         "fallback_count": 0,
         "average_calibration_adjustment": np.nan,
         "selection_overlap_avg": np.nan,
@@ -252,7 +251,7 @@ def _metrics(portfolio: pd.DataFrame, trades: pd.DataFrame, labels: pd.DataFrame
             "average_selected_count": float(pd.to_numeric(portfolio["selected_count"], errors="coerce").mean()) if "selected_count" in portfolio else np.nan,
             "turnover": float(pd.to_numeric(portfolio["turnover"], errors="coerce").mean()) if "turnover" in portfolio else np.nan,
             "direction_accuracy": float((returns > 0).mean()),
-            "sample_size": int(len(trades)),
+            "sample_size": len(trades),
         }
     base.update(_label_metrics(labels, mode))
     if mode == "calibrated_forecast_research" and not trades.empty:

@@ -7,11 +7,17 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-
 try:
     from sklearn.ensemble import GradientBoostingClassifier, RandomForestClassifier
     from sklearn.linear_model import LogisticRegression
-    from sklearn.metrics import accuracy_score, confusion_matrix, f1_score, precision_score, recall_score, roc_auc_score
+    from sklearn.metrics import (
+        accuracy_score,
+        confusion_matrix,
+        f1_score,
+        precision_score,
+        recall_score,
+        roc_auc_score,
+    )
     from sklearn.preprocessing import StandardScaler
 
     SKLEARN_AVAILABLE = True
@@ -163,7 +169,7 @@ def _return_metrics(returns: pd.Series, labels: pd.Series) -> dict[str, float]:
     max_dd = float(drawdown.min()) if len(drawdown) else 0.0
     annual_factor = np.sqrt(252 / 20)
     return {
-        "trades_kept": int(len(returns)),
+        "trades_kept": len(returns),
         "TP_rate": float(aligned_labels.eq(1).mean()) if aligned_labels.notna().any() else np.nan,
         "SL_rate": float(aligned_labels.eq(-1).mean()) if aligned_labels.notna().any() else np.nan,
         "hit_rate": float(returns.gt(0).mean()),
@@ -235,8 +241,8 @@ def _train_models(x_train: pd.DataFrame, x_test: pd.DataFrame, y_train: pd.Serie
                         "model": name,
                         **{f"train_{k}": v for k, v in train_metrics.items()},
                         **{f"test_{k}": v for k, v in test_metrics.items()},
-                        "train_size": int(len(y_train)),
-                        "test_size": int(len(y_test)),
+                        "train_size": len(y_train),
+                        "test_size": len(y_test),
                         "status": "ok",
                     }
                 )
@@ -253,8 +259,8 @@ def _train_models(x_train: pd.DataFrame, x_test: pd.DataFrame, y_train: pd.Serie
                 "model": "numpy_logistic_regression",
                 **{f"train_{k}": v for k, v in train_metrics.items()},
                 **{f"test_{k}": v for k, v in test_metrics.items()},
-                "train_size": int(len(y_train)),
-                "test_size": int(len(y_test)),
+                "train_size": len(y_train),
+                "test_size": len(y_test),
                 "status": "ok_numpy_fallback",
             }
         )

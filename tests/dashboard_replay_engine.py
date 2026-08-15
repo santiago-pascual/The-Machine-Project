@@ -7,7 +7,12 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
-from dashboard_historical_loader import ReplayData, latest_on_or_before, rows_on_or_before
+from dashboard_historical_loader import (
+    ReplayData,
+    latest_on_or_before,
+    rows_on_or_before,
+)
+
 
 @dataclass
 class ReplaySnapshot:

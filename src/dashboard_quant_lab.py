@@ -1,15 +1,27 @@
 
 from __future__ import annotations
 
-from pathlib import Path
 from time import perf_counter
-from typing import Callable
 
 import numpy as np
 import pandas as pd
 
-from dashboard_components import alert_box, fmt_num, fmt_pct, metric_card, section_header, source_caption, status_badge
-from dashboard_data_layer import MODEL_VERSION, VARIANT, CSV_FILES, current_holdings, latest, latest_market_date, numeric
+from dashboard_components import (
+    alert_box,
+    fmt_pct,
+    metric_card,
+    section_header,
+    source_caption,
+    status_badge,
+)
+from dashboard_data_layer import (
+    CSV_FILES,
+    MODEL_VERSION,
+    VARIANT,
+    current_holdings,
+    latest_market_date,
+    numeric,
+)
 from dashboard_quant_embeddings import render_pca_3d
 from dashboard_quant_equations import render_equation_explorer
 from dashboard_quant_monte_carlo import render_monte_carlo_lab

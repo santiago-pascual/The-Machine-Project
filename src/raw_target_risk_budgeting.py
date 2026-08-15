@@ -5,7 +5,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-
 RAW_TRADES_FILE = "expected_return_ablation_trades.csv"
 BASELINE_PORTFOLIO_FILE = "historical_walk_forward_portfolio_returns.csv"
 LABELS_FILE = "historical_triple_barrier_labels.csv"

@@ -5,7 +5,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-
 ABLATION_RESULTS = "expected_return_ablation_results.csv"
 ABLATION_DAILY = "expected_return_ablation_daily_returns.csv"
 ABLATION_TRADES = "expected_return_ablation_trades.csv"
@@ -97,7 +96,7 @@ def _portfolio_mode_metrics(portfolio: pd.DataFrame, snapshots: pd.DataFrame, la
         "turnover": float(_num(daily.get("turnover", pd.Series(dtype=float))).mean()),
         "hit_rate": float((_num(trades.get("realized_return_20d", pd.Series(dtype=float))) > 0).mean()) if not trades.empty else np.nan,
         "direction_accuracy": float((returns > 0).mean()) if not returns.empty else np.nan,
-        "sample_size": int(len(trades)),
+        "sample_size": len(trades),
         **label_metrics,
     }
 

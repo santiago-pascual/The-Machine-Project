@@ -5,7 +5,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-
 PRICE_CACHE_DIR = Path("yahoo_ohlcv_price_cache")
 BLACKLIST_FILE = Path("growth_universe_blacklist.csv")
 REPORT_FILE = Path("growth_universe_quality_report.csv")

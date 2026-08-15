@@ -5,7 +5,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-
 DAILY_FILE = "growth_final_selection_daily_returns.csv"
 RESULTS_FILE = "growth_final_selection_results.csv"
 STRESS_FILE = "growth_final_selection_stress_periods.csv"
@@ -83,7 +82,7 @@ def _metrics(name: str, df: pd.DataFrame, return_col: str = "net_return") -> dic
         "model": name,
         "start_date": data["date"].min().strftime("%Y-%m-%d"),
         "end_date": data["date"].max().strftime("%Y-%m-%d"),
-        "observations": int(len(returns)),
+        "observations": len(returns),
         "total_return": total_return,
         "CAGR": cagr,
         "volatility": volatility,

@@ -1,17 +1,31 @@
 
 from __future__ import annotations
 
-from typing import Iterable
+from collections.abc import Iterable
 
 import numpy as np
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 
-from dashboard_components import alert_box, fmt_money, fmt_num, fmt_pct, metric_card, section_header, source_caption, status_badge
-from dashboard_data_layer import MODEL_VERSION, VARIANT, latest_market_date, numeric
+from dashboard_components import (
+    alert_box,
+    fmt_num,
+    fmt_pct,
+    metric_card,
+    section_header,
+    source_caption,
+)
+from dashboard_data_layer import MODEL_VERSION, VARIANT, numeric
 from dashboard_decision_calculations import FEATURE_COLUMNS, build_decision_bundle
-from dashboard_theme import AMBER, BRIGHT_ORANGE, CHART_COLORS, MUTED_ORANGE, ORANGE, apply_plotly_layout
+from dashboard_theme import (
+    AMBER,
+    BRIGHT_ORANGE,
+    CHART_COLORS,
+    MUTED_ORANGE,
+    ORANGE,
+    apply_plotly_layout,
+)
 
 DECISION_SEQUENCE = [ORANGE, BRIGHT_ORANGE, AMBER, MUTED_ORANGE, "#FFB25C", "#D96B00"]
 

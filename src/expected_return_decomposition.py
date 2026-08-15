@@ -5,7 +5,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-
 SNAPSHOTS_FILE = "historical_forecast_snapshots.csv"
 FEATURE_STORE_FILE = "historical_feature_store.csv"
 REALIZED_FILE = "historical_realized_returns.csv"

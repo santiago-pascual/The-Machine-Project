@@ -1,15 +1,35 @@
 from __future__ import annotations
 
-from pathlib import Path
 from typing import Any
 
 import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
 
-from dashboard_components import fmt_money, fmt_num, fmt_pct, fmt_pct_points, metric_card, status_badge
-from dashboard_data_layer import next_rebalance_date, MODEL_VERSION, VARIANT, latest, latest_market_date, numeric, official_start_date
-from dashboard_theme import AMBER, BRIGHT_ORANGE, CHART_COLORS, INFO, ORANGE, PURPLE, RED, apply_plotly_layout
+from dashboard_components import (
+    fmt_money,
+    fmt_num,
+    fmt_pct,
+    metric_card,
+    status_badge,
+)
+from dashboard_data_layer import (
+    MODEL_VERSION,
+    VARIANT,
+    latest,
+    latest_market_date,
+    next_rebalance_date,
+    numeric,
+    official_start_date,
+)
+from dashboard_theme import (
+    AMBER,
+    BRIGHT_ORANGE,
+    INFO,
+    ORANGE,
+    PURPLE,
+    apply_plotly_layout,
+)
 
 OFFICIAL_SOURCES = {
     "performance": "growth_official_paper_performance.csv",

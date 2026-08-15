@@ -306,7 +306,7 @@ def regime_usefulness(feature_df: pd.DataFrame, fit: HMMFit, mean: pd.Series, st
                 "n_states": fit.n_states,
                 "state": int(state),
                 "regime_label": label,
-                "observations": int(len(group)),
+                "observations": len(group),
                 "avg_spy_return": float(group["spy_return"].mean()),
                 "avg_spy_vol20": float(group["spy_vol20"].mean()),
                 "future_20d_return": float(group["future_spy_return_20d"].mean()),

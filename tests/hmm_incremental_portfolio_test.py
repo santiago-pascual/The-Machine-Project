@@ -189,7 +189,7 @@ def summarize(daily: pd.DataFrame, folds: pd.DataFrame, data_mode: str) -> tuple
     results = []
     regime_rows = []
     for variant, group in daily.groupby("variant"):
-        results.append({"variant": variant, "data_mode": data_mode, "folds": int(group["fold_id"].nunique()), "observations": int(len(group)), **metrics(group, "strategy_return", "strategy_turnover", "strategy_exposure")})
+        results.append({"variant": variant, "data_mode": data_mode, "folds": int(group["fold_id"].nunique()), "observations": len(group), **metrics(group, "strategy_return", "strategy_turnover", "strategy_exposure")})
         for regime, rg in group.groupby("hmm_regime_label", dropna=False):
             regime_rows.append({"variant": variant, "hmm_regime_label": regime, "observations": len(rg), **metrics(rg, "strategy_return", "strategy_turnover", "strategy_exposure")})
     results_df = pd.DataFrame(results)
@@ -230,7 +230,7 @@ def governance(results: pd.DataFrame, stability: pd.DataFrame, data_mode: str, e
                 best_dd_delta = float((joined["max_drawdown"] - joined["max_drawdown_base"]).median())
                 best_turnover_increase = float(((joined["turnover"] - joined["turnover_base"]) / joined["turnover_base"].abs().clip(lower=1e-9)).median())
                 improved_folds = int((joined["Sharpe"] > joined["Sharpe_base"]).sum())
-                comparable_folds = int(len(joined))
+                comparable_folds = len(joined)
         if not best_variant:
             cls = "diagnostic_only"
             reason = "no comparable HMM portfolio variant generated"

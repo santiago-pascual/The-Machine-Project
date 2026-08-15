@@ -4,14 +4,11 @@ from __future__ import annotations
 import argparse
 import ast
 import importlib.util
-import math
 import re
 import time
 from pathlib import Path
 
-import numpy as np
 import pandas as pd
-
 
 MODEL_MAP_FILE = "model_ticker_to_cedear_map.csv"
 SNAPSHOTS_FILE = "historical_forecast_snapshots.csv"
@@ -163,7 +160,7 @@ def _coverage_from_df(ticker: str, df: pd.DataFrame) -> dict[str, object]:
         "download_status": "ok",
         "first_available_date": first.strftime("%Y-%m-%d") if pd.notna(first) else "",
         "last_available_date": last.strftime("%Y-%m-%d") if pd.notna(last) else "",
-        "observations": int(len(df)),
+        "observations": len(df),
         "volume_available": bool("Volume" in df.columns and pd.to_numeric(df["Volume"], errors="coerce").notna().any()),
         "adjusted_close_available": bool("Adj Close" in df.columns and pd.to_numeric(df["Adj Close"], errors="coerce").notna().any()),
         "download_error": "",
@@ -176,7 +173,7 @@ def _coverage_from_df(ticker: str, df: pd.DataFrame) -> dict[str, object]:
         enough = existed and len(after.dropna(how="all")) >= MIN_OBSERVATIONS
         row[f"existed_at_{year}"] = existed
         row[f"enough_history_from_{year}"] = bool(enough)
-        row[f"observations_from_{year}"] = int(len(after.dropna(how="all")))
+        row[f"observations_from_{year}"] = len(after.dropna(how="all"))
     return row
 
 
@@ -284,7 +281,7 @@ def reconstructed_backtest_plan(coverage: pd.DataFrame, total_universe: int, uni
         "classification": classification,
         "universe": universe,
         "total_universe_tickers": total_universe,
-        "tickers_downloaded_successfully": int(len(ok)),
+        "tickers_downloaded_successfully": len(ok),
         "tickers_failed": int(len(coverage) - len(ok)) if not coverage.empty else total_universe,
         "exact_pre2022_replay_possible": False,
         "reconstructed_backtest_possible": classification in {"reconstructed_backtest_possible", "price_only_reconstruction_possible"},

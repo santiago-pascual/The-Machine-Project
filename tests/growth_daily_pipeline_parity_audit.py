@@ -1,12 +1,10 @@
 from __future__ import annotations
 
 import json
-import re
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
-
 
 FILES_TO_AUDIT = [
     "daily_research_run.py",
@@ -339,8 +337,8 @@ def _data_source_audit() -> pd.DataFrame:
                 "proxy_used": source != "raw_target_return_exact",
                 "cedear_filter_used": False,
                 "historical_stale_fallback_used": False,
-                "current_allocation_rows": int(len(alloc)),
-                "current_raw_feature_rows": int(len(raw)),
+                "current_allocation_rows": len(alloc),
+                "current_raw_feature_rows": len(raw),
                 "data_source": str(alloc.get("data_source", pd.Series(["missing"])).dropna().iloc[0]) if "data_source" in alloc.columns and not alloc["data_source"].dropna().empty else "missing",
                 "fallback_reason": str(alloc.get("fallback_reason", pd.Series([""])).dropna().iloc[0]) if "fallback_reason" in alloc.columns and not alloc["fallback_reason"].dropna().empty else "",
             }
@@ -373,9 +371,9 @@ def _state_audit() -> pd.DataFrame:
                 "same_day_overwrite_supported": "--overwrite-same-day" in _text("daily_research_run.py") and "overwrite_same_day" in _text("growth_candidate_paper_trading.py"),
                 "append_only_default": True,
                 "prior_holdings_available_for_soft_exit": prior_available,
-                "state_rows_latest": int(len(state)),
-                "trade_rows_latest": int(len(trades)),
-                "performance_rows_latest": int(len(perf)),
+                "state_rows_latest": len(state),
+                "trade_rows_latest": len(trades),
+                "performance_rows_latest": len(perf),
                 "turnover_from_trades": expected_turnover,
                 "turnover_in_performance": perf_turnover,
                 "turnover_match": bool(np.isfinite(expected_turnover) and np.isfinite(perf_turnover) and abs(expected_turnover - perf_turnover) < 1e-9),

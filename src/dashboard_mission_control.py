@@ -8,10 +8,29 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 
-from dashboard_components import alert_box, fmt_money, fmt_num, fmt_pct, metric_card, section_header, source_caption, status_badge
-from dashboard_data_layer import MODEL_VERSION, VARIANT, latest_market_date, next_rebalance_date, numeric
+from dashboard_components import (
+    alert_box,
+    fmt_money,
+    fmt_pct,
+    metric_card,
+    section_header,
+    source_caption,
+    status_badge,
+)
+from dashboard_data_layer import (
+    MODEL_VERSION,
+    VARIANT,
+    latest_market_date,
+    next_rebalance_date,
+)
 from dashboard_system_health import build_mission_control
-from dashboard_theme import AMBER, BRIGHT_ORANGE, CHART_COLORS, GREEN, ORANGE, RED, apply_plotly_layout
+from dashboard_theme import (
+    AMBER,
+    BRIGHT_ORANGE,
+    GREEN,
+    RED,
+    apply_plotly_layout,
+)
 
 STATUS_COLORS = {"PASS": GREEN, "WARNING": AMBER, "FAIL": RED, "BLOCKED": RED, "RUNNING": BRIGHT_ORANGE}
 

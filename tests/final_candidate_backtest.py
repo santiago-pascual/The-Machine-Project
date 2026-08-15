@@ -7,7 +7,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-
 try:
     from sklearn.isotonic import IsotonicRegression
     from sklearn.linear_model import LogisticRegression
@@ -217,7 +216,7 @@ def _daily_returns_from_trades(trades: pd.DataFrame, candidate: str, config: Fin
             "selected_count": int((weights > 0).sum()),
             "turnover": turnover / 2.0,
             "sample_reduction": float(1.0 - group["meta_filter_pass"].mean()) if "meta_filter_pass" in group.columns else 0.0,
-            "trades_kept": int(group["meta_filter_pass"].sum()) if "meta_filter_pass" in group.columns else int(len(group)),
+            "trades_kept": int(group["meta_filter_pass"].sum()) if "meta_filter_pass" in group.columns else len(group),
         }
         for horizon in [1, 5, 10, 20, 30]:
             row[f"realized_portfolio_return_{horizon}d"] = _portfolio_return(group, horizon)
@@ -286,7 +285,7 @@ def _performance_metrics(daily: pd.DataFrame, trades: pd.DataFrame, config: Fina
             "average_cash": float(daily["cash_weight"].mean()) if "cash_weight" in daily.columns and not daily.empty else np.nan,
             "average_selected_count": float(daily["selected_count"].mean()) if "selected_count" in daily.columns and not daily.empty else np.nan,
             "turnover": float(daily["turnover"].mean()) if "turnover" in daily.columns and not daily.empty else np.nan,
-            "trades_kept": int(trades["meta_filter_pass"].sum()) if "meta_filter_pass" in trades.columns else int(len(trades)),
+            "trades_kept": int(trades["meta_filter_pass"].sum()) if "meta_filter_pass" in trades.columns else len(trades),
             "sample_reduction": float(1.0 - trades["meta_filter_pass"].mean()) if "meta_filter_pass" in trades.columns and len(trades) else 0.0,
         }
     )

@@ -5,7 +5,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-
 BASE_DAILY = "reconstructed_growth_long_horizon_daily_returns.csv"
 BASE_TRADES = "reconstructed_growth_long_horizon_trades.csv"
 BASE_RESULTS = "reconstructed_growth_long_horizon_results.csv"
@@ -81,7 +80,7 @@ def _metrics(name: str, df: pd.DataFrame, return_col: str = "overlay_return") ->
         "model": name,
         "start_date": data["date"].min().strftime("%Y-%m-%d"),
         "end_date": data["date"].max().strftime("%Y-%m-%d"),
-        "observations": int(len(returns)),
+        "observations": len(returns),
         "total_return": total_return,
         "CAGR": cagr,
         "volatility": vol,

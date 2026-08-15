@@ -6,7 +6,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-
 FEATURE_STORE_FILE = "historical_feature_store.csv"
 SNAPSHOTS_FILE = "historical_forecast_snapshots.csv"
 REALIZED_FILE = "historical_realized_returns.csv"
@@ -176,7 +175,7 @@ def _regime_persistence(snapshots: pd.DataFrame, labels: pd.DataFrame) -> pd.Dat
             {
                 "section": "persistence",
                 "regime": regime,
-                "observations": int(len(returns.dropna())),
+                "observations": len(returns.dropna()),
                 "average_forward_return_20d": float(returns.mean()) if returns.notna().any() else np.nan,
                 "average_volatility": float(returns.std(ddof=0)) if returns.notna().sum() > 1 else np.nan,
                 "Sharpe": _sharpe(returns),
@@ -207,7 +206,7 @@ def _forecast_quality(snapshots: pd.DataFrame) -> pd.DataFrame:
         rows.append(
             {
                 "regime": regime,
-                "observations": int(len(valid)),
+                "observations": len(valid),
                 "MAE": float(valid["error"].abs().mean()),
                 "RMSE": float(np.sqrt(np.mean(np.square(valid["error"])))),
                 "bias": float(valid["error"].mean()),

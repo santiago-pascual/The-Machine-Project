@@ -1,15 +1,15 @@
 
 from __future__ import annotations
 
+import hashlib
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
-import hashlib
 
 import numpy as np
 import pandas as pd
 
-from dashboard_data_layer import latest, numeric
+from dashboard_data_layer import latest
 
 GOVERNANCE_SOURCES = {
     "growth_system_integrity_report": "growth_system_integrity_report.txt",

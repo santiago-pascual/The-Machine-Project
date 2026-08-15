@@ -337,7 +337,7 @@ def build_kpis(data: dict[str, pd.DataFrame], blotter: pd.DataFrame, turnover: p
         "reconciliation_status": latest_reb.get("reconciliation_passed", "unavailable"),
         "last_rebalance_turnover": latest_reb.get("turnover", np.nan),
         "cumulative_turnover": numeric(turnover.get("turnover", pd.Series(dtype=float))).sum() if not turnover.empty else np.nan,
-        "costed_order_count": int(len(trade_rows)),
+        "costed_order_count": len(trade_rows),
         "last_rebalance_estimated_cost": latest_cost,
         "cumulative_estimated_cost": cum_cost,
         "gross_portfolio_value": perf_row.get("gross_portfolio_value", perf_row.get("portfolio_value", np.nan)),

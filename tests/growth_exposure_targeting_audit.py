@@ -7,7 +7,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-
 TARGET_VOL = 0.22
 OUTPUT_AUDIT = "growth_exposure_targeting_audit.csv"
 OUTPUT_CODE = "growth_exposure_code_audit.csv"
@@ -104,7 +103,7 @@ def build_exposure_audit() -> pd.DataFrame:
         row = {
             "date": date,
             "selected_tickers": selected,
-            "selected_count": int(len(non_cash)),
+            "selected_count": len(non_cash),
             "ticker_weights_before_vol_targeting": weights,
             "estimated_portfolio_volatility": rolling_vol,
             "target_volatility": TARGET_VOL,
@@ -183,7 +182,7 @@ def exposure_vs_backtest(audit: pd.DataFrame) -> pd.DataFrame:
         rows.append(
             {
                 "series": "growth_champion_final_backtest_v3",
-                "observations": int(len(exp)),
+                "observations": len(exp),
                 "average_exposure": float(exp.mean()) if len(exp) else np.nan,
                 "median_exposure": float(exp.median()) if len(exp) else np.nan,
                 "min_exposure": float(exp.min()) if len(exp) else np.nan,
@@ -196,7 +195,7 @@ def exposure_vs_backtest(audit: pd.DataFrame) -> pd.DataFrame:
         rows.append(
             {
                 "series": "growth_paper_current_history",
-                "observations": int(len(exp)),
+                "observations": len(exp),
                 "average_exposure": float(exp.mean()) if len(exp) else np.nan,
                 "median_exposure": float(exp.median()) if len(exp) else np.nan,
                 "min_exposure": float(exp.min()) if len(exp) else np.nan,

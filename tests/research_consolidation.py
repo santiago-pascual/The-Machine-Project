@@ -5,7 +5,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-
 REGISTRY_FILE = "model_lifecycle_status.csv"
 SUMMARY_FILE = "final_research_summary.txt"
 

@@ -8,7 +8,6 @@ from quant_research_features import (
     kalman_local_level,
 )
 
-
 TRADING_DAYS_PER_YEAR = 252
 EPS = 1e-12
 

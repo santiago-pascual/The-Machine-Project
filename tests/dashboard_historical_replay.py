@@ -1,18 +1,35 @@
 
 from __future__ import annotations
 
-import time
-from typing import Any
-
 import numpy as np
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 
-from dashboard_components import alert_box, fmt_money, fmt_num, fmt_pct, metric_card, section_header, source_caption, status_badge
+from dashboard_components import (
+    alert_box,
+    fmt_money,
+    fmt_num,
+    fmt_pct,
+    metric_card,
+    section_header,
+    source_caption,
+    status_badge,
+)
 from dashboard_historical_loader import load_replay_data, nearest_replay_date
-from dashboard_replay_engine import build_snapshot, compare_snapshots, performance_evolution, validate_replay
-from dashboard_theme import AMBER, BRIGHT_ORANGE, CHART_COLORS, GREEN, ORANGE, RED, apply_plotly_layout
+from dashboard_replay_engine import (
+    build_snapshot,
+    compare_snapshots,
+    performance_evolution,
+    validate_replay,
+)
+from dashboard_theme import (
+    AMBER,
+    BRIGHT_ORANGE,
+    GREEN,
+    RED,
+    apply_plotly_layout,
+)
 
 COLOR_MAP = {"BUY": GREEN, "INCREASE": BRIGHT_ORANGE, "REDUCE": AMBER, "SELL": RED, "HOLD": "#7A8490", "CASH_CHANGE": "#4B5563"}
 

@@ -6,7 +6,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-
 OUTPUT_AUDIT = "target_engineering_audit.csv"
 OUTPUT_REGIME = "forecast_error_by_regime.csv"
 OUTPUT_TICKER = "forecast_error_by_ticker.csv"
@@ -76,7 +75,7 @@ def _forecast_metrics(frame: pd.DataFrame, forecast_col: str, realized_col: str)
     error = data[forecast_col] - data[realized_col]
     denom = data[realized_col].abs().replace(0, np.nan)
     return {
-        "sample_size": int(len(data)),
+        "sample_size": len(data),
         "MAE": float(error.abs().mean()),
         "RMSE": float(np.sqrt(np.square(error).mean())),
         "MAPE": float((error.abs() / denom).replace([np.inf, -np.inf], np.nan).mean()),
@@ -193,7 +192,7 @@ def _confidence_audit(base: pd.DataFrame, config: TargetAuditConfig) -> pd.DataF
                 {
                     "horizon": f"{horizon}D",
                     "confidence_bucket": str(bucket),
-                    "sample_size": int(len(group)),
+                    "sample_size": len(group),
                     "avg_confidence": float(_safe_numeric(group["target_confidence"], np.nan).mean(skipna=True)),
                     "avg_abs_error": float(group["abs_error"].mean(skipna=True)),
                     "success_rate": float(group["success"].mean(skipna=True)),

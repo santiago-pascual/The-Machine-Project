@@ -5,7 +5,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-
 START_DATE = "2020-01-01"
 RAW_DAILY_FILE = "expected_return_ablation_daily_returns.csv"
 RAW_TRADES_FILE = "expected_return_ablation_trades.csv"
@@ -114,7 +113,7 @@ def _metrics(name: str, daily: pd.DataFrame, return_col: str = "return") -> dict
         "start_date_requested": START_DATE,
         "actual_start_date": str(dates.min().date()) if not dates.empty else "missing",
         "end_date": str(dates.max().date()) if not dates.empty else "missing",
-        "observations": int(len(returns)),
+        "observations": len(returns),
         "total_return": float((1.0 + returns).prod() - 1.0) if not returns.empty else np.nan,
         "CAGR": _cagr(returns, dates),
         "volatility": float(returns.std(ddof=0) * np.sqrt(TRADING_DAYS)) if len(returns) > 1 else np.nan,

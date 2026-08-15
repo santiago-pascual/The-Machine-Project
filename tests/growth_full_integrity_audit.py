@@ -9,7 +9,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-
 GRAPH_FILE = "growth_pipeline_dependency_graph.csv"
 INTEGRITY_FILE = "growth_pipeline_integrity_report.csv"
 STAGE_FILE = "growth_pipeline_stage_validation.csv"

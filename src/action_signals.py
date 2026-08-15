@@ -5,7 +5,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-
 PORTFOLIO_STATE_FILE = "portfolio_state.csv"
 
 

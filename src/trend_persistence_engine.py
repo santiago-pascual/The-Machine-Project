@@ -13,7 +13,6 @@ from quant_research_features import (
     shannon_entropy,
 )
 
-
 EPS = 1e-12
 
 DEFAULT_COMPONENT_WEIGHTS = {

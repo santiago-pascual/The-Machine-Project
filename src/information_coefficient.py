@@ -5,7 +5,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-
 IC_HISTORY_FILE = "ic_history.csv"
 DEFAULT_HORIZONS = (5, 10, 20)
 

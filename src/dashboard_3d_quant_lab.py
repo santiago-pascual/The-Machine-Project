@@ -4,9 +4,9 @@ import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
 
-from dashboard_components import heatmap, source_caption
+from dashboard_components import source_caption
 from dashboard_data_layer import current_holdings, numeric, read_price_cache
-from dashboard_theme import AMBER, CYAN, GREEN, RED, apply_plotly_layout
+from dashboard_theme import AMBER, RED, apply_plotly_layout
 
 
 def _surface(st, z: pd.DataFrame, title: str, source: str, status: str) -> None:

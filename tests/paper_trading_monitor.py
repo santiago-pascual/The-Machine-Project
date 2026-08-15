@@ -6,7 +6,6 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
-
 MONITOR_CSV = "paper_trading_monitor_report.csv"
 MONITOR_TXT = "paper_trading_monitor_report.txt"
 
@@ -52,7 +51,7 @@ def _paper_metrics(performance: pd.DataFrame, state: pd.DataFrame, trades: pd.Da
             "paper_max_drawdown": np.nan,
             "paper_cash": np.nan,
             "paper_turnover": np.nan,
-            "number_of_trades": int(len(trades)),
+            "number_of_trades": len(trades),
             "trade_win_rate": np.nan,
             "current_holdings": "",
         }
@@ -98,7 +97,7 @@ def _paper_metrics(performance: pd.DataFrame, state: pd.DataFrame, trades: pd.Da
         "paper_max_drawdown": max_dd,
         "paper_cash": cash,
         "paper_turnover": turnover,
-        "number_of_trades": int(len(trades)),
+        "number_of_trades": len(trades),
         "trade_win_rate": win_rate,
         "current_holdings": holdings,
     }

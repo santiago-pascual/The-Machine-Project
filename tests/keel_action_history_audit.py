@@ -5,7 +5,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-
 OUTPUT_CSV = "keel_action_history_audit.csv"
 OUTPUT_TXT = "keel_action_history_summary.txt"
 

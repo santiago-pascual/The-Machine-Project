@@ -6,7 +6,6 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
-
 DEFAULT_OUTPUT_FILE = "robustness_validation.csv"
 
 THRESHOLD_DEFAULTS = {
@@ -317,7 +316,7 @@ def _analyze_threshold(thresholds: pd.DataFrame) -> tuple[pd.DataFrame, dict[str
         "threshold_robustness_score": best_score,
         "threshold_overfit_warning": ", ".join(best_reasons) if best_reasons else "none",
         "stable_parameter_ranges": ranges,
-        "accepted_config_count": int(len(accepted)),
+        "accepted_config_count": len(accepted),
         "rejected_config_count": int(len(ranked) - len(accepted)),
     }
     return pd.DataFrame(rows), summary

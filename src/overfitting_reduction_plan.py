@@ -7,7 +7,6 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
-
 PLAN_OUTPUT = "overfitting_reduction_plan.csv"
 CONFIG_OUTPUT = "constrained_research_config.json"
 
@@ -127,8 +126,8 @@ def identify_overfitting_sources() -> tuple[pd.DataFrame, dict[str, Any]]:
     full_quant = _read_csv("full_quant_robustness_walk_forward.csv")
 
     total_trials = int(pd.to_numeric(trial_log.get("number_of_trials", pd.Series(dtype=float)), errors="coerce").fillna(0).sum())
-    threshold_trials = int(len(thresholds))
-    barrier_trials = int(len(barriers))
+    threshold_trials = len(thresholds)
+    barrier_trials = len(barriers)
     pbo = _safe_float(_dashboard_value(dashboard, "PBO_proxy", np.nan), np.nan)
     robustness_score = _safe_float(_dashboard_value(dashboard, "robustness_score", np.nan), np.nan)
     if not np.isfinite(robustness_score) and not robustness.empty and "robustness_score" in robustness.columns:

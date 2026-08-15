@@ -10,8 +10,10 @@ from pathlib import Path
 
 import pandas as pd
 
-from canonical_market_data_manager import refresh_tickers, validate_freshness, latest_dates_summary
-
+from canonical_market_data_manager import (
+    refresh_tickers,
+    validate_freshness,
+)
 
 LOG_FILE = "daily_research_run_log.csv"
 PRICE_CACHE_DIR = Path("yahoo_ohlcv_price_cache")
@@ -30,7 +32,7 @@ def _read_csv(path: str | Path) -> pd.DataFrame:
 
 def _row_count(path: str | Path) -> int:
     df = _read_csv(path)
-    return int(len(df)) if not df.empty else 0
+    return len(df) if not df.empty else 0
 
 
 def _latest_date_in_csv(path: str | Path, date_col: str = "date") -> pd.Timestamp | pd.NaT:

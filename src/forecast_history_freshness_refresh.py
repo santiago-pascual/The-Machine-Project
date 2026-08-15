@@ -136,7 +136,7 @@ def refresh_forecast_history_to_cache_latest(overwrite_same_day: bool = True) ->
     after = _latest_forecast_date(combined)
     report.update({
         "forecast_history_latest_after": after.date().isoformat() if pd.notna(after) else "missing",
-        "rows_added": int(len(new_rows)),
+        "rows_added": len(new_rows),
         "rows_overwritten": rows_overwritten,
         "rows_with_cache_price_update": updates,
         "status": "refreshed",

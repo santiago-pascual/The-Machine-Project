@@ -5,7 +5,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-
 STATE_FILE = "growth_candidate_paper_state.csv"
 PERFORMANCE_FILE = "growth_candidate_paper_performance.csv"
 TRADES_FILE = "growth_candidate_paper_trades.csv"
@@ -89,7 +88,7 @@ def _live_metrics(perf: pd.DataFrame) -> dict[str, object]:
     dd = _drawdown(returns)
     months = int(perf["date"].dt.to_period("M").nunique())
     return {
-        "days_tracked": int(len(perf)),
+        "days_tracked": len(perf),
         "months_tracked": months,
         "live_total_return": total,
         "live_CAGR": cagr,

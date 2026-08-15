@@ -5,7 +5,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-
 REGIME_V2_DAILY_FILE = "regime_v2_daily_state.csv"
 REGIME_V2_PERFORMANCE_FILE = "regime_v2_performance_attribution.csv"
 SNAPSHOTS_FILE = "historical_forecast_snapshots.csv"
@@ -256,7 +255,7 @@ def _metrics(daily: pd.DataFrame, trades: pd.DataFrame, labels: pd.DataFrame, mo
             "average_selected_count": float(_num(daily.get("selected_count", pd.Series(dtype=float))).mean()),
             "turnover": float(_num(daily.get("turnover", pd.Series(dtype=float))).mean()),
             "direction_accuracy": float((returns > 0).mean()),
-            "sample_size": int(len(trades)),
+            "sample_size": len(trades),
         }
     base.update(_label_metrics(labels, trades, mode))
     return base
@@ -271,7 +270,7 @@ def _performance_by_regime(candidate_daily: pd.DataFrame) -> pd.DataFrame:
         rows.append(
             {
                 "regime_v2_label": label,
-                "dates": int(len(group)),
+                "dates": len(group),
                 "source_full_quant_share": float(group["source_model_mode"].astype(str).eq("regime_gated_full_quant").mean()),
                 "realized_return": float((1.0 + returns.dropna()).prod() - 1.0) if returns.notna().any() else np.nan,
                 "Sharpe": _sharpe(returns),

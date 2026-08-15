@@ -8,7 +8,6 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
-
 OUTPUT_FILE = "clean_research_evaluation.csv"
 
 
@@ -126,7 +125,7 @@ def _governed_summary(
     for col in ["Sharpe", "selected_only_sample_size", "number_of_test_dates", "TP_rate", "SL_rate", "average_turnover"]:
         if col in df.columns:
             df[col] = pd.to_numeric(df[col], errors="coerce")
-    total_trials = int(len(df))
+    total_trials = len(df)
     best_sharpe = float(df["Sharpe"].max()) if "Sharpe" in df.columns else np.nan
     sample_size = int(df["selected_only_sample_size"].max()) if "selected_only_sample_size" in df.columns else 0
     test_dates = int(df["number_of_test_dates"].max()) if "number_of_test_dates" in df.columns else 0

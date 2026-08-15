@@ -18,7 +18,6 @@ from final_selected_holdings_sanity_check import audit_and_filter_selected_holdi
 from growth_action_reconciliation import reconcile_growth_actions, signals_to_trade_rows
 from growth_universe_quality_filter import apply_growth_universe_quality_filter
 
-
 INITIAL_CAPITAL = 100000.0
 MODEL_NAME = "growth_champion_final"
 VARIANT = "growth_v1_exposure_cap_60_dual_trend_filter"

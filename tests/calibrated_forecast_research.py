@@ -6,7 +6,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-
 DEFAULT_CALIBRATED_FORECAST_FILE = "walk_forward_calibrated_forecasts.csv"
 
 
@@ -129,7 +128,7 @@ def apply_walk_forward_calibrated_forecasts(
         metadata.update(
             {
                 "calibrated_forecasts_used": 0,
-                "fallback_original_forecasts": int(len(original)),
+                "fallback_original_forecasts": len(original),
                 "calibrated_confidence_used": 0,
                 "average_calibration_adjustment": 0.0,
             }

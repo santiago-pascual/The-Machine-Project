@@ -7,7 +7,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-
 try:
     from sklearn.ensemble import GradientBoostingClassifier, RandomForestClassifier
     from sklearn.linear_model import LogisticRegression
@@ -171,7 +170,7 @@ def _return_metrics(returns: pd.Series, labels: pd.Series) -> dict[str, float]:
     max_dd = float(drawdown.min()) if len(drawdown) else 0.0
     annual_factor = np.sqrt(252 / 20)
     return {
-        "trades_kept": int(len(returns)),
+        "trades_kept": len(returns),
         "TP_rate": float(labels.eq(1).mean()) if labels.notna().any() else np.nan,
         "SL_rate": float(labels.eq(-1).mean()) if labels.notna().any() else np.nan,
         "hit_rate": float(returns.gt(0).mean()),
@@ -230,7 +229,7 @@ def _calibration_rows(y_test: pd.Series, probabilities: dict[str, np.ndarray], b
                 {
                     "model": model,
                     "bucket": str(bucket),
-                    "sample_size": int(len(group)),
+                    "sample_size": len(group),
                     "avg_predicted_probability": float(group["probability"].mean()),
                     "actual_positive_rate": float(group["actual"].mean()),
                     "calibration_error": float(abs(group["probability"].mean() - group["actual"].mean())),
@@ -345,7 +344,7 @@ def run_ml_ensemble_research(config: MLEnsembleConfig | None = None) -> dict[str
     probabilities = _fit_models(x_train, x_test, y_train)
     rows = []
     for model, probs in probabilities.items():
-        rows.append({"model": model, **_metrics(y_test, probs), "test_size": int(len(y_test)), "status": "ok"})
+        rows.append({"model": model, **_metrics(y_test, probs), "test_size": len(y_test), "status": "ok"})
     results = pd.DataFrame(rows).sort_values(["roc_auc", "f1"], ascending=False)
     results.to_csv(OUTPUT_RESULTS, index=False)
     thresholds = _threshold_rows(test_dataset, probabilities, config)

@@ -20,7 +20,6 @@ from anti_overfitting_framework import (
     pbo_approximation,
 )
 
-
 EXPERIMENT_REGISTRY_FILE = "experiment_registry.csv"
 TRIAL_LOG_FILE = "strategy_trial_log.csv"
 

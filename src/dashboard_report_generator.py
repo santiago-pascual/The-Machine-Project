@@ -6,10 +6,10 @@ from pathlib import Path
 
 import pandas as pd
 
+from dashboard_components import metric_card, source_caption
 from dashboard_data_layer import load_all
 from dashboard_report_export import export_report
 from dashboard_report_templates import build_report_bundle
-from dashboard_components import metric_card, source_caption
 
 
 def generate_sample_reports(data: dict[str, pd.DataFrame] | None = None) -> dict[str, dict[str, str]]:

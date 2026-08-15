@@ -7,7 +7,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-
 INPUT_FILES = {
     "meta_feature_ranking": "meta_feature_ranking.csv",
     "meta_model_results": "meta_model_results.csv",
@@ -169,7 +168,7 @@ def _ic_history_evidence(feature: str, ic_history: pd.DataFrame) -> dict[str, fl
     values = rows[ic_cols].apply(pd.to_numeric, errors="coerce").abs()
     return {
         "ic_history_strength": float(values.mean(axis=1).mean(skipna=True) or 0.0),
-        "ic_history_sample_rows": int(len(rows)),
+        "ic_history_sample_rows": len(rows),
     }
 
 

@@ -10,7 +10,6 @@ import pandas as pd
 from growth_action_reconciliation import reconcile_growth_actions, signals_to_trade_rows
 from growth_rebalance_scheduler import scheduler_status
 
-
 CANDIDATE_NAME = "growth_champion_final"
 CANDIDATE_VARIANT = "growth_v1_exposure_cap_60_dual_trend_filter"
 CANDIDATE_MODEL_VERSION = "growth_champion_final_v1_0_frozen"

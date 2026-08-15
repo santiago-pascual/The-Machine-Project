@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import os
 from contextlib import contextmanager
+
 import numpy as np
 import pandas as pd
 import yfinance as yf
