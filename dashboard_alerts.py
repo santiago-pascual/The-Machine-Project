@@ -1,5 +1,11 @@
-from __future__ import annotations
-
-from dashboard_system_health import alert_center, incident_center
-
-__all__ = ["alert_center", "incident_center"]
+# Auto-generated shim to preserve import paths after repo reorg
+from importlib import import_module
+_mod = import_module("src.dashboard_alerts")
+# re-export public attributes
+for _attr in dir(_mod):
+    if not _attr.startswith("__"):
+        globals()[_attr] = getattr(_mod, _attr)
+# If moved module defines a main(), call it when executed as a script
+if __name__ == '__main__':
+    if hasattr(_mod, 'main'):
+        _mod.main()
