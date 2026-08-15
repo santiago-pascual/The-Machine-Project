@@ -5,7 +5,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-
 RAW_RESULTS_FILE = "raw_target_research_backtest_results.csv"
 RAW_TRADES_FILE = "expected_return_ablation_trades.csv"
 RAW_DAILY_FILE = "expected_return_ablation_daily_returns.csv"
@@ -158,7 +157,11 @@ def _labels_for_trades(trades: pd.DataFrame) -> dict[str, float]:
         return {"TP_rate": np.nan, "SL_rate": np.nan, "TP_minus_SL": np.nan, "hit_rate": np.nan}
     tp = float((merged["first_touch_type"].astype(str) == "take_profit").mean()) if "first_touch_type" in merged else np.nan
     sl = float((merged["first_touch_type"].astype(str) == "stop_loss").mean()) if "first_touch_type" in merged else np.nan
-    hit = float((_num(merged.get("realized_return_at_barrier", pd.Series(dtype=float))) > 0).mean()) if "realized_return_at_barrier" in merged else np.nan
+    hit = (
+        float((_num(merged.get("realized_return_at_barrier", pd.Series(dtype=float))) > 0).mean())
+        if "realized_return_at_barrier" in merged
+        else np.nan
+    )
     return {"TP_rate": tp, "SL_rate": sl, "TP_minus_SL": tp - sl if np.isfinite(tp) and np.isfinite(sl) else np.nan, "hit_rate": hit}
 
 
@@ -207,7 +210,9 @@ def _reference_metrics(mode: str) -> dict[str, object]:
     snapshots = _prepare_dates(_read_csv(SNAPSHOTS_FILE))
     labels = _prepare_dates(_read_csv(LABELS_FILE))
     daily = portfolio[portfolio["model_mode"].astype(str).eq(mode)].copy()
-    trades = snapshots[snapshots["model_mode"].astype(str).eq(mode) & _bool(snapshots.get("selected", pd.Series(False, index=snapshots.index)))].copy()
+    trades = snapshots[
+        snapshots["model_mode"].astype(str).eq(mode) & _bool(snapshots.get("selected", pd.Series(False, index=snapshots.index)))
+    ].copy()
     returns = _num(daily.get("realized_portfolio_return_1d", pd.Series(dtype=float))).dropna()
     out = {
         "variant": mode,

@@ -7,7 +7,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-
 TARGET_VOL = 0.22
 OUTPUT_AUDIT = "growth_exposure_targeting_audit.csv"
 OUTPUT_CODE = "growth_exposure_code_audit.csv"
@@ -87,14 +86,32 @@ def build_exposure_audit() -> pd.DataFrame:
         date = str(perf_row["date"])
         state_day = state[state["date"].astype(str).eq(date)] if not state.empty else pd.DataFrame()
         alloc_day = alloc[alloc["date"].astype(str).eq(date)] if not alloc.empty else pd.DataFrame()
-        non_cash = state_day[state_day.get("ticker", pd.Series(dtype=str)).astype(str).ne("CASH")] if not state_day.empty else pd.DataFrame()
+        non_cash = (
+            state_day[state_day.get("ticker", pd.Series(dtype=str)).astype(str).ne("CASH")] if not state_day.empty else pd.DataFrame()
+        )
         selected = ",".join(non_cash.get("ticker", pd.Series(dtype=str)).astype(str).tolist())
-        weights = ",".join(f"{t}:{float(w):.4f}" for t, w in zip(non_cash.get("ticker", []), num(non_cash.get("paper_position_weight", pd.Series(dtype=float))).fillna(0.0))) if not non_cash.empty else ""
+        weights = (
+            ",".join(
+                f"{t}:{float(w):.4f}"
+                for t, w in zip(non_cash.get("ticker", []), num(non_cash.get("paper_position_weight", pd.Series(dtype=float))).fillna(0.0))
+            )
+            if not non_cash.empty
+            else ""
+        )
         rolling_vol = np.nan
         raw_vol_target = np.nan
         if not alloc_day.empty:
-            rolling_vol = float(num(alloc_day.get("rolling_volatility_used", pd.Series([np.nan]))).dropna().iloc[0]) if "rolling_volatility_used" in alloc_day.columns and not num(alloc_day["rolling_volatility_used"]).dropna().empty else np.nan
-            raw_vol_target = float(num(alloc_day.get("raw_volatility_target_exposure", pd.Series([np.nan]))).dropna().iloc[0]) if "raw_volatility_target_exposure" in alloc_day.columns and not num(alloc_day["raw_volatility_target_exposure"]).dropna().empty else np.nan
+            rolling_vol = (
+                float(num(alloc_day.get("rolling_volatility_used", pd.Series([np.nan]))).dropna().iloc[0])
+                if "rolling_volatility_used" in alloc_day.columns and not num(alloc_day["rolling_volatility_used"]).dropna().empty
+                else np.nan
+            )
+            raw_vol_target = (
+                float(num(alloc_day.get("raw_volatility_target_exposure", pd.Series([np.nan]))).dropna().iloc[0])
+                if "raw_volatility_target_exposure" in alloc_day.columns
+                and not num(alloc_day["raw_volatility_target_exposure"]).dropna().empty
+                else np.nan
+            )
         if not np.isfinite(rolling_vol):
             rolling_vol = float(vol_ref.get("rolling_vol_used", np.nan))
         if not np.isfinite(raw_vol_target):
@@ -104,7 +121,7 @@ def build_exposure_audit() -> pd.DataFrame:
         row = {
             "date": date,
             "selected_tickers": selected,
-            "selected_count": int(len(non_cash)),
+            "selected_count": len(non_cash),
             "ticker_weights_before_vol_targeting": weights,
             "estimated_portfolio_volatility": rolling_vol,
             "target_volatility": TARGET_VOL,
@@ -117,7 +134,9 @@ def build_exposure_audit() -> pd.DataFrame:
             "reason_final_exposure": "",
             "final_exposure_equals_40_exactly": abs(final - 0.40) <= 1e-8 if np.isfinite(final) else False,
             "volatility_reference_date": vol_ref.get("vol_reference_date", ""),
-            "volatility_reference_stale": str(vol_ref.get("vol_reference_date", "")) < date if vol_ref.get("vol_reference_date", "") else True,
+            "volatility_reference_stale": str(vol_ref.get("vol_reference_date", "")) < date
+            if vol_ref.get("vol_reference_date", "")
+            else True,
             "data_source": perf_row.get("data_source", ""),
             "raw_target_feature_source": perf_row.get("raw_target_feature_source", ""),
             "stale_data_flag": "unknown",
@@ -183,7 +202,7 @@ def exposure_vs_backtest(audit: pd.DataFrame) -> pd.DataFrame:
         rows.append(
             {
                 "series": "growth_champion_final_backtest_v3",
-                "observations": int(len(exp)),
+                "observations": len(exp),
                 "average_exposure": float(exp.mean()) if len(exp) else np.nan,
                 "median_exposure": float(exp.median()) if len(exp) else np.nan,
                 "min_exposure": float(exp.min()) if len(exp) else np.nan,
@@ -196,7 +215,7 @@ def exposure_vs_backtest(audit: pd.DataFrame) -> pd.DataFrame:
         rows.append(
             {
                 "series": "growth_paper_current_history",
-                "observations": int(len(exp)),
+                "observations": len(exp),
                 "average_exposure": float(exp.mean()) if len(exp) else np.nan,
                 "median_exposure": float(exp.median()) if len(exp) else np.nan,
                 "min_exposure": float(exp.min()) if len(exp) else np.nan,
@@ -213,7 +232,11 @@ def sensitivity() -> pd.DataFrame:
         return pd.DataFrame()
     latest_date = alloc["date"].max()
     cur = alloc[alloc["date"].astype(str).eq(str(latest_date))].copy()
-    rolling_vol = float(num(cur.get("rolling_volatility_used", pd.Series([np.nan]))).dropna().iloc[0]) if "rolling_volatility_used" in cur.columns and not num(cur["rolling_volatility_used"]).dropna().empty else np.nan
+    rolling_vol = (
+        float(num(cur.get("rolling_volatility_used", pd.Series([np.nan]))).dropna().iloc[0])
+        if "rolling_volatility_used" in cur.columns and not num(cur["rolling_volatility_used"]).dropna().empty
+        else np.nan
+    )
     if not np.isfinite(rolling_vol):
         rolling_vol = float(latest_vol_target_reference().get("rolling_vol_used", np.nan))
     cap60 = float(num(cur.get("exposure_cap_60", pd.Series([0.60]))).dropna().iloc[0])
@@ -248,7 +271,9 @@ def write_summary(audit: pd.DataFrame, code: pd.DataFrame, compare: pd.DataFrame
     dual = float(current.get("dual_trend_cap", np.nan)) if not audit.empty else np.nan
     cap = float(current.get("exposure_cap_60", np.nan)) if not audit.empty else np.nan
     vol = float(current.get("estimated_portfolio_volatility", np.nan)) if not audit.empty else np.nan
-    hardcoded = code[(code["file"].eq("current_growth_feature_generation.py")) & (code["check"].eq("hardcoded_40_or_floor"))]["matched"].any()
+    hardcoded = code[(code["file"].eq("current_growth_feature_generation.py")) & (code["check"].eq("hardcoded_40_or_floor"))][
+        "matched"
+    ].any()
     stale = str(current.get("data_source", "")).strip() != "current_growth_candidate_allocation"
     lines = [
         "===== GROWTH EXPOSURE TARGETING AUDIT =====",

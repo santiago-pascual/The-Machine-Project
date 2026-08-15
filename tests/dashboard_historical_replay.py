@@ -1,18 +1,34 @@
-
 from __future__ import annotations
-
-import time
-from typing import Any
 
 import numpy as np
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 
-from dashboard_components import alert_box, fmt_money, fmt_num, fmt_pct, metric_card, section_header, source_caption, status_badge
+from dashboard_components import (
+    alert_box,
+    fmt_money,
+    fmt_num,
+    fmt_pct,
+    metric_card,
+    section_header,
+    source_caption,
+    status_badge,
+)
 from dashboard_historical_loader import load_replay_data, nearest_replay_date
-from dashboard_replay_engine import build_snapshot, compare_snapshots, performance_evolution, validate_replay
-from dashboard_theme import AMBER, BRIGHT_ORANGE, CHART_COLORS, GREEN, ORANGE, RED, apply_plotly_layout
+from dashboard_replay_engine import (
+    build_snapshot,
+    compare_snapshots,
+    performance_evolution,
+    validate_replay,
+)
+from dashboard_theme import (
+    AMBER,
+    BRIGHT_ORANGE,
+    GREEN,
+    RED,
+    apply_plotly_layout,
+)
 
 COLOR_MAP = {"BUY": GREEN, "INCREASE": BRIGHT_ORANGE, "REDUCE": AMBER, "SELL": RED, "HOLD": "#7A8490", "CASH_CHANGE": "#4B5563"}
 
@@ -83,7 +99,14 @@ def _time_machine(st, dates: list[pd.Timestamp]) -> pd.Timestamp | None:
     if _ss_get(st, "historical_replay_play", False):
         step = {"1x": 1, "2x": 1, "5x": 1, "20x": 1}.get(speed, 1)
         _ss_set(st, "historical_replay_idx", min(len(dates) - 1, int(_ss_get(st, "historical_replay_idx", 0)) + step))
-    idx = st.slider("Replay timeline", min_value=0, max_value=len(dates) - 1, value=int(_ss_get(st, "historical_replay_idx", 0)), format="%d", key="replay_slider")
+    idx = st.slider(
+        "Replay timeline",
+        min_value=0,
+        max_value=len(dates) - 1,
+        value=int(_ss_get(st, "historical_replay_idx", 0)),
+        format="%d",
+        key="replay_slider",
+    )
     _ss_set(st, "historical_replay_idx", idx)
     selected = dates[idx]
     if mode == "calendar":
@@ -92,13 +115,23 @@ def _time_machine(st, dates: list[pd.Timestamp]) -> pd.Timestamp | None:
         st.caption(f"Nearest official replay date: {selected.date()}")
     elif mode == "month":
         months = sorted({d.strftime("%Y-%m") for d in dates})
-        month = st.selectbox("Month", months, index=months.index(selected.strftime("%Y-%m")) if selected.strftime("%Y-%m") in months else len(months)-1, key="replay_month")
+        month = st.selectbox(
+            "Month",
+            months,
+            index=months.index(selected.strftime("%Y-%m")) if selected.strftime("%Y-%m") in months else len(months) - 1,
+            key="replay_month",
+        )
         selected = [d for d in dates if d.strftime("%Y-%m") == month][-1]
     elif mode == "year":
         years = sorted({d.year for d in dates})
         year = st.selectbox("Year", years, index=years.index(selected.year), key="replay_year")
         selected = [d for d in dates if d.year == year][-1]
-    events = {"COVID Crash": "2020-03-23", "2022 Bear Market": "2022-10-12", "AI Rally": "2024-05-01", "Official Start": str(dates[0].date())}
+    events = {
+        "COVID Crash": "2020-03-23",
+        "2022 Bear Market": "2022-10-12",
+        "AI Rally": "2024-05-01",
+        "Official Start": str(dates[0].date()),
+    }
     jump = st.selectbox("Historical event jump", ["none"] + list(events.keys()), key="replay_event_jump")
     if jump != "none":
         selected = nearest_replay_date(dates, events[jump]) or selected
@@ -110,17 +143,27 @@ def _snapshot_cards(st, snap) -> None:
     section_header(st, "Official Snapshot", "Values are read from official historical paper files for selected date.")
     p, r, g = snap.performance, snap.risk, snap.governance
     cols = st.columns(5)
-    with cols[0]: metric_card(st, "Portfolio Value", fmt_money(p.get("gross_portfolio_value", p.get("portfolio_value", np.nan))))
-    with cols[1]: metric_card(st, "Net Portfolio Value", fmt_money(p.get("estimated_net_portfolio_value", np.nan)))
-    with cols[2]: metric_card(st, "Cash", fmt_pct(r.get("cash", p.get("cash_weight", np.nan))))
-    with cols[3]: metric_card(st, "Exposure", fmt_pct(r.get("exposure", p.get("exposure", np.nan))))
-    with cols[4]: metric_card(st, "Drawdown", fmt_pct(r.get("drawdown", p.get("current_drawdown", np.nan))))
+    with cols[0]:
+        metric_card(st, "Portfolio Value", fmt_money(p.get("gross_portfolio_value", p.get("portfolio_value", np.nan))))
+    with cols[1]:
+        metric_card(st, "Net Portfolio Value", fmt_money(p.get("estimated_net_portfolio_value", np.nan)))
+    with cols[2]:
+        metric_card(st, "Cash", fmt_pct(r.get("cash", p.get("cash_weight", np.nan))))
+    with cols[3]:
+        metric_card(st, "Exposure", fmt_pct(r.get("exposure", p.get("exposure", np.nan))))
+    with cols[4]:
+        metric_card(st, "Drawdown", fmt_pct(r.get("drawdown", p.get("current_drawdown", np.nan))))
     cols = st.columns(5)
-    with cols[0]: metric_card(st, "Gross Return", fmt_pct(p.get("gross_daily_return", p.get("daily_return", np.nan))))
-    with cols[1]: metric_card(st, "Net Return", fmt_pct(p.get("estimated_net_daily_return", np.nan)))
-    with cols[2]: metric_card(st, "Volatility", fmt_pct(r.get("volatility", np.nan)))
-    with cols[3]: metric_card(st, "HHI", fmt_num(r.get("hhi", np.nan), 3))
-    with cols[4]: metric_card(st, "Governance", str(g.get("paper_status", "unavailable")), f"integrity {g.get('integrity_status', 'unavailable')}")
+    with cols[0]:
+        metric_card(st, "Gross Return", fmt_pct(p.get("gross_daily_return", p.get("daily_return", np.nan))))
+    with cols[1]:
+        metric_card(st, "Net Return", fmt_pct(p.get("estimated_net_daily_return", np.nan)))
+    with cols[2]:
+        metric_card(st, "Volatility", fmt_pct(r.get("volatility", np.nan)))
+    with cols[3]:
+        metric_card(st, "HHI", fmt_num(r.get("hhi", np.nan), 3))
+    with cols[4]:
+        metric_card(st, "Governance", str(g.get("paper_status", "unavailable")), f"integrity {g.get('integrity_status', 'unavailable')}")
 
 
 def _holdings(st, snap) -> None:
@@ -129,7 +172,22 @@ def _holdings(st, snap) -> None:
     if h.empty:
         alert_box(st, "Historical holdings unavailable.", "warning")
         return
-    cols = ["ticker", "action", "paper_position_weight", "entry_date", "days_held", "daily_pnl", "unrealized_pnl", "raw_target_return_exact", "pct_total_portfolio_risk", "sector", "industry", "country", "market_cap", "holding_quality_classification"]
+    cols = [
+        "ticker",
+        "action",
+        "paper_position_weight",
+        "entry_date",
+        "days_held",
+        "daily_pnl",
+        "unrealized_pnl",
+        "raw_target_return_exact",
+        "pct_total_portfolio_risk",
+        "sector",
+        "industry",
+        "country",
+        "market_cap",
+        "holding_quality_classification",
+    ]
     if "entry_date" in h.columns and "date" in h.columns:
         h["days_held"] = (pd.to_datetime(h["date"], errors="coerce") - pd.to_datetime(h["entry_date"], errors="coerce")).dt.days
     elif "entry_date" not in h.columns:
@@ -157,7 +215,11 @@ def _decision_replay(st, snap) -> None:
     st.dataframe(_safe_df(snap.decision_funnel), width="stretch", hide_index=True)
     fig = px.funnel(snap.decision_funnel.fillna({"count": 0}), y="stage", x="count", title="Historical Decision Funnel")
     _chart(st, fig, "Historical Decision Funnel", 360)
-    alert_box(st, "If historical feature snapshots are unavailable, the replay shows stored selected holdings only and does not fabricate universe/ranking counts.", "warning")
+    alert_box(
+        st,
+        "If historical feature snapshots are unavailable, the replay shows stored selected holdings only and does not fabricate universe/ranking counts.",
+        "warning",
+    )
 
 
 def _risk_execution_governance(st, snap) -> None:
@@ -190,7 +252,14 @@ def _performance(st, replay, snap) -> None:
     for col in ["SPY_cumulative_pct", "QQQ_cumulative_pct"]:
         if col in perf.columns:
             base = snap.performance.get("gross_equity", snap.performance.get("portfolio_value", 100000))
-            fig.add_trace(go.Scatter(x=perf["date"], y=100000 * (1 + pd.to_numeric(perf[col], errors="coerce") / 100), mode="lines+markers", name=col.replace("_cumulative_pct", "")))
+            fig.add_trace(
+                go.Scatter(
+                    x=perf["date"],
+                    y=100000 * (1 + pd.to_numeric(perf[col], errors="coerce") / 100),
+                    mode="lines+markers",
+                    name=col.replace("_cumulative_pct", ""),
+                )
+            )
     _chart(st, fig, "Portfolio vs Benchmark Replay", 430)
     metrics = [c for c in ["cash_weight", "exposure", "current_drawdown", "volatility", "turnover"] if c in perf.columns]
     if metrics:
@@ -208,12 +277,22 @@ def _comparison(st, replay, dates: list[pd.Timestamp]) -> None:
     with cols[0]:
         da = st.selectbox("Date A", dates, index=0, format_func=lambda x: str(x.date()), key="replay_date_a")
     with cols[1]:
-        db = st.selectbox("Date B", dates, index=len(dates)-1, format_func=lambda x: str(x.date()), key="replay_date_b")
+        db = st.selectbox("Date B", dates, index=len(dates) - 1, format_func=lambda x: str(x.date()), key="replay_date_b")
     a, b = build_snapshot(replay, da), build_snapshot(replay, db)
     st.dataframe(_safe_df(compare_snapshots(a, b)), width="stretch", hide_index=True)
     left = set(a.holdings.get("ticker", pd.Series(dtype=str)).astype(str)) - {"CASH"}
     right = set(b.holdings.get("ticker", pd.Series(dtype=str)).astype(str)) - {"CASH"}
-    st.dataframe(pd.DataFrame({"added": [", ".join(sorted(right-left))], "removed": [", ".join(sorted(left-right))], "unchanged": [", ".join(sorted(left & right))]}), width="stretch", hide_index=True)
+    st.dataframe(
+        pd.DataFrame(
+            {
+                "added": [", ".join(sorted(right - left))],
+                "removed": [", ".join(sorted(left - right))],
+                "unchanged": [", ".join(sorted(left & right))],
+            }
+        ),
+        width="stretch",
+        hide_index=True,
+    )
 
 
 def render_historical_replay(st, data: dict[str, pd.DataFrame]) -> None:

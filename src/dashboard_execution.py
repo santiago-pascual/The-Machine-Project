@@ -1,16 +1,33 @@
-
 from __future__ import annotations
 
 from typing import Any
 
-import numpy as np
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 
-from dashboard_components import alert_box, fmt_money, fmt_num, fmt_pct, metric_card, section_header, source_caption, status_badge
+from dashboard_components import (
+    alert_box,
+    fmt_money,
+    fmt_num,
+    fmt_pct,
+    metric_card,
+    section_header,
+    source_caption,
+)
 from dashboard_execution_calculations import build_execution_bundle
-from dashboard_theme import AMBER, BRIGHT_ORANGE, CHART_COLORS, CYAN, GREEN, INFO, MUTED_ORANGE, ORANGE, RED, apply_plotly_layout
+from dashboard_theme import (
+    AMBER,
+    BRIGHT_ORANGE,
+    CHART_COLORS,
+    CYAN,
+    GREEN,
+    INFO,
+    MUTED_ORANGE,
+    ORANGE,
+    RED,
+    apply_plotly_layout,
+)
 
 EXEC_COLORS = [ORANGE, BRIGHT_ORANGE, AMBER, MUTED_ORANGE, INFO, CYAN, GREEN, RED]
 ACTION_COLORS = {
@@ -32,7 +49,7 @@ def _arrow_safe_frame(df: pd.DataFrame) -> pd.DataFrame:
         if pd.api.types.is_object_dtype(series):
             sample = series.dropna().head(200).tolist()
             type_names = {type(v).__name__ for v in sample}
-            if len(type_names) > 1 or any(t in type_names for t in {"str", "dict", "list", "tuple"}):
+            if len(type_names) > 1 or any(t in type_names for t in ("str", "dict", "list", "tuple")):
                 out[col] = series.map(lambda v: "" if pd.isna(v) else str(v))
     return out
 
@@ -72,14 +89,35 @@ def _header(st, kpis: dict[str, Any], status: str) -> None:
     )
     cols = st.columns(4)
     with cols[0]:
-        metric_card(st, "Latest Signal Date", str(kpis.get("latest_signal_date", "unavailable")), "growth_official_paper_performance.csv", badge="official")
+        metric_card(
+            st,
+            "Latest Signal Date",
+            str(kpis.get("latest_signal_date", "unavailable")),
+            "growth_official_paper_performance.csv",
+            badge="official",
+        )
     with cols[1]:
-        metric_card(st, "Economic Application", str(kpis.get("economic_application_date", "unavailable")), "t+1 execution lag", badge="read only")
+        metric_card(
+            st, "Economic Application", str(kpis.get("economic_application_date", "unavailable")), "t+1 execution lag", badge="read only"
+        )
     with cols[2]:
-        metric_card(st, "Last Rebalance", str(kpis.get("last_rebalance_date", "unavailable")), f"next {kpis.get('next_rebalance_date', 'unavailable')}", badge="official")
+        metric_card(
+            st,
+            "Last Rebalance",
+            str(kpis.get("last_rebalance_date", "unavailable")),
+            f"next {kpis.get('next_rebalance_date', 'unavailable')}",
+            badge="official",
+        )
     with cols[3]:
         rec = str(kpis.get("reconciliation_status", "unavailable"))
-        metric_card(st, "Reconciliation", rec, "broker/orders disabled", state="neutral" if rec.lower() in {"true", "pass"} else "warning", badge="no orders")
+        metric_card(
+            st,
+            "Reconciliation",
+            rec,
+            "broker/orders disabled",
+            state="neutral" if rec.lower() in {"true", "pass"} else "warning",
+            badge="no orders",
+        )
 
 
 def _kpi_cards(st, bundle) -> None:
@@ -100,16 +138,33 @@ def _kpi_cards(st, bundle) -> None:
     ]
     for i in range(0, len(rows), 4):
         cols = st.columns(4)
-        for col, (label, value, note) in zip(cols, rows[i:i+4]):
+        for col, (label, value, note) in zip(cols, rows[i : i + 4]):
             with col:
                 metric_card(st, label, value, note, badge="official")
 
 
 def _order_blotter(st, blotter: pd.DataFrame) -> None:
     cols = [
-        "signal date", "economic application date", "ticker", "company", "action", "old weight", "new weight", "weight change",
-        "estimated_trade_value", "reference price", "synthetic_quantity", "commission", "spread_cost", "slippage", "market_impact",
-        "estimated_total_cost", "ADV", "participation_rate", "execution_status", "reconciliation_status",
+        "signal date",
+        "economic application date",
+        "ticker",
+        "company",
+        "action",
+        "old weight",
+        "new weight",
+        "weight change",
+        "estimated_trade_value",
+        "reference price",
+        "synthetic_quantity",
+        "commission",
+        "spread_cost",
+        "slippage",
+        "market_impact",
+        "estimated_total_cost",
+        "ADV",
+        "participation_rate",
+        "execution_status",
+        "reconciliation_status",
     ]
     st.markdown("### Order Blotter")
     st.caption("Estimated execution quality — no live broker fills.")
@@ -148,14 +203,41 @@ def _gross_vs_net(st, equity: pd.DataFrame) -> None:
         return
     fig = go.Figure()
     if "gross_equity_display" in equity.columns:
-        fig.add_trace(go.Scatter(x=equity["date"], y=equity["gross_equity_display"], mode="lines+markers", name="Gross equity", line=dict(color=CHART_COLORS["growth"])))
+        fig.add_trace(
+            go.Scatter(
+                x=equity["date"],
+                y=equity["gross_equity_display"],
+                mode="lines+markers",
+                name="Gross equity",
+                line={"color": CHART_COLORS["growth"]},
+            )
+        )
     if "estimated_net_equity_display" in equity.columns:
-        fig.add_trace(go.Scatter(x=equity["date"], y=equity["estimated_net_equity_display"], mode="lines+markers", name="Estimated net equity", line=dict(color=CHART_COLORS["growth_net"])))
+        fig.add_trace(
+            go.Scatter(
+                x=equity["date"],
+                y=equity["estimated_net_equity_display"],
+                mode="lines+markers",
+                name="Estimated net equity",
+                line={"color": CHART_COLORS["growth_net"]},
+            )
+        )
     if "cumulative_cost_drag" in equity.columns:
-        fig.add_trace(go.Bar(x=equity["date"], y=equity["cumulative_cost_drag"], name="Cumulative cost drag", marker_color=AMBER, yaxis="y2", opacity=0.35))
-        fig.update_layout(yaxis2=dict(overlaying="y", side="right", title="Cost drag"))
+        fig.add_trace(
+            go.Bar(
+                x=equity["date"],
+                y=equity["cumulative_cost_drag"],
+                name="Cumulative cost drag",
+                marker_color=AMBER,
+                yaxis="y2",
+                opacity=0.35,
+            )
+        )
+        fig.update_layout(yaxis2={"overlaying": "y", "side": "right", "title": "Cost drag"})
     st.plotly_chart(apply_plotly_layout(fig, "Official gross vs estimated net equity"), width="stretch")
-    _safe_df(st, equity, ["date", "gross_equity_display", "estimated_net_equity_display", "cumulative_cost_drag", "estimated_execution_cost"])
+    _safe_df(
+        st, equity, ["date", "gross_equity_display", "estimated_net_equity_display", "cumulative_cost_drag", "estimated_execution_cost"]
+    )
 
 
 def _turnover(st, turnover: pd.DataFrame) -> None:
@@ -168,7 +250,14 @@ def _turnover(st, turnover: pd.DataFrame) -> None:
         fig = px.bar(turnover, x="date", y="turnover", color="session_type", color_discrete_sequence=EXEC_COLORS)
         st.plotly_chart(apply_plotly_layout(fig, "Turnover by session"), width="stretch")
     with c2:
-        fig = px.scatter(turnover, x="turnover", y="gross_daily_return", color="session_type", size=turnover["turnover"].abs() + 0.001, color_discrete_sequence=EXEC_COLORS)
+        fig = px.scatter(
+            turnover,
+            x="turnover",
+            y="gross_daily_return",
+            color="session_type",
+            size=turnover["turnover"].abs() + 0.001,
+            color_discrete_sequence=EXEC_COLORS,
+        )
         st.plotly_chart(apply_plotly_layout(fig, "Turnover vs portfolio return"), width="stretch")
     _safe_df(st, turnover)
 
@@ -185,7 +274,14 @@ def _capacity(st, capacity: pd.DataFrame, kpis: dict[str, Any]) -> None:
     if capacity.empty:
         st.warning("Capacity table unavailable.")
         return
-    fig = px.scatter(capacity, x="capital", y="max_participation", color="capacity_status", facet_col="participation_limit" if "participation_limit" in capacity.columns else None, color_discrete_sequence=EXEC_COLORS)
+    fig = px.scatter(
+        capacity,
+        x="capital",
+        y="max_participation",
+        color="capacity_status",
+        facet_col="participation_limit" if "participation_limit" in capacity.columns else None,
+        color_discrete_sequence=EXEC_COLORS,
+    )
     st.plotly_chart(apply_plotly_layout(fig, "Capacity scenarios by participation limit"), width="stretch")
     _safe_df(st, capacity, height=360)
 
@@ -199,7 +295,13 @@ def _quality_and_lifecycle(st, bundle) -> None:
     if not bundle.lifecycle.empty and "ticker" in bundle.lifecycle.columns:
         value_col = "estimated_net_pnl" if "estimated_net_pnl" in bundle.lifecycle.columns else "unrealized_pnl"
         if value_col in bundle.lifecycle.columns:
-            fig = px.bar(bundle.lifecycle, x="ticker", y=value_col, color="current_status" if "current_status" in bundle.lifecycle.columns else None, color_discrete_sequence=EXEC_COLORS)
+            fig = px.bar(
+                bundle.lifecycle,
+                x="ticker",
+                y=value_col,
+                color="current_status" if "current_status" in bundle.lifecycle.columns else None,
+                color_discrete_sequence=EXEC_COLORS,
+            )
             st.plotly_chart(apply_plotly_layout(fig, "Realized/unrealized contribution"), width="stretch")
 
 
@@ -226,17 +328,19 @@ def render_execution_terminal(st, data: dict[str, pd.DataFrame]) -> None:
     _kpi_cards(st, bundle)
     alert_box(st, bundle.commentary, "info")
 
-    tabs = st.tabs([
-        "Rebalance Summary",
-        "Order Blotter",
-        "Costs",
-        "Gross vs Net",
-        "Turnover",
-        "Capacity",
-        "Quality & Lifecycle",
-        "Reconciliation",
-        "Sources",
-    ])
+    tabs = st.tabs(
+        [
+            "Rebalance Summary",
+            "Order Blotter",
+            "Costs",
+            "Gross vs Net",
+            "Turnover",
+            "Capacity",
+            "Quality & Lifecycle",
+            "Reconciliation",
+            "Sources",
+        ]
+    )
     with tabs[0]:
         _safe_df(st, bundle.rebalance_summary, height=360)
     with tabs[1]:

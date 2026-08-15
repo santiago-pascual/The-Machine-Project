@@ -3,7 +3,6 @@ from __future__ import annotations
 import contextlib
 import io
 from dataclasses import dataclass
-from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -12,13 +11,19 @@ from covariance_estimation import calculate_covariance
 from ema_timing_model import apply_timing_to_expected_returns, compute_asset_timing
 from expected_returns_model import compute_expected_returns
 from exposure_control import compute_net_exposure
-from full_quant_regime_gate import average_entropy_from_diagnostics, average_trend_score, evaluate_full_quant_regime_gate
+from full_quant_regime_gate import (
+    average_entropy_from_diagnostics,
+    average_trend_score,
+    evaluate_full_quant_regime_gate,
+)
 from market_regime_model import compute_market_regime_model
 from portfolio_optimizer import PortfolioOptimizer
 from quant_target_model import generate_quant_targets
 from risk_metrics import compute_return_risk_metrics
-from trend_persistence_engine import apply_trend_persistence_to_expected_returns, compute_trend_persistence
-
+from trend_persistence_engine import (
+    apply_trend_persistence_to_expected_returns,
+    compute_trend_persistence,
+)
 
 DEFAULT_REDUCED_UNIVERSE = [
     "AAPL",
@@ -291,7 +296,11 @@ def _run_shadow_production_pipeline(
         weights, sharpe, best_return, best_volatility, _ = optimizer.optimize()
 
     raw_weights = pd.Series(weights, index=selected_assets, dtype=float).clip(lower=0.0)
-    raw_weights = raw_weights / float(raw_weights.sum()) if float(raw_weights.sum()) > 0 else pd.Series(1.0 / len(selected_assets), index=selected_assets)
+    raw_weights = (
+        raw_weights / float(raw_weights.sum())
+        if float(raw_weights.sum()) > 0
+        else pd.Series(1.0 / len(selected_assets), index=selected_assets)
+    )
     exposure_info = compute_net_exposure(
         regime_score=regime_score,
         regime_confidence=regime_confidence,
@@ -333,9 +342,7 @@ def _portfolio_forward_return(
     horizon: int,
 ) -> float:
     asset_returns = {
-        ticker: _future_asset_return(prices_df, ticker, t_pos, horizon)
-        for ticker in weights.index
-        if ticker in prices_df.columns
+        ticker: _future_asset_return(prices_df, ticker, t_pos, horizon) for ticker in weights.index if ticker in prices_df.columns
     }
     clean = pd.Series(asset_returns, dtype=float).dropna()
     if clean.empty:
@@ -367,12 +374,14 @@ def _build_summary(
     rows = {
         "test_start": str(portfolio_df["date"].iloc[0]) if not portfolio_df.empty else "",
         "test_end": str(portfolio_df["date"].iloc[-1]) if not portfolio_df.empty else "",
-        "number_of_test_dates": int(len(portfolio_df)),
+        "number_of_test_dates": len(portfolio_df),
         "average_cash": float(portfolio_df["cash_weight"].mean()) if not portfolio_df.empty else 0.0,
         "average_selected_count": float(portfolio_df["selected_count"].mean()) if not portfolio_df.empty else 0.0,
         "realized_return": float((1.0 + realized_1d).prod() - 1.0) if not realized_1d.empty else 0.0,
         "realized_volatility": float(risk["annualized_volatility"]),
-        "realized_sharpe": float(risk["annualized_return_estimate"] / risk["annualized_volatility"]) if risk["annualized_volatility"] > 0 else 0.0,
+        "realized_sharpe": float(risk["annualized_return_estimate"] / risk["annualized_volatility"])
+        if risk["annualized_volatility"] > 0
+        else 0.0,
         "max_drawdown": max_drawdown,
         "Sortino": float(risk["sortino_ratio"]),
         "Calmar": float(risk["calmar_ratio"]),
@@ -500,7 +509,7 @@ def run_walk_forward_backtest(
             "date": date.strftime("%Y-%m-%d"),
             "realized_portfolio_return_1d": _portfolio_forward_return(data, weights, t_pos, 1),
             "cash_weight": float(result["cash_weight"]),
-            "selected_count": int(len(selected_assets)),
+            "selected_count": len(selected_assets),
             "turnover": float(turnover),
             "max_weight": float(weights.max()) if len(weights) else 0.0,
             "portfolio_expected_return": float(result["portfolio_expected_return"]),

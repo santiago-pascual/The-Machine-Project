@@ -5,7 +5,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-
 PERFORMANCE_FILE = "growth_candidate_paper_performance.csv"
 STATE_FILE = "growth_candidate_paper_state.csv"
 TRADES_FILE = "growth_candidate_paper_trades.csv"
@@ -252,7 +251,7 @@ def _monthly_report(perf: pd.DataFrame, returns: pd.Series) -> pd.DataFrame:
                 "average_exposure": float(group["exposure"].mean()) if group["exposure"].notna().any() else np.nan,
                 "average_cash": float(group["cash_weight"].mean()) if group["cash_weight"].notna().any() else np.nan,
                 "average_turnover": float(group["turnover"].mean()) if group["turnover"].notna().any() else np.nan,
-                "observations": int(len(group)),
+                "observations": len(group),
             }
         )
     return pd.DataFrame(rows)
@@ -319,7 +318,7 @@ def run_growth_paper_governance() -> pd.DataFrame:
     variant = str(latest_perf.get("growth_paper_variant", "growth_v1_exposure_cap_60"))
 
     paper_months = _paper_month_span(perf)
-    paper_days = int(len(perf))
+    paper_days = len(perf)
     active_holdings = (
         latest_state[latest_state["ticker"].astype(str).ne("CASH")]["ticker"].astype(str).tolist()
         if not latest_state.empty and "ticker" in latest_state.columns
@@ -389,7 +388,7 @@ def run_growth_paper_governance() -> pd.DataFrame:
         "benchmark_status": "available" if benchmark_available else "missing",
         "benchmark_reason": benchmark_reason,
         "holdings": ",".join(active_holdings),
-        "trades_today": int(len(latest_trades)) if not latest_trades.empty else 0,
+        "trades_today": len(latest_trades) if not latest_trades.empty else 0,
         **expected_benchmarks,
     }
 

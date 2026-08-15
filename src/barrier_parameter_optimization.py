@@ -1,15 +1,14 @@
 from __future__ import annotations
 
-from pathlib import Path
 import contextlib
 import io
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
 
 from risk_metrics import compute_return_risk_metrics
 from triple_barrier_labeling import generate_triple_barrier_labels
-
 
 DEFAULT_OUTPUT_FILE = "barrier_parameter_optimization.csv"
 DEFAULT_HORIZONS = [5, 10, 20, 30]
@@ -54,7 +53,7 @@ def _performance_block(labels: pd.DataFrame, subset_name: str) -> dict[str, floa
     sharpe = float(realized.mean() / realized.std(ddof=1)) if len(realized) > 1 and float(realized.std(ddof=1)) > 0 else 0.0
     return {
         "subset": subset_name,
-        "sample_size": int(len(labels)),
+        "sample_size": len(labels),
         "TP_rate": tp_rate,
         "SL_rate": sl_rate,
         "timeout_rate": timeout_rate,
@@ -103,7 +102,9 @@ def run_barrier_parameter_optimization(
                         sl_multiple=float(sl_multiple),
                         output_path=Path(output_path).with_suffix(".tmp.csv"),
                     )
-                selected_labels = labels[labels["selected"].astype(bool)] if not labels.empty and "selected" in labels.columns else labels.iloc[0:0]
+                selected_labels = (
+                    labels[labels["selected"].astype(bool)] if not labels.empty and "selected" in labels.columns else labels.iloc[0:0]
+                )
                 for subset_name, subset in [("universe", labels), ("selected_only", selected_labels)]:
                     metrics = _performance_block(subset, subset_name=subset_name)
                     rows.append(

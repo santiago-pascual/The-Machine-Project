@@ -5,7 +5,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-
 ALPHA_REPORT_FILE = "alpha_attribution_report.csv"
 IC_RANKING_FILE = "factor_ic_ranking.csv"
 INCREMENTAL_FILE = "factor_incremental_alpha.csv"
@@ -126,13 +125,26 @@ def _prepare_dataset() -> pd.DataFrame:
         data = data.drop(columns=[col for col in available if col in data.columns], errors="ignore")
         data = data.merge(realized[["date", "ticker", "model_mode"] + available], on=["date", "ticker", "model_mode"], how="left")
     for col in data.columns:
-        if col not in {"date", "ticker", "model_mode", "selected", "regime", "timing_model", "target_model", "covariance_method", "gate_decision", "gate_reason"}:
+        if col not in {
+            "date",
+            "ticker",
+            "model_mode",
+            "selected",
+            "regime",
+            "timing_model",
+            "target_model",
+            "covariance_method",
+            "gate_decision",
+            "gate_reason",
+        }:
             converted = pd.to_numeric(data[col], errors="coerce")
             if converted.notna().sum() > 0:
                 data[col] = converted
     if "daily_volatility" not in data.columns:
         if "realized_return_1d" in data.columns:
-            data["daily_volatility"] = data.groupby("ticker")["realized_return_1d"].transform(lambda s: _num(s).rolling(20, min_periods=5).std())
+            data["daily_volatility"] = data.groupby("ticker")["realized_return_1d"].transform(
+                lambda s: _num(s).rolling(20, min_periods=5).std()
+            )
         elif "realized_return_5d" in data.columns:
             data["daily_volatility"] = _num(data["realized_return_5d"]).abs() / np.sqrt(5)
         else:
@@ -231,7 +243,7 @@ def _select_by_candidate(data: pd.DataFrame, score_col: str) -> pd.DataFrame:
     selected_rows: list[pd.DataFrame] = []
     for date, group in data.groupby("date", sort=True):
         current_selected = group[_bool(group.get("selected", pd.Series(False, index=group.index)))]
-        selected_count = int(len(current_selected)) if len(current_selected) else 4
+        selected_count = len(current_selected) if len(current_selected) else 4
         selected_count = min(4, max(2, selected_count))
         candidates = group[_num(group["expected_daily_return"]).gt(0)].copy()
         if candidates.empty:
@@ -239,7 +251,9 @@ def _select_by_candidate(data: pd.DataFrame, score_col: str) -> pd.DataFrame:
         picks = candidates.sort_values(score_col, ascending=False).head(selected_count).copy()
         active_weight = float(_num(group.get("weight", pd.Series(dtype=float))).clip(lower=0.0).sum())
         if not np.isfinite(active_weight) or active_weight <= 0:
-            active_weight = max(0.0, 1.0 - float(_num(group.get("cash_weight", pd.Series([0.5]))).dropna().iloc[0] if "cash_weight" in group else 0.5))
+            active_weight = max(
+                0.0, 1.0 - float(_num(group.get("cash_weight", pd.Series([0.5]))).dropna().iloc[0] if "cash_weight" in group else 0.5)
+            )
         picks["factor_alpha_weight"] = active_weight / max(1, len(picks))
         selected_rows.append(picks)
     return pd.concat(selected_rows, ignore_index=True) if selected_rows else pd.DataFrame()
@@ -278,7 +292,7 @@ def _portfolio_metrics(selected: pd.DataFrame, candidate: str) -> dict[str, obje
         "average_selected_count": float(daily["selected_count"].mean()) if not daily.empty else np.nan,
         "average_cash_proxy": float(daily["cash_proxy"].mean()) if not daily.empty else np.nan,
         "turnover": float(daily["turnover"].mean()) if not daily.empty else np.nan,
-        "sample_size": int(len(selected)),
+        "sample_size": len(selected),
     }, daily
 
 
@@ -311,7 +325,11 @@ def _backtest_candidates(data: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame
 
 def _governance(scores: pd.DataFrame, backtest: pd.DataFrame) -> pd.DataFrame:
     rows: list[dict[str, object]] = []
-    baseline_sharpe = float(backtest.loc[backtest["candidate"].eq("candidate_A_expected_only"), "Sharpe"].iloc[0]) if "candidate_A_expected_only" in set(backtest["candidate"]) else np.nan
+    baseline_sharpe = (
+        float(backtest.loc[backtest["candidate"].eq("candidate_A_expected_only"), "Sharpe"].iloc[0])
+        if "candidate_A_expected_only" in set(backtest["candidate"])
+        else np.nan
+    )
     for _, row in backtest.iterrows():
         candidate = str(row["candidate"])
         score_row = scores[scores["candidate"].eq(candidate)].iloc[0] if candidate in set(scores["candidate"]) else pd.Series(dtype=float)
@@ -353,7 +371,14 @@ def run_factor_alpha_model() -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, 
     data = _prepare_dataset()
     if data.empty:
         raise ValueError("No historical data available for factor alpha model.")
-    required = {"expected_daily_return", "signal_strength", "realized_return_1d", "realized_return_5d", "realized_return_10d", "realized_return_20d"}
+    required = {
+        "expected_daily_return",
+        "signal_strength",
+        "realized_return_1d",
+        "realized_return_5d",
+        "realized_return_10d",
+        "realized_return_20d",
+    }
     missing = sorted(required - set(data.columns))
     if missing:
         raise ValueError(f"Missing required columns: {missing}")
@@ -361,7 +386,9 @@ def run_factor_alpha_model() -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, 
     scores = _score_metrics(data)
     backtest, daily = _backtest_candidates(data)
     governance = _governance(scores, backtest)
-    results = backtest.merge(scores, on="candidate", how="left", suffixes=("", "_score")).merge(governance[["candidate", "classification", "reason"]], on="candidate", how="left")
+    results = backtest.merge(scores, on="candidate", how="left", suffixes=("", "_score")).merge(
+        governance[["candidate", "classification", "reason"]], on="candidate", how="left"
+    )
 
     results.to_csv(RESULTS_FILE, index=False)
     scores.to_csv(SCORES_FILE, index=False)
@@ -373,10 +400,32 @@ def run_factor_alpha_model() -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, 
     print("production change: none")
 
     print("\n===== FACTOR ALPHA CANDIDATES =====")
-    print(scores[["candidate", "formula", "spearman_ic_5d", "spearman_ic_10d", "spearman_ic_20d", "average_abs_rank_ic", "monotonicity_score"]].to_string(index=False))
+    print(
+        scores[
+            ["candidate", "formula", "spearman_ic_5d", "spearman_ic_10d", "spearman_ic_20d", "average_abs_rank_ic", "monotonicity_score"]
+        ].to_string(index=False)
+    )
 
     print("\n===== FACTOR ALPHA BACKTEST =====")
-    print(backtest[["candidate", "realized_return", "Sharpe", "Sortino", "Calmar", "max_drawdown", "TP_rate", "SL_rate", "TP_minus_SL", "hit_rate", "average_selected_count", "average_cash_proxy", "sample_size"]].to_string(index=False))
+    print(
+        backtest[
+            [
+                "candidate",
+                "realized_return",
+                "Sharpe",
+                "Sortino",
+                "Calmar",
+                "max_drawdown",
+                "TP_rate",
+                "SL_rate",
+                "TP_minus_SL",
+                "hit_rate",
+                "average_selected_count",
+                "average_cash_proxy",
+                "sample_size",
+            ]
+        ].to_string(index=False)
+    )
 
     print("\n===== FACTOR ALPHA GOVERNANCE =====")
     print(governance.to_string(index=False))

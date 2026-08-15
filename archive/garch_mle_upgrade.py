@@ -2,16 +2,18 @@ from __future__ import annotations
 
 import argparse
 import math
+from collections.abc import Callable
 from pathlib import Path
-from typing import Callable
 
 import numpy as np
 import pandas as pd
 from scipy.optimize import minimize
 from scipy.special import gammaln
 
-from quant_research_features import egarch11_forecast_variance, garch11_forecast_variance
-
+from quant_research_features import (
+    egarch11_forecast_variance,
+    garch11_forecast_variance,
+)
 
 TRADING_DAYS = 252
 EPS = 1e-12
@@ -245,7 +247,7 @@ def validation_metrics(forecasts: pd.DataFrame) -> pd.DataFrame:
         rows.append(
             {
                 "model_name": model_name,
-                "observations": int(len(g)),
+                "observations": len(g),
                 "QLIKE": float(np.mean(np.log(h) + rv / h)),
                 "MSE": float(np.mean(errors**2)),
                 "MAE": float(np.mean(np.abs(errors))),

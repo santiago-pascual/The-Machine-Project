@@ -7,7 +7,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-
 DEFAULT_OUTPUT_TRIAL_LOG = "strategy_trial_log.csv"
 
 
@@ -59,16 +58,7 @@ def _count_mode_columns(df: pd.DataFrame) -> int:
     mode_like = [
         col
         for col in df.columns
-        if col
-        in {
-            "baseline",
-            "full_quant_research",
-            "regime_gated_full_quant",
-            "ema",
-            "trend_persistence",
-        }
-        or col.endswith("_sharpe")
-        or col.endswith("_return")
+        if col in {"baseline", "full_quant_research", "regime_gated_full_quant", "ema", "trend_persistence"} or col.endswith(("_sharpe", "_return"))
     ]
     return max(1, len(set(mode_like)))
 
@@ -77,13 +67,13 @@ def _count_trials(df: pd.DataFrame, mode: str) -> int:
     if df.empty:
         return 0
     if mode == "rows":
-        return int(len(df))
+        return len(df)
     if mode == "mode_columns":
         return int(_count_mode_columns(df))
     if mode == "unique_barrier_configs":
         cols = [c for c in ["horizon", "tp_multiple", "sl_multiple", "subset"] if c in df.columns]
-        return int(df[cols].drop_duplicates().shape[0]) if cols else int(len(df))
-    return int(len(df))
+        return int(df[cols].drop_duplicates().shape[0]) if cols else len(df)
+    return len(df)
 
 
 def build_strategy_trial_log(
@@ -160,7 +150,7 @@ def _infer_sample_length(path: str, row_index: int | None = None) -> int:
                 return int(max(0, values.max()))
     if "date" in df.columns:
         return int(df["date"].nunique())
-    return int(len(df))
+    return len(df)
 
 
 def _return_distribution_stats() -> dict[str, float]:
@@ -180,11 +170,11 @@ def _return_distribution_stats() -> dict[str, float]:
             returns.extend(pd.to_numeric(df[col], errors="coerce").dropna().tolist())
     series = pd.Series(returns, dtype=float).replace([np.inf, -np.inf], np.nan).dropna()
     if len(series) < 3:
-        return {"skewness": 0.0, "kurtosis": 3.0, "sample_size": int(len(series))}
+        return {"skewness": 0.0, "kurtosis": 3.0, "sample_size": len(series)}
     return {
         "skewness": float(series.skew()),
         "kurtosis": float(series.kurtosis() + 3.0),
-        "sample_size": int(len(series)),
+        "sample_size": len(series),
     }
 
 

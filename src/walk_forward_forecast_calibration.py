@@ -6,7 +6,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-
 OUTPUT_FORECASTS = "walk_forward_calibrated_forecasts.csv"
 OUTPUT_COEFFICIENTS = "walk_forward_calibration_coefficients.csv"
 OUTPUT_DIAGNOSTICS = "walk_forward_calibration_diagnostics.csv"
@@ -65,7 +64,7 @@ def _prepare_panel(config: WalkForwardForecastCalibrationConfig) -> pd.DataFrame
 def _fit_coefficients(train: pd.DataFrame, forecast_col: str, realized_col: str) -> dict[str, float]:
     data = train[[forecast_col, realized_col]].apply(pd.to_numeric, errors="coerce").replace([np.inf, -np.inf], np.nan).dropna()
     if len(data) < 20 or data[forecast_col].nunique() < 2:
-        return {"alpha": 0.0, "beta": 1.0, "r2": 0.0, "sample_size": int(len(data))}
+        return {"alpha": 0.0, "beta": 1.0, "r2": 0.0, "sample_size": len(data)}
     x = data[forecast_col].to_numpy(dtype=float)
     y = data[realized_col].to_numpy(dtype=float)
     x_mean = float(x.mean())
@@ -76,7 +75,7 @@ def _fit_coefficients(train: pd.DataFrame, forecast_col: str, realized_col: str)
     ss_res = float(np.sum(np.square(y - pred)))
     ss_tot = float(np.sum(np.square(y - y_mean)))
     r2 = 1.0 - ss_res / ss_tot if ss_tot > 1e-12 else 0.0
-    return {"alpha": alpha, "beta": beta, "r2": float(r2), "sample_size": int(len(data))}
+    return {"alpha": alpha, "beta": beta, "r2": float(r2), "sample_size": len(data)}
 
 
 def _calibrate_walk_forward(panel: pd.DataFrame, config: WalkForwardForecastCalibrationConfig) -> tuple[pd.DataFrame, pd.DataFrame]:
@@ -93,7 +92,7 @@ def _calibrate_walk_forward(panel: pd.DataFrame, config: WalkForwardForecastCali
                 current[f"wf_calibration_warning_{horizon}d"] = "missing_realized_column"
                 continue
             if len(history) < config.min_train_observations:
-                coeff = {"alpha": 0.0, "beta": 1.0, "r2": 0.0, "sample_size": int(len(history))}
+                coeff = {"alpha": 0.0, "beta": 1.0, "r2": 0.0, "sample_size": len(history)}
                 warning = "insufficient_prior_data"
             else:
                 coeff = _fit_coefficients(history, "forecast_return", realized_col)
@@ -162,7 +161,9 @@ def _diagnostics(forecasts: pd.DataFrame, config: WalkForwardForecastCalibration
     return pd.DataFrame(rows)
 
 
-def _select_shadow(group: pd.DataFrame, score_col: str, selected_count: int, cash_weight: float, candidate: str, horizon: int) -> pd.DataFrame:
+def _select_shadow(
+    group: pd.DataFrame, score_col: str, selected_count: int, cash_weight: float, candidate: str, horizon: int
+) -> pd.DataFrame:
     frame = group.copy()
     frame["score"] = _safe_numeric(frame[score_col], np.nan)
     frame = frame.sort_values("score", ascending=False).head(max(1, int(selected_count))).copy()
@@ -204,7 +205,7 @@ def _portfolio_shadow(forecasts: pd.DataFrame, config: WalkForwardForecastCalibr
                     "date": date,
                     "candidate": candidate,
                     "cash_weight": cash,
-                    "selected_count": int(len(selected)),
+                    "selected_count": len(selected),
                     "turnover": turnover,
                     f"realized_portfolio_return_{config.portfolio_horizon}d": float(selected["shadow_return"].sum(skipna=True)),
                 }
@@ -216,7 +217,15 @@ def _portfolio_shadow(forecasts: pd.DataFrame, config: WalkForwardForecastCalibr
 def _risk_metrics(returns: pd.Series) -> dict[str, float]:
     returns = pd.to_numeric(returns, errors="coerce").replace([np.inf, -np.inf], np.nan).dropna()
     if returns.empty:
-        return {"realized_return": np.nan, "volatility": np.nan, "Sharpe": np.nan, "Sortino": np.nan, "Calmar": np.nan, "max_drawdown": np.nan, "hit_rate": np.nan}
+        return {
+            "realized_return": np.nan,
+            "volatility": np.nan,
+            "Sharpe": np.nan,
+            "Sortino": np.nan,
+            "Calmar": np.nan,
+            "max_drawdown": np.nan,
+            "hit_rate": np.nan,
+        }
     equity = (1.0 + returns).cumprod()
     dd = equity / equity.cummax() - 1.0
     mean_ret = float(returns.mean())
@@ -289,14 +298,25 @@ def run_walk_forward_forecast_calibration(config: WalkForwardForecastCalibration
     diagnostics.to_csv(OUTPUT_DIAGNOSTICS, index=False)
     shadow.to_csv(OUTPUT_SHADOW, index=False)
     _print_report(diagnostics, shadow, coefficients)
-    return {"forecasts": forecasts, "coefficients": coefficients, "diagnostics": diagnostics, "shadow": shadow, "trades": trades, "daily": daily}
+    return {
+        "forecasts": forecasts,
+        "coefficients": coefficients,
+        "diagnostics": diagnostics,
+        "shadow": shadow,
+        "trades": trades,
+        "daily": daily,
+    }
 
 
 def _print_report(diagnostics: pd.DataFrame, shadow: pd.DataFrame, coefficients: pd.DataFrame) -> None:
     print("\n===== WALK-FORWARD FORECAST CALIBRATION =====")
     print("strict no-look-ahead: True")
     print(f"coefficient rows: {len(coefficients)}")
-    warnings = coefficients["warning"].replace("", np.nan).dropna().value_counts().to_dict() if not coefficients.empty and "warning" in coefficients.columns else {}
+    warnings = (
+        coefficients["warning"].replace("", np.nan).dropna().value_counts().to_dict()
+        if not coefficients.empty and "warning" in coefficients.columns
+        else {}
+    )
     print(f"warnings: {warnings if warnings else 'none'}")
 
     print("\n===== BEFORE VS AFTER FORECAST CALIBRATION =====")

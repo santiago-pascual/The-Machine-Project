@@ -1,4 +1,3 @@
-
 from __future__ import annotations
 
 import shutil
@@ -82,7 +81,9 @@ def reconstruct_accounting(perf: pd.DataFrame, state: pd.DataFrame, costs: pd.Da
     previous_net = INITIAL_CAPITAL
     for _, row in p.iterrows():
         d = row["date"]
-        gross_return = float(pd.to_numeric(pd.Series([row.get("gross_daily_return", row.get("daily_return", 0.0))]), errors="coerce").fillna(0.0).iloc[0])
+        gross_return = float(
+            pd.to_numeric(pd.Series([row.get("gross_daily_return", row.get("daily_return", 0.0))]), errors="coerce").fillna(0.0).iloc[0]
+        )
         cost = float(c.get(d, row.get("estimated_execution_cost", 0.0)))
         gross_equity = previous_gross * (1.0 + gross_return)
         net_equity = previous_net * (1.0 + gross_return) - cost
@@ -98,26 +99,30 @@ def reconstruct_accounting(perf: pd.DataFrame, state: pd.DataFrame, costs: pd.Da
         reported_gross_value = float(pd.to_numeric(pd.Series([row.get("portfolio_value", np.nan)]), errors="coerce").iloc[0])
         reported_net_cum = float(pd.to_numeric(pd.Series([row.get("estimated_net_cumulative_return", np.nan)]), errors="coerce").iloc[0])
         expected_net_cum = net_equity / INITIAL_CAPITAL - 1.0
-        rows.append({
-            "date": d.date().isoformat(),
-            "gross_return": gross_return,
-            "execution_cost": cost,
-            "gross_equity_expected": gross_equity,
-            "gross_equity_reported": reported_gross_value,
-            "gross_equity_diff": reported_gross_value - gross_equity if np.isfinite(reported_gross_value) else np.nan,
-            "net_equity_expected": net_equity,
-            "estimated_net_cumulative_return_expected": expected_net_cum,
-            "estimated_net_cumulative_return_reported": reported_net_cum,
-            "estimated_net_cumulative_return_diff": reported_net_cum - expected_net_cum if np.isfinite(reported_net_cum) else np.nan,
-            "holdings_plus_cash_value": holdings_value,
-            "holdings_cash_vs_gross_diff": holdings_value - gross_equity if np.isfinite(holdings_value) else np.nan,
-            "cash_value": cash_value,
-            "weight_sum": weight_sum,
-            "weights_sum_to_one": bool(np.isfinite(weight_sum) and abs(weight_sum - 1.0) < 1e-6),
-            "gross_identity_pass": bool(abs(reported_gross_value - gross_equity) < 1e-6) if np.isfinite(reported_gross_value) else False,
-            "net_identity_pass": bool(abs(reported_net_cum - expected_net_cum) < 1e-6) if np.isfinite(reported_net_cum) else False,
-            "holdings_cash_identity_pass": bool(abs(holdings_value - gross_equity) < 1e-5) if np.isfinite(holdings_value) else False,
-        })
+        rows.append(
+            {
+                "date": d.date().isoformat(),
+                "gross_return": gross_return,
+                "execution_cost": cost,
+                "gross_equity_expected": gross_equity,
+                "gross_equity_reported": reported_gross_value,
+                "gross_equity_diff": reported_gross_value - gross_equity if np.isfinite(reported_gross_value) else np.nan,
+                "net_equity_expected": net_equity,
+                "estimated_net_cumulative_return_expected": expected_net_cum,
+                "estimated_net_cumulative_return_reported": reported_net_cum,
+                "estimated_net_cumulative_return_diff": reported_net_cum - expected_net_cum if np.isfinite(reported_net_cum) else np.nan,
+                "holdings_plus_cash_value": holdings_value,
+                "holdings_cash_vs_gross_diff": holdings_value - gross_equity if np.isfinite(holdings_value) else np.nan,
+                "cash_value": cash_value,
+                "weight_sum": weight_sum,
+                "weights_sum_to_one": bool(np.isfinite(weight_sum) and abs(weight_sum - 1.0) < 1e-6),
+                "gross_identity_pass": bool(abs(reported_gross_value - gross_equity) < 1e-6)
+                if np.isfinite(reported_gross_value)
+                else False,
+                "net_identity_pass": bool(abs(reported_net_cum - expected_net_cum) < 1e-6) if np.isfinite(reported_net_cum) else False,
+                "holdings_cash_identity_pass": bool(abs(holdings_value - gross_equity) < 1e-5) if np.isfinite(holdings_value) else False,
+            }
+        )
         previous_gross = gross_equity
         previous_net = net_equity
     return pd.DataFrame(rows)
@@ -131,40 +136,51 @@ def build_execution_lag_audit(perf: pd.DataFrame, actions: pd.DataFrame) -> pd.D
         d = row["date"]
         signal = pd.to_datetime(row.get("signal_date", d), errors="coerce")
         app = pd.to_datetime(row.get("economic_application_date", pd.NaT), errors="coerce")
-        gross_return = float(pd.to_numeric(pd.Series([row.get("gross_daily_return", row.get("daily_return", 0.0))]), errors="coerce").fillna(0.0).iloc[0])
+        gross_return = float(
+            pd.to_numeric(pd.Series([row.get("gross_daily_return", row.get("daily_return", 0.0))]), errors="coerce").fillna(0.0).iloc[0]
+        )
         day_actions = a[a["date"].eq(d)] if not a.empty else pd.DataFrame()
         weekend_gap = bool(pd.notna(app) and pd.notna(signal) and (app.normalize() - signal.normalize()).days >= 3)
-        trade_count = int(day_actions["action"].isin(TRADE_ACTIONS).sum()) if not day_actions.empty and "action" in day_actions.columns else 0
+        trade_count = (
+            int(day_actions["action"].isin(TRADE_ACTIONS).sum()) if not day_actions.empty and "action" in day_actions.columns else 0
+        )
         # Only trade-action signal rows must have zero same-day market return. Monitoring/HOLD rows
         # represent already-active positions and can legitimately carry daily PnL.
         no_return_required = trade_count > 0
         no_market_return_on_signal_date = bool(abs(gross_return) < 1e-12) if no_return_required else True
-        lag_rule_pass = bool(pd.notna(app) and pd.notna(signal) and app.normalize() > signal.normalize() and no_market_return_on_signal_date)
-        rows.append({
-            "date": d.date().isoformat(),
-            "signal_date": signal.date().isoformat() if pd.notna(signal) else "missing",
-            "economic_application_date": app.date().isoformat() if pd.notna(app) else "missing",
-            "gross_return_on_signal_date": gross_return,
-            "trade_actions_on_signal_date": trade_count,
-            "market_return_zero_required": no_return_required,
-            "no_market_return_on_signal_date": no_market_return_on_signal_date,
-            "weekend_return_created": False,
-            "weekend_gap_between_signal_and_application": weekend_gap,
-            "returns_begin_on_application_date": "pending_next_official_row" if len(p) == 1 else "check_subsequent_rows",
-            "lag_rule_pass": lag_rule_pass,
-        })
+        lag_rule_pass = bool(
+            pd.notna(app) and pd.notna(signal) and app.normalize() > signal.normalize() and no_market_return_on_signal_date
+        )
+        rows.append(
+            {
+                "date": d.date().isoformat(),
+                "signal_date": signal.date().isoformat() if pd.notna(signal) else "missing",
+                "economic_application_date": app.date().isoformat() if pd.notna(app) else "missing",
+                "gross_return_on_signal_date": gross_return,
+                "trade_actions_on_signal_date": trade_count,
+                "market_return_zero_required": no_return_required,
+                "no_market_return_on_signal_date": no_market_return_on_signal_date,
+                "weekend_return_created": False,
+                "weekend_gap_between_signal_and_application": weekend_gap,
+                "returns_begin_on_application_date": "pending_next_official_row" if len(p) == 1 else "check_subsequent_rows",
+                "lag_rule_pass": lag_rule_pass,
+            }
+        )
     return pd.DataFrame(rows)
 
 
 def build_cost_duplication_audit(perf: pd.DataFrame, actions: pd.DataFrame, trades: pd.DataFrame, costs: pd.DataFrame) -> pd.DataFrame:
-    dates = sorted(set(pd.to_datetime(df.get("date", pd.Series(dtype=str)), errors="coerce").dropna().dt.normalize().tolist() for df in []))
+    dates = sorted({pd.to_datetime(df.get("date", pd.Series(dtype=str)), errors="coerce").dropna().dt.normalize().tolist() for df in []})
     all_dates = set()
     for df in [perf, actions, trades, costs]:
         if not df.empty and "date" in df.columns:
             all_dates |= set(pd.to_datetime(df["date"], errors="coerce").dropna().dt.normalize())
     rows = []
     for d in sorted(all_dates):
-        p = normalize_dates(perf); a = normalize_dates(actions); t = normalize_dates(trades); c = normalize_dates(costs)
+        p = normalize_dates(perf)
+        a = normalize_dates(actions)
+        t = normalize_dates(trades)
+        c = normalize_dates(costs)
         perf_day = p[p["date"].eq(d)] if not p.empty else pd.DataFrame()
         actions_day = a[a["date"].eq(d)] if not a.empty else pd.DataFrame()
         trades_day = t[t["date"].eq(d)] if not t.empty else pd.DataFrame()
@@ -174,20 +190,34 @@ def build_cost_duplication_audit(perf: pd.DataFrame, actions: pd.DataFrame, trad
         ledger_cost = float(num(costs_day.get("estimated_total_cost", pd.Series(dtype=float))).sum()) if not costs_day.empty else 0.0
         hold_cost = 0.0
         if not costs_day.empty and "action" in costs_day.columns:
-            hold_cost = float(num(costs_day[~costs_day["action"].isin(TRADE_ACTIONS)].get("estimated_total_cost", pd.Series(dtype=float))).sum())
-        duplicate_rows = int(costs_day.duplicated(subset=[c for c in ["date", "ticker", "action", "estimated_order_value"] if c in costs_day.columns]).sum()) if not costs_day.empty else 0
+            hold_cost = float(
+                num(costs_day[~costs_day["action"].isin(TRADE_ACTIONS)].get("estimated_total_cost", pd.Series(dtype=float))).sum()
+            )
+        duplicate_rows = (
+            int(
+                costs_day.duplicated(
+                    subset=[c for c in ["date", "ticker", "action", "estimated_order_value"] if c in costs_day.columns]
+                ).sum()
+            )
+            if not costs_day.empty
+            else 0
+        )
         cost_once = abs(perf_cost - ledger_cost) < 1e-6 and abs(trades_cost - ledger_cost) < 1e-6 and duplicate_rows == 0
-        rows.append({
-            "date": d.date().isoformat(),
-            "performance_cost": perf_cost,
-            "trades_cost_sum": trades_cost,
-            "ledger_cost_sum": ledger_cost,
-            "duplicate_cost_rows": duplicate_rows,
-            "hold_day_cost": hold_cost,
-            "cost_only_trade_actions": bool(hold_cost == 0.0),
-            "cost_recorded_once_in_accounting": bool(cost_once),
-            "notes": "trades and ledger mirror same estimated costs; performance deducts once in net ledger" if cost_once else "cost mismatch or duplicate detected",
-        })
+        rows.append(
+            {
+                "date": d.date().isoformat(),
+                "performance_cost": perf_cost,
+                "trades_cost_sum": trades_cost,
+                "ledger_cost_sum": ledger_cost,
+                "duplicate_cost_rows": duplicate_rows,
+                "hold_day_cost": hold_cost,
+                "cost_only_trade_actions": bool(hold_cost == 0.0),
+                "cost_recorded_once_in_accounting": bool(cost_once),
+                "notes": "trades and ledger mirror same estimated costs; performance deducts once in net ledger"
+                if cost_once
+                else "cost mismatch or duplicate detected",
+            }
+        )
     return pd.DataFrame(rows)
 
 
@@ -213,7 +243,11 @@ def repair_net_accounting_if_needed(perf: pd.DataFrame, recon: pd.DataFrame) -> 
         fixed.at[idx, "gross_cumulative_return"] = r["gross_equity_expected"] / INITIAL_CAPITAL - 1.0
         fixed.at[idx, "cumulative_return"] = r["gross_equity_expected"] / INITIAL_CAPITAL - 1.0
         fixed.at[idx, "estimated_net_cumulative_return"] = r["estimated_net_cumulative_return_expected"]
-        fixed.at[idx, "estimated_net_daily_return"] = (r["net_equity_expected"] - INITIAL_CAPITAL) / INITIAL_CAPITAL if len(fixed) == 1 else fixed.at[idx, "estimated_net_daily_return"]
+        fixed.at[idx, "estimated_net_daily_return"] = (
+            (r["net_equity_expected"] - INITIAL_CAPITAL) / INITIAL_CAPITAL
+            if len(fixed) == 1
+            else fixed.at[idx, "estimated_net_daily_return"]
+        )
     fixed["date"] = fixed["date"].dt.strftime("%Y-%m-%d")
     write_csv(fixed, "growth_official_paper_performance.csv")
     return backup
@@ -244,26 +278,32 @@ def main() -> None:
         and (lag.empty or lag["lag_rule_pass"].all())
     )
     warning = bool(accounting_pass and backup_dir)
-    governance = "official_accounting_warning" if warning else ("official_accounting_pass" if accounting_pass else "official_accounting_fail")
+    governance = (
+        "official_accounting_warning" if warning else ("official_accounting_pass" if accounting_pass else "official_accounting_fail")
+    )
 
     initial_cost = float(cost_audit["ledger_cost_sum"].iloc[0]) if not cost_audit.empty else 0.0
     net_value = float(recon["net_equity_expected"].iloc[-1]) if not recon.empty else np.nan
     gross_value = float(recon["gross_equity_expected"].iloc[-1]) if not recon.empty else np.nan
     first_return_date = lag["economic_application_date"].iloc[0] if not lag.empty else "missing"
 
-    summary = pd.DataFrame([{
-        "date": datetime.now().date().isoformat(),
-        "governance": governance,
-        "accounting_pass": accounting_pass,
-        "repair_backup_dir": backup_dir,
-        "initial_cost_charged_once": bool(not cost_audit.empty and cost_audit["cost_recorded_once_in_accounting"].iloc[0]),
-        "first_valid_return_date": first_return_date,
-        "gross_value": gross_value,
-        "estimated_net_value": net_value,
-        "cumulative_estimated_costs": float(cost_audit["ledger_cost_sum"].sum()) if not cost_audit.empty else 0.0,
-        "no_signal_date_return_leakage": bool(not lag.empty and lag["no_market_return_on_signal_date"].all()),
-        "weekend_return_created": bool(not lag.empty and lag["weekend_return_created"].any()),
-    }])
+    summary = pd.DataFrame(
+        [
+            {
+                "date": datetime.now().date().isoformat(),
+                "governance": governance,
+                "accounting_pass": accounting_pass,
+                "repair_backup_dir": backup_dir,
+                "initial_cost_charged_once": bool(not cost_audit.empty and cost_audit["cost_recorded_once_in_accounting"].iloc[0]),
+                "first_valid_return_date": first_return_date,
+                "gross_value": gross_value,
+                "estimated_net_value": net_value,
+                "cumulative_estimated_costs": float(cost_audit["ledger_cost_sum"].sum()) if not cost_audit.empty else 0.0,
+                "no_signal_date_return_leakage": bool(not lag.empty and lag["no_market_return_on_signal_date"].all()),
+                "weekend_return_created": bool(not lag.empty and lag["weekend_return_created"].any()),
+            }
+        ]
+    )
 
     summary.to_csv("official_forward_accounting_audit.csv", index=False)
     lag.to_csv("official_execution_lag_audit.csv", index=False)

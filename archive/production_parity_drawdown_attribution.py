@@ -5,7 +5,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-
 RESULTS_FILE = "production_parity_growth_results.csv"
 DAILY_FILE = "production_parity_growth_daily_returns.csv"
 TRADES_FILE = "production_parity_growth_trades.csv"
@@ -73,7 +72,7 @@ def _metrics(name: str, daily: pd.DataFrame, return_col: str = "return") -> dict
     max_dd = float(dd.min())
     return {
         "variant": name,
-        "observations": int(len(r)),
+        "observations": len(r),
         "total_return": total,
         "CAGR": cagr,
         "volatility": vol,
@@ -104,7 +103,7 @@ def _max_drawdown_window(daily: pd.DataFrame) -> dict[str, object]:
         "start_date": start_date,
         "trough_date": trough_date,
         "recovery_date": recovery_date,
-        "duration_periods": int(len(dd_period)),
+        "duration_periods": len(dd_period),
         "portfolio_return": float(data.loc[trough_idx, "equity"] / peak_equity - 1.0),
         "period_frame": dd_period,
     }

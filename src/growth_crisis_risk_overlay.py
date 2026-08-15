@@ -5,7 +5,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-
 BASE_DAILY = "reconstructed_growth_long_horizon_daily_returns.csv"
 BASE_TRADES = "reconstructed_growth_long_horizon_trades.csv"
 BASE_RESULTS = "reconstructed_growth_long_horizon_results.csv"
@@ -81,7 +80,7 @@ def _metrics(name: str, df: pd.DataFrame, return_col: str = "overlay_return") ->
         "model": name,
         "start_date": data["date"].min().strftime("%Y-%m-%d"),
         "end_date": data["date"].max().strftime("%Y-%m-%d"),
-        "observations": int(len(returns)),
+        "observations": len(returns),
         "total_return": total_return,
         "CAGR": cagr,
         "volatility": vol,
@@ -130,9 +129,7 @@ def _market_features(dates: pd.Series) -> pd.DataFrame:
         close_shifted = price.shift(1)
         features[f"{ticker.lower()}_price"] = _asof(close_shifted, features["date"])
         features[f"{ticker.lower()}_ma200"] = _asof(ma200, features["date"])
-        features[f"{ticker.lower()}_below_200dma"] = (
-            features[f"{ticker.lower()}_price"] < features[f"{ticker.lower()}_ma200"]
-        )
+        features[f"{ticker.lower()}_below_200dma"] = features[f"{ticker.lower()}_price"] < features[f"{ticker.lower()}_ma200"]
     spy_ret = spy.pct_change()
     spy_vol20 = spy_ret.rolling(20, min_periods=15).std().shift(1) * np.sqrt(252)
     spy_vol90 = spy_vol20.rolling(252, min_periods=126).quantile(0.90).shift(1)
@@ -279,7 +276,9 @@ def run_overlay() -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     if not results.empty:
         bench = _read_csv(BENCHMARK_RESULTS)
         if not bench.empty and {"window_start", "benchmark"}.issubset(bench.columns):
-            bench_pivot = bench.pivot_table(index="window_start", columns="benchmark", values=["CAGR", "Sharpe", "max_drawdown"], aggfunc="first")
+            bench_pivot = bench.pivot_table(
+                index="window_start", columns="benchmark", values=["CAGR", "Sharpe", "max_drawdown"], aggfunc="first"
+            )
             bench_pivot.columns = [f"{metric}_{benchmark}" for metric, benchmark in bench_pivot.columns]
             results = results.merge(bench_pivot.reset_index(), on="window_start", how="left")
             results["beats_SPY_CAGR"] = results["CAGR"] > results.get("CAGR_SPY", np.nan)
@@ -376,7 +375,11 @@ def _print_report(results: pd.DataFrame, stress: pd.DataFrame, governance: pd.Da
 
     print("\n===== STRESS PERIOD IMPACT =====")
     if not stress.empty:
-        stress_view = stress[stress["stress_period"].isin(["2011_euro_crisis", "2018_q4_selloff", "covid_crash_2020", "2022_bear_market", "2024_ai_bull_market"])]
+        stress_view = stress[
+            stress["stress_period"].isin(
+                ["2011_euro_crisis", "2018_q4_selloff", "covid_crash_2020", "2022_bear_market", "2024_ai_bull_market"]
+            )
+        ]
         stress_view = stress_view[["window_start", "overlay", "stress_period", "total_return", "max_drawdown", "Sharpe"]].copy()
         stress_view["total_return"] = stress_view["total_return"].map(_pct)
         stress_view["max_drawdown"] = stress_view["max_drawdown"].map(_pct)

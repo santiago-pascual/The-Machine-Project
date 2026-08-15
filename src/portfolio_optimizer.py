@@ -122,10 +122,7 @@ class PortfolioOptimizer:
         if not self.use_expected_returns:
             return self.historical_mean_returns
 
-        blended_returns = (
-            self.alpha * self.expected_daily_returns
-            + (1 - self.alpha) * self.historical_mean_returns
-        )
+        blended_returns = self.alpha * self.expected_daily_returns + (1 - self.alpha) * self.historical_mean_returns
         return blended_returns
 
     def portfolio_return(self, weights: np.ndarray) -> float:
@@ -234,10 +231,7 @@ class PortfolioOptimizer:
         return weights / total
 
     def initialize_population(self) -> list[dict[str, np.ndarray | float | None]]:
-        self.population = [
-            {"weights": self.random_weights(), "fitness": None}
-            for _ in range(self.population_size)
-        ]
+        self.population = [{"weights": self.random_weights(), "fitness": None} for _ in range(self.population_size)]
         return self.population
 
     def evaluate_population(self) -> None:
@@ -250,10 +244,7 @@ class PortfolioOptimizer:
             key=lambda member: float(member["fitness"]),
             reverse=True,
         )
-        return [
-            {"weights": member["weights"].copy(), "fitness": member["fitness"]}
-            for member in ranked_population[: self.elite_size]
-        ]
+        return [{"weights": member["weights"].copy(), "fitness": member["fitness"]} for member in ranked_population[: self.elite_size]]
 
     def crossover(self, parent1: np.ndarray, parent2: np.ndarray) -> np.ndarray:
         alpha = np.random.rand()
@@ -273,10 +264,7 @@ class PortfolioOptimizer:
         self,
         elite: list[dict[str, np.ndarray | float | None]],
     ) -> list[dict[str, np.ndarray | float | None]]:
-        new_population = [
-            {"weights": member["weights"].copy(), "fitness": None}
-            for member in elite
-        ]
+        new_population = [{"weights": member["weights"].copy(), "fitness": None} for member in elite]
 
         elite_weights = [member["weights"] for member in elite]
         random_slots = max(1, int(self.population_size * 0.2))
@@ -299,10 +287,7 @@ class PortfolioOptimizer:
         self,
         elite: list[dict[str, np.ndarray | float | None]],
     ) -> list[dict[str, np.ndarray | float | None]]:
-        restarted_population = [
-            {"weights": member["weights"].copy(), "fitness": None}
-            for member in elite
-        ]
+        restarted_population = [{"weights": member["weights"].copy(), "fitness": None} for member in elite]
 
         while len(restarted_population) < self.population_size:
             restarted_population.append({"weights": self.random_weights(), "fitness": None})
@@ -370,10 +355,9 @@ class PortfolioOptimizer:
         best_return = self.portfolio_return(best_global_weights)
         best_volatility = self.portfolio_volatility(best_global_weights)
 
-        if np.sum(
-            (best_global_weights <= self.min_weight + 1e-3)
-            | (best_global_weights >= self.max_weight - 1e-3)
-        ) > 0.8 * len(best_global_weights):
+        if np.sum((best_global_weights <= self.min_weight + 1e-3) | (best_global_weights >= self.max_weight - 1e-3)) > 0.8 * len(
+            best_global_weights
+        ):
             print("WARNING: Solution is hitting constraints heavily")
 
         if np.isfinite(equal_weight_sharpe) and abs(equal_weight_sharpe) >= 0.05:

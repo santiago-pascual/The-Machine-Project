@@ -1,7 +1,7 @@
-
 from __future__ import annotations
 
 from pathlib import Path
+
 import numpy as np
 import pandas as pd
 
@@ -58,7 +58,9 @@ def periods_per_year(dates: pd.Series) -> float:
     return len(d) / years
 
 
-def metrics(df: pd.DataFrame, returns: pd.Series, exposure: pd.Series, cash: pd.Series, turnover: pd.Series, spy: pd.Series, qqq: pd.Series) -> dict:
+def metrics(
+    df: pd.DataFrame, returns: pd.Series, exposure: pd.Series, cash: pd.Series, turnover: pd.Series, spy: pd.Series, qqq: pd.Series
+) -> dict:
     r = numeric(returns).fillna(0)
     freq = periods_per_year(df["date"])
     equity = (1 + r).cumprod()
@@ -75,11 +77,22 @@ def metrics(df: pd.DataFrame, returns: pd.Series, exposure: pd.Series, cash: pd.
     spy_total = float((1 + numeric(spy).fillna(0)).prod() - 1) if len(spy) else np.nan
     qqq_total = float((1 + numeric(qqq).fillna(0)).prod() - 1) if len(qqq) else np.nan
     return {
-        "total_return": total, "CAGR": cagr, "Sharpe": sharpe, "Sortino": sortino, "Calmar": calmar,
-        "max_drawdown": maxdd, "annual_volatility": vol, "average_cash": numeric(cash).mean(),
-        "median_cash": numeric(cash).median(), "min_cash": numeric(cash).min(), "max_cash": numeric(cash).max(),
-        "cash_utilization_pct": 1 - numeric(cash).mean(), "average_exposure": numeric(exposure).mean(),
-        "turnover": numeric(turnover).mean(), "alpha_vs_SPY": total - spy_total, "alpha_vs_QQQ": total - qqq_total,
+        "total_return": total,
+        "CAGR": cagr,
+        "Sharpe": sharpe,
+        "Sortino": sortino,
+        "Calmar": calmar,
+        "max_drawdown": maxdd,
+        "annual_volatility": vol,
+        "average_cash": numeric(cash).mean(),
+        "median_cash": numeric(cash).median(),
+        "min_cash": numeric(cash).min(),
+        "max_cash": numeric(cash).max(),
+        "cash_utilization_pct": 1 - numeric(cash).mean(),
+        "average_exposure": numeric(exposure).mean(),
+        "turnover": numeric(turnover).mean(),
+        "alpha_vs_SPY": total - spy_total,
+        "alpha_vs_QQQ": total - qqq_total,
     }
 
 
@@ -98,24 +111,39 @@ def prepare_base() -> pd.DataFrame:
     base = load_csv("reconstructed_growth_long_horizon_daily_returns.csv")
     if final.empty:
         raise SystemExit("Missing growth_final_selection_daily_returns.csv")
-    v3 = final[(final["window_start"].astype(str).eq("2008-01-01")) & (final["candidate"].astype(str).eq("growth_champion_v3"))].copy().sort_values("date")
+    v3 = (
+        final[(final["window_start"].astype(str).eq("2008-01-01")) & (final["candidate"].astype(str).eq("growth_champion_v3"))]
+        .copy()
+        .sort_values("date")
+    )
     if v3.empty:
         raise SystemExit("Missing 2008 growth_champion_v3 rows")
     base2008 = base[base["window_start"].astype(str).eq("2008-01-01")].copy().sort_values("date") if not base.empty else pd.DataFrame()
-    out = v3.merge(base2008[["date", "uncapped_exposure", "rolling_vol_used", "target_exposure"]], on="date", how="left", suffixes=("", "_base"))
+    out = v3.merge(
+        base2008[["date", "uncapped_exposure", "rolling_vol_used", "target_exposure"]], on="date", how="left", suffixes=("", "_base")
+    )
     out["current_exposure"] = numeric(out["candidate_exposure"]).fillna(0)
     out["basket_return"] = numeric(out["candidate_return"]) / out["current_exposure"].replace(0, np.nan)
     out["basket_return"] = out["basket_return"].replace([np.inf, -np.inf], np.nan).fillna(0)
     out["current_dual_cap"] = numeric(out["overlay_cap"]).fillna(CURRENT_EXPOSURE_CAP)
     rv = numeric(out.get("rolling_vol_used", pd.Series(dtype=float)))
     out["vol_exposure_current"] = (CURRENT_VOL_TARGET / rv).clip(lower=MIN_EXPOSURE, upper=1.0)
-    out.loc[out["vol_exposure_current"].isna(), "vol_exposure_current"] = numeric(out.get("uncapped_exposure", pd.Series(dtype=float))).fillna(CURRENT_EXPOSURE_CAP)
+    out.loc[out["vol_exposure_current"].isna(), "vol_exposure_current"] = numeric(
+        out.get("uncapped_exposure", pd.Series(dtype=float))
+    ).fillna(CURRENT_EXPOSURE_CAP)
     out["spy_return"] = benchmark_returns_from_cache(out["date"], "SPY").values
     out["qqq_return"] = benchmark_returns_from_cache(out["date"], "QQQ").values
     return out
 
 
-def simulate(base: pd.DataFrame, experiment_type: str, parameter: str, exposure_cap: float = CURRENT_EXPOSURE_CAP, vol_target: float = CURRENT_VOL_TARGET, dual_config: tuple[float, float, float] = DUAL_TREND_GRIDS["current_60_40_25"]) -> pd.DataFrame:
+def simulate(
+    base: pd.DataFrame,
+    experiment_type: str,
+    parameter: str,
+    exposure_cap: float = CURRENT_EXPOSURE_CAP,
+    vol_target: float = CURRENT_VOL_TARGET,
+    dual_config: tuple[float, float, float] = DUAL_TREND_GRIDS["current_60_40_25"],
+) -> pd.DataFrame:
     out = base.copy()
     if experiment_type == "production":
         out["shadow_exposure"] = out["current_exposure"]
@@ -142,23 +170,33 @@ def run_grid() -> tuple[pd.DataFrame, pd.DataFrame]:
     # production baseline
     sims.append(simulate(base, "production", "current", CURRENT_EXPOSURE_CAP, CURRENT_VOL_TARGET, DUAL_TREND_GRIDS["current_60_40_25"]))
     for cap in [0.40, 0.50, 0.60, 0.70, 0.80, 0.90, 1.00]:
-        sims.append(simulate(base, "exposure_cap", f"{int(cap*100)}pct", cap, CURRENT_VOL_TARGET, DUAL_TREND_GRIDS["current_60_40_25"]))
+        sims.append(simulate(base, "exposure_cap", f"{int(cap * 100)}pct", cap, CURRENT_VOL_TARGET, DUAL_TREND_GRIDS["current_60_40_25"]))
     for vt in [0.15, 0.18, 0.20, 0.22, 0.24, 0.26, 0.28, 0.30]:
-        sims.append(simulate(base, "vol_target", f"{int(vt*100)}pct", CURRENT_EXPOSURE_CAP, vt, DUAL_TREND_GRIDS["current_60_40_25"]))
+        sims.append(simulate(base, "vol_target", f"{int(vt * 100)}pct", CURRENT_EXPOSURE_CAP, vt, DUAL_TREND_GRIDS["current_60_40_25"]))
     for name, cfg in DUAL_TREND_GRIDS.items():
         sims.append(simulate(base, "dual_trend", name, CURRENT_EXPOSURE_CAP, CURRENT_VOL_TARGET, cfg))
     daily = pd.concat(sims, ignore_index=True)
     rows = []
     for (etype, param), g in daily.groupby(["experiment_type", "parameter"], sort=False):
-        m = metrics(g, g["shadow_return"], g["shadow_exposure"], g["shadow_cash"], g["candidate_turnover"], g["spy_return"], g["qqq_return"])
-        rows.append({
-            "experiment_type": etype, "parameter": param,
-            "Exposure Cap": np.nan, "Vol Target": np.nan, "Dual Trend": np.nan,
-            **m,
-        })
-        if etype == "exposure_cap": rows[-1]["Exposure Cap"] = float(param.replace("pct", "")) / 100
-        if etype == "vol_target": rows[-1]["Vol Target"] = float(param.replace("pct", "")) / 100
-        if etype == "dual_trend": rows[-1]["Dual Trend"] = param
+        m = metrics(
+            g, g["shadow_return"], g["shadow_exposure"], g["shadow_cash"], g["candidate_turnover"], g["spy_return"], g["qqq_return"]
+        )
+        rows.append(
+            {
+                "experiment_type": etype,
+                "parameter": param,
+                "Exposure Cap": np.nan,
+                "Vol Target": np.nan,
+                "Dual Trend": np.nan,
+                **m,
+            }
+        )
+        if etype == "exposure_cap":
+            rows[-1]["Exposure Cap"] = float(param.replace("pct", "")) / 100
+        if etype == "vol_target":
+            rows[-1]["Vol Target"] = float(param.replace("pct", "")) / 100
+        if etype == "dual_trend":
+            rows[-1]["Dual Trend"] = param
     grid = pd.DataFrame(rows)
     prod = grid[grid["experiment_type"].eq("production")].iloc[0]
     for col in ["CAGR", "Sharpe", "Sortino", "Calmar", "max_drawdown", "annual_volatility", "average_cash", "cash_utilization_pct"]:
@@ -175,18 +213,32 @@ def pareto_flags(grid: pd.DataFrame) -> pd.DataFrame:
     for i, row in work.iterrows():
         dominated = False
         for j, other in work.iterrows():
-            if i == j: continue
+            if i == j:
+                continue
             better_or_equal = all(other[c] >= row[c] for c in higher_is_better) and all(other[c] <= row[c] for c in lower_is_better)
             strictly = any(other[c] > row[c] for c in higher_is_better) or any(other[c] < row[c] for c in lower_is_better)
             if better_or_equal and strictly:
-                dominated = True; break
+                dominated = True
+                break
         flags.append(not dominated)
     work["pareto_efficient"] = flags
     return work
 
 
 def frontier_tables(grid: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
-    frontier = grid[["experiment_type", "parameter", "CAGR", "max_drawdown", "annual_volatility", "average_cash", "cash_utilization_pct", "Sharpe", "Calmar"]].copy()
+    frontier = grid[
+        [
+            "experiment_type",
+            "parameter",
+            "CAGR",
+            "max_drawdown",
+            "annual_volatility",
+            "average_cash",
+            "cash_utilization_pct",
+            "Sharpe",
+            "Calmar",
+        ]
+    ].copy()
     cash_frontier = frontier.sort_values(["cash_utilization_pct", "CAGR"], ascending=[False, False])
     pareto = pareto_flags(grid)
     return frontier, cash_frontier, pareto

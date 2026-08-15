@@ -6,7 +6,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-
 OUTPUT_FILE = "meta_filter_failure_attribution.csv"
 
 
@@ -74,7 +73,7 @@ def _group_quality(group_name: str, trades: pd.DataFrame, config: MetaFilterFail
     output = {
         "section": "kept_vs_rejected_trade_quality",
         "group": group_name,
-        "sample_size": int(len(trades)),
+        "sample_size": len(trades),
         **metrics,
         "TP_rate": float(labels.eq(1).mean()) if labels.notna().any() else np.nan,
         "SL_rate": float(labels.eq(-1).mean()) if labels.notna().any() else np.nan,
@@ -124,7 +123,7 @@ def _error_type_rows(candidate: pd.DataFrame, config: MetaFilterFailureConfig) -
             {
                 "section": "meta_filter_error_types",
                 "group": name,
-                "sample_size": int(len(subset)),
+                "sample_size": len(subset),
                 "avg_return": float(subset["future_return"].mean(skipna=True)) if not subset.empty else np.nan,
                 "weighted_return_lost_or_kept": float((subset["future_return"] * _safe_numeric(subset.get("original_weight", pd.Series(0, index=subset.index)), 0.0)).sum(skipna=True)) if not subset.empty else 0.0,
                 "top_tickers": ", ".join(subset["ticker"].astype(str).value_counts().head(5).index.tolist()) if not subset.empty else "",
@@ -150,7 +149,7 @@ def _concentration_rows(candidate: pd.DataFrame, config: MetaFilterFailureConfig
                 {
                     "section": label,
                     "group": str(value),
-                    "sample_size": int(len(group)),
+                    "sample_size": len(group),
                     "average_realized_return": float(group["future_return"].mean(skipna=True)),
                     "portfolio_return_contribution_lost": float(group["weighted_return"].sum(skipna=True)),
                 }
@@ -162,7 +161,7 @@ def _concentration_rows(candidate: pd.DataFrame, config: MetaFilterFailureConfig
             {
                 "section": "rejected_by_year",
                 "group": str(year),
-                "sample_size": int(len(group)),
+                "sample_size": len(group),
                 "average_realized_return": float(group["future_return"].mean(skipna=True)),
                 "portfolio_return_contribution_lost": float(group["weighted_return"].sum(skipna=True)),
             }
@@ -188,7 +187,7 @@ def _cash_drag_rows(candidate: pd.DataFrame, daily: pd.DataFrame, results: pd.Da
             {
                 "section": "cash_drag_analysis",
                 "group": "rejected_to_cash",
-                "sample_size": int(len(rejected)),
+                "sample_size": len(rejected),
                 "return_lost_to_cash": lost_return,
                 "avg_rejected_return": float(rejected_returns.mean(skipna=True)),
                 "avg_rejected_weight": float(rejected_weights.mean(skipna=True)),

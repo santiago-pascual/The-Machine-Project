@@ -5,7 +5,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-
 EXIT_DAILY_FILE = "exit_rule_walk_forward_daily_returns.csv"
 EXIT_TRADES_FILE = "exit_rule_walk_forward_trades.csv"
 EXIT_RESULTS_FILE = "exit_rule_walk_forward_results.csv"
@@ -85,7 +84,7 @@ def _metrics(variant: str, daily: pd.DataFrame) -> dict:
         "variant": variant,
         "start_date": data["date"].min().date().isoformat(),
         "end_date": data["date"].max().date().isoformat(),
-        "observations": int(len(r)),
+        "observations": len(r),
         "total_return": total,
         "CAGR": float((1.0 + total) ** (1.0 / years) - 1.0),
         "volatility": vol,

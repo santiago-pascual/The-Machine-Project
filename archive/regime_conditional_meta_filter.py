@@ -6,7 +6,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-
 OUTPUT_REGIME = "regime_conditional_meta_filter.csv"
 OUTPUT_COMPARISON = "regime_conditional_meta_filter_comparison.csv"
 
@@ -94,8 +93,8 @@ def _regime_quality(trades: pd.DataFrame, config: RegimeConditionalMetaConfig) -
         rows.append(
             {
                 "regime": regime,
-                "kept_trades": int(len(kept)),
-                "rejected_trades": int(len(rejected)),
+                "kept_trades": len(kept),
+                "rejected_trades": len(rejected),
                 "avg_return_kept": kept_return,
                 "avg_return_rejected": rejected_return,
                 "TP_rate_kept": float(labels_kept.eq(1).mean()) if labels_kept.notna().any() else np.nan,

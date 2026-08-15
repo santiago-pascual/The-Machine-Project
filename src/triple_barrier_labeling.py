@@ -5,7 +5,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-
 DEFAULT_HORIZONS = (5, 10, 20)
 DEFAULT_OUTPUT_FILE = "triple_barrier_labels.csv"
 
@@ -159,9 +158,8 @@ def generate_triple_barrier_labels(
         if decision_pos is None:
             continue
         current_price = float(prediction.get("current_price", np.nan))
-        if not np.isfinite(current_price) or current_price <= 0:
-            if ticker in price_data.columns:
-                current_price = float(price_data.iloc[decision_pos][ticker])
+        if (not np.isfinite(current_price) or current_price <= 0) and ticker in price_data.columns:
+            current_price = float(price_data.iloc[decision_pos][ticker])
         daily_vol = _daily_volatility(price_data, ticker, decision_pos)
 
         for horizon in horizons:

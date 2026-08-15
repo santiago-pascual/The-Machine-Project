@@ -5,7 +5,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-
 IC_HISTORY_FILE = "ic_history.csv"
 DEFAULT_HORIZONS = (5, 10, 20)
 
@@ -253,5 +252,7 @@ def print_information_coefficient_report(
     print(valid.sort_values("Average_IC", ascending=True).head(10)[existing].to_string(index=False) if not valid.empty else "None")
 
     if source == "snapshot_no_forward_labels":
-        print("\nIC warning: no forward realized labels available yet; report will become meaningful after forecast_history_evaluated.csv has future returns.")
+        print(
+            "\nIC warning: no forward realized labels available yet; report will become meaningful after forecast_history_evaluated.csv has future returns."
+        )
     return report

@@ -10,7 +10,6 @@ import pandas as pd
 from growth_action_reconciliation import reconcile_growth_actions, signals_to_trade_rows
 from growth_rebalance_scheduler import scheduler_status
 
-
 CANDIDATE_NAME = "growth_champion_final"
 CANDIDATE_VARIANT = "growth_v1_exposure_cap_60_dual_trend_filter"
 CANDIDATE_MODEL_VERSION = "growth_champion_final_v1_0_frozen"
@@ -39,7 +38,6 @@ MONITOR_FILE = "growth_candidate_paper_monitor.csv"
 DEFAULT_INITIAL_CAPITAL = 100000.0
 
 
-
 def _growth_paper_config() -> dict[str, object]:
     default = {
         "active_growth_paper_model": CANDIDATE_NAME,
@@ -65,6 +63,7 @@ def _growth_paper_config() -> dict[str, object]:
 def _exposure_cap() -> float:
     cfg = _growth_paper_config()
     return float(np.clip(float(cfg.get("exposure_cap", 0.60)), 0.0, float(cfg.get("max_leverage", 1.0))))
+
 
 def _read_csv(path: str | Path) -> pd.DataFrame:
     file_path = Path(path)
@@ -122,13 +121,17 @@ def _candidate_daily() -> pd.DataFrame:
     daily = _dates(_read_csv(GROWTH_DAILY_FILE))
     if daily.empty:
         return daily
-    selector = daily.get("vol_target_variant", daily.get("variant", pd.Series(index=daily.index, dtype=str))).astype(str).eq(BACKTEST_VARIANT)
+    selector = (
+        daily.get("vol_target_variant", daily.get("variant", pd.Series(index=daily.index, dtype=str))).astype(str).eq(BACKTEST_VARIANT)
+    )
     daily = daily[selector].copy()
     if daily.empty:
         return daily
     daily["paper_return_proxy"] = _num(daily.get("vol_target_return", daily.get("return", pd.Series(index=daily.index, dtype=float))))
     daily["target_exposure"] = _num(daily.get("target_exposure", pd.Series(index=daily.index, dtype=float))).fillna(0.0).clip(0.0, 1.0)
-    daily["cash_weight"] = _num(daily.get("cash_weight", 1.0 - daily["target_exposure"])).fillna(1.0 - daily["target_exposure"]).clip(0.0, 1.0)
+    daily["cash_weight"] = (
+        _num(daily.get("cash_weight", 1.0 - daily["target_exposure"])).fillna(1.0 - daily["target_exposure"]).clip(0.0, 1.0)
+    )
     daily["turnover"] = _num(daily.get("turnover", pd.Series(index=daily.index, dtype=float))).fillna(0.0)
     return daily.sort_values("date")
 
@@ -154,7 +157,6 @@ def _current_forecast_snapshot() -> pd.DataFrame:
     return latest
 
 
-
 def _quality_reason_map() -> dict[str, str]:
     quality = _dates(_read_csv(CURRENT_GROWTH_QUALITY_FILE))
     if quality.empty or "ticker" not in quality.columns:
@@ -168,7 +170,12 @@ def _quality_reason_map() -> dict[str, str]:
     failed = quality[~quality["quality_pass"]].copy()
     if failed.empty:
         return {}
-    return dict(zip(failed["ticker"].astype(str), failed.get("exclusion_reason", pd.Series("failed universe quality filter", index=failed.index)).astype(str)))
+    return dict(
+        zip(
+            failed["ticker"].astype(str),
+            failed.get("exclusion_reason", pd.Series("failed universe quality filter", index=failed.index)).astype(str),
+        )
+    )
 
 
 def _current_growth_allocation() -> pd.DataFrame:
@@ -177,7 +184,26 @@ def _current_growth_allocation() -> pd.DataFrame:
         return allocation
     latest_date = allocation["date"].max()
     allocation = allocation[allocation["date"].eq(latest_date)].copy()
-    for col in ["current_price", "raw_target_return", "raw_target_return_exact", "raw_expected_daily_return_exact", "raw_target_rank", "final_growth_weight", "cash_weight", "vol_target_exposure", "volatility_target_exposure", "uncapped_volatility_target_exposure", "exposure_cap", "exposure_cap_60", "dual_trend_cap", "final_exposure", "spy_close", "spy_ma_200", "qqq_close", "qqq_ma_200"]:
+    for col in [
+        "current_price",
+        "raw_target_return",
+        "raw_target_return_exact",
+        "raw_expected_daily_return_exact",
+        "raw_target_rank",
+        "final_growth_weight",
+        "cash_weight",
+        "vol_target_exposure",
+        "volatility_target_exposure",
+        "uncapped_volatility_target_exposure",
+        "exposure_cap",
+        "exposure_cap_60",
+        "dual_trend_cap",
+        "final_exposure",
+        "spy_close",
+        "spy_ma_200",
+        "qqq_close",
+        "qqq_ma_200",
+    ]:
         if col in allocation.columns:
             allocation[col] = _num(allocation[col])
     if "quality_pass" in allocation.columns:
@@ -197,12 +223,32 @@ def _current_growth_candidate_row_or_none(historical_latest: pd.Series) -> pd.Se
     tickers = allocation.sort_values("final_growth_weight", ascending=False)["ticker"].astype(str).tolist()
     exposure = float(_num(allocation["final_growth_weight"]).fillna(0.0).sum())
     cap = _exposure_cap()
-    dual_trend_cap = float(_num(allocation.get("dual_trend_cap", pd.Series([cap]))).dropna().iloc[0]) if "dual_trend_cap" in allocation.columns and not _num(allocation["dual_trend_cap"]).dropna().empty else cap
-    vol_target_exposure = float(_num(allocation.get("vol_target_exposure", allocation.get("uncapped_volatility_target_exposure", pd.Series([exposure])))).dropna().iloc[0]) if len(allocation) else exposure
-    final_exposure = float(_num(allocation.get("final_exposure", pd.Series([exposure]))).dropna().iloc[0]) if "final_exposure" in allocation.columns and not _num(allocation["final_exposure"]).dropna().empty else min(exposure, cap, dual_trend_cap)
+    dual_trend_cap = (
+        float(_num(allocation.get("dual_trend_cap", pd.Series([cap]))).dropna().iloc[0])
+        if "dual_trend_cap" in allocation.columns and not _num(allocation["dual_trend_cap"]).dropna().empty
+        else cap
+    )
+    vol_target_exposure = (
+        float(
+            _num(allocation.get("vol_target_exposure", allocation.get("uncapped_volatility_target_exposure", pd.Series([exposure]))))
+            .dropna()
+            .iloc[0]
+        )
+        if len(allocation)
+        else exposure
+    )
+    final_exposure = (
+        float(_num(allocation.get("final_exposure", pd.Series([exposure]))).dropna().iloc[0])
+        if "final_exposure" in allocation.columns and not _num(allocation["final_exposure"]).dropna().empty
+        else min(exposure, cap, dual_trend_cap)
+    )
     exposure = float(np.clip(final_exposure, 0.0, 1.0))
     cash = float(1.0 - exposure)
-    source = str(allocation.get("raw_target_feature_source", pd.Series(["unknown"])).dropna().iloc[0]) if "raw_target_feature_source" in allocation.columns and not allocation["raw_target_feature_source"].dropna().empty else "unknown"
+    source = (
+        str(allocation.get("raw_target_feature_source", pd.Series(["unknown"])).dropna().iloc[0])
+        if "raw_target_feature_source" in allocation.columns and not allocation["raw_target_feature_source"].dropna().empty
+        else "unknown"
+    )
     exact_available = bool(source == "raw_target_return_exact")
     fallback_reason = (
         "exact raw target current growth allocation generated from current_growth_feature_generation"
@@ -217,20 +263,38 @@ def _current_growth_candidate_row_or_none(historical_latest: pd.Series) -> pd.Se
             "cash_weight": float(np.clip(cash, 0.0, 1.0)),
             "turnover": np.nan,
             "data_source": "current_growth_candidate_allocation",
-            "growth_paper_model": str(allocation.get("growth_paper_model", pd.Series([CANDIDATE_NAME])).dropna().iloc[0]) if "growth_paper_model" in allocation.columns and not allocation["growth_paper_model"].dropna().empty else CANDIDATE_NAME,
-            "growth_paper_variant": str(allocation.get("growth_paper_variant", pd.Series([CANDIDATE_VARIANT])).dropna().iloc[0]) if "growth_paper_variant" in allocation.columns and not allocation["growth_paper_variant"].dropna().empty else CANDIDATE_VARIANT,
+            "growth_paper_model": str(allocation.get("growth_paper_model", pd.Series([CANDIDATE_NAME])).dropna().iloc[0])
+            if "growth_paper_model" in allocation.columns and not allocation["growth_paper_model"].dropna().empty
+            else CANDIDATE_NAME,
+            "growth_paper_variant": str(allocation.get("growth_paper_variant", pd.Series([CANDIDATE_VARIANT])).dropna().iloc[0])
+            if "growth_paper_variant" in allocation.columns and not allocation["growth_paper_variant"].dropna().empty
+            else CANDIDATE_VARIANT,
             "exposure_cap": cap,
             "exposure_cap_60": cap,
             "dual_trend_cap": dual_trend_cap,
             "vol_target_exposure": vol_target_exposure,
             "final_exposure": exposure,
-            "spy_close": float(_num(allocation.get("spy_close", pd.Series([np.nan]))).dropna().iloc[0]) if "spy_close" in allocation.columns and not _num(allocation["spy_close"]).dropna().empty else np.nan,
-            "spy_ma_200": float(_num(allocation.get("spy_ma_200", pd.Series([np.nan]))).dropna().iloc[0]) if "spy_ma_200" in allocation.columns and not _num(allocation["spy_ma_200"]).dropna().empty else np.nan,
-            "qqq_close": float(_num(allocation.get("qqq_close", pd.Series([np.nan]))).dropna().iloc[0]) if "qqq_close" in allocation.columns and not _num(allocation["qqq_close"]).dropna().empty else np.nan,
-            "qqq_ma_200": float(_num(allocation.get("qqq_ma_200", pd.Series([np.nan]))).dropna().iloc[0]) if "qqq_ma_200" in allocation.columns and not _num(allocation["qqq_ma_200"]).dropna().empty else np.nan,
-            "spy_below_200d": bool(allocation.get("spy_below_200d", pd.Series([False])).iloc[0]) if "spy_below_200d" in allocation.columns else False,
-            "qqq_below_200d": bool(allocation.get("qqq_below_200d", pd.Series([False])).iloc[0]) if "qqq_below_200d" in allocation.columns else False,
-            "dual_trend_reason": str(allocation.get("dual_trend_reason", pd.Series([""])).iloc[0]) if "dual_trend_reason" in allocation.columns else "",
+            "spy_close": float(_num(allocation.get("spy_close", pd.Series([np.nan]))).dropna().iloc[0])
+            if "spy_close" in allocation.columns and not _num(allocation["spy_close"]).dropna().empty
+            else np.nan,
+            "spy_ma_200": float(_num(allocation.get("spy_ma_200", pd.Series([np.nan]))).dropna().iloc[0])
+            if "spy_ma_200" in allocation.columns and not _num(allocation["spy_ma_200"]).dropna().empty
+            else np.nan,
+            "qqq_close": float(_num(allocation.get("qqq_close", pd.Series([np.nan]))).dropna().iloc[0])
+            if "qqq_close" in allocation.columns and not _num(allocation["qqq_close"]).dropna().empty
+            else np.nan,
+            "qqq_ma_200": float(_num(allocation.get("qqq_ma_200", pd.Series([np.nan]))).dropna().iloc[0])
+            if "qqq_ma_200" in allocation.columns and not _num(allocation["qqq_ma_200"]).dropna().empty
+            else np.nan,
+            "spy_below_200d": bool(allocation.get("spy_below_200d", pd.Series([False])).iloc[0])
+            if "spy_below_200d" in allocation.columns
+            else False,
+            "qqq_below_200d": bool(allocation.get("qqq_below_200d", pd.Series([False])).iloc[0])
+            if "qqq_below_200d" in allocation.columns
+            else False,
+            "dual_trend_reason": str(allocation.get("dual_trend_reason", pd.Series([""])).iloc[0])
+            if "dual_trend_reason" in allocation.columns
+            else "",
             "raw_target_current_features_available": exact_available,
             "raw_target_feature_source": source,
             "fallback_reason": fallback_reason,
@@ -480,7 +544,9 @@ def run_growth_candidate_paper_trading(overwrite_same_day: bool = False, allow_p
     dual_trend_reason = str(latest.get("dual_trend_reason", ""))
 
     previous = _previous_state()
-    previous_weights = previous.set_index("ticker")["paper_position_weight"].to_dict() if not previous.empty and "ticker" in previous.columns else {}
+    previous_weights = (
+        previous.set_index("ticker")["paper_position_weight"].to_dict() if not previous.empty and "ticker" in previous.columns else {}
+    )
     previous_non_cash_weights = {str(k): float(v) for k, v in previous_weights.items() if str(k).upper() != "CASH"}
     monitoring_only = bool(not rebalance_due and previous_non_cash_weights)
     if monitoring_only:
@@ -504,7 +570,9 @@ def run_growth_candidate_paper_trading(overwrite_same_day: bool = False, allow_p
     daily_return = _realized_daily_return(previous, previous_prices)
     previous_value = _previous_value()
     portfolio_value = previous_value * (1.0 + daily_return)
-    target_weights = {ticker: (previous_non_cash_weights.get(ticker, 0.0) if monitoring_only else exposure / len(tickers)) for ticker in tickers}
+    target_weights = {
+        ticker: (previous_non_cash_weights.get(ticker, 0.0) if monitoring_only else exposure / len(tickers)) for ticker in tickers
+    }
     target_weight = exposure / len(tickers)
 
     current_allocation = _current_growth_allocation()
@@ -537,7 +605,9 @@ def run_growth_candidate_paper_trading(overwrite_same_day: bool = False, allow_p
         previous_prices=previous_prices,
         overwrite_same_day=overwrite_same_day,
     )
-    action_by_ticker = dict(zip(action_signals["ticker"].astype(str), action_signals["action"].astype(str))) if not action_signals.empty else {}
+    action_by_ticker = (
+        dict(zip(action_signals["ticker"].astype(str), action_signals["action"].astype(str))) if not action_signals.empty else {}
+    )
     state_rows = []
     trade_rows = []
     for ticker in tickers:
@@ -550,7 +620,14 @@ def run_growth_candidate_paper_trading(overwrite_same_day: bool = False, allow_p
                 entry_price = float(prev_row.iloc[0]["entry_price"])
         unrealized = current_price / entry_price - 1.0 if np.isfinite(current_price) and entry_price > 0 else np.nan
         ticker_target_weight = target_weights.get(ticker, target_weight)
-        action = action_by_ticker.get(ticker, "BUY" if previous_weight <= 0 else ("REDUCE" if ticker_target_weight < previous_weight else ("INCREASE" if ticker_target_weight > previous_weight else "HOLD")))
+        action = action_by_ticker.get(
+            ticker,
+            "BUY"
+            if previous_weight <= 0
+            else (
+                "REDUCE" if ticker_target_weight < previous_weight else ("INCREASE" if ticker_target_weight > previous_weight else "HOLD")
+            ),
+        )
         state_rows.append(
             {
                 "date": date_str,
@@ -649,7 +726,11 @@ def run_growth_candidate_paper_trading(overwrite_same_day: bool = False, allow_p
     quality_fail_reasons = _quality_reason_map()
     removed = sorted(set(previous_weights) - set(tickers) - {"CASH"})
     for ticker in removed:
-        removal_reason = "removed_by_universe_quality_filter: " + quality_fail_reasons[ticker] if ticker in quality_fail_reasons else "removed_by_growth_candidate"
+        removal_reason = (
+            "removed_by_universe_quality_filter: " + quality_fail_reasons[ticker]
+            if ticker in quality_fail_reasons
+            else "removed_by_growth_candidate"
+        )
         trade_rows.append(
             {
                 "date": date_str,
@@ -688,7 +769,7 @@ def run_growth_candidate_paper_trading(overwrite_same_day: bool = False, allow_p
     turnover = float(reconciliation.get("turnover", 0.0))
     reconciliation_passed = bool(reconciliation.get("reconciliation_passed", False))
     if not reconciliation_passed:
-        print('WARNING: Rebalance reconciliation failed')
+        print("WARNING: Rebalance reconciliation failed")
     perf_existing = _read_csv(PERFORMANCE_FILE)
     temp_perf = pd.concat(
         [
@@ -699,7 +780,7 @@ def run_growth_candidate_paper_trading(overwrite_same_day: bool = False, allow_p
                         "date": date_str,
                         "model_mode": CANDIDATE_NAME,
                         "growth_paper_variant": CANDIDATE_VARIANT,
-                "growth_model_version": CANDIDATE_MODEL_VERSION,
+                        "growth_model_version": CANDIDATE_MODEL_VERSION,
                         "portfolio_value": portfolio_value,
                         "daily_return": daily_return,
                         "cash_weight": cash,
@@ -900,14 +981,3 @@ def parse_args() -> argparse.Namespace:
 if __name__ == "__main__":
     args = parse_args()
     run_growth_candidate_paper_trading(overwrite_same_day=args.overwrite_same_day, allow_proxy_fallback=args.allow_proxy_fallback)
-
-
-
-
-
-
-
-
-
-
-

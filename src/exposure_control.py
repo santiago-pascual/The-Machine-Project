@@ -186,14 +186,9 @@ def compute_net_exposure(
 
     pre_override_exposure = float(target["net_exposure"])
     top3_list = top3_signals.tolist()
-    if len(top3_list) >= 3:
-        if (
-            float(top3_list[0]) > 0.8
-            and float(top3_list[1]) > 0.6
-            and float(top3_list[2]) > 0.4
-        ):
-            target["net_exposure"] = max(float(target["net_exposure"]), 0.5)
-            target["cash_weight"] = max(0.0, 1.0 - float(target["net_exposure"]))
+    if len(top3_list) >= 3 and float(top3_list[0]) > 0.8 and float(top3_list[1]) > 0.6 and float(top3_list[2]) > 0.4:
+        target["net_exposure"] = max(float(target["net_exposure"]), 0.5)
+        target["cash_weight"] = max(0.0, 1.0 - float(target["net_exposure"]))
 
     if opportunity_score > 0.6:
         target["net_exposure"] = max(float(target["net_exposure"]), 0.4)

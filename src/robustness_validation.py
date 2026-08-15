@@ -6,7 +6,6 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
-
 DEFAULT_OUTPUT_FILE = "robustness_validation.csv"
 
 THRESHOLD_DEFAULTS = {
@@ -317,7 +316,7 @@ def _analyze_threshold(thresholds: pd.DataFrame) -> tuple[pd.DataFrame, dict[str
         "threshold_robustness_score": best_score,
         "threshold_overfit_warning": ", ".join(best_reasons) if best_reasons else "none",
         "stable_parameter_ranges": ranges,
-        "accepted_config_count": int(len(accepted)),
+        "accepted_config_count": len(accepted),
         "rejected_config_count": int(len(ranked) - len(accepted)),
     }
     return pd.DataFrame(rows), summary
@@ -353,7 +352,9 @@ def run_robustness_validation(
     overfit_warning = "; ".join(reason for reason in overfit_reasons if reason and reason != "none") or "none"
 
     print("\n===== ROBUSTNESS VALIDATION REPORT =====")
-    print(f"input rows: barrier={len(barrier)}, threshold={len(thresholds)}, predictions={len(predictions)}, portfolio={len(portfolio_returns)}, labels={len(labels)}")
+    print(
+        f"input rows: barrier={len(barrier)}, threshold={len(thresholds)}, predictions={len(predictions)}, portfolio={len(portfolio_returns)}, labels={len(labels)}"
+    )
     print(f"best barrier config: {barrier_summary.get('best_barrier_config')}")
     print(f"best threshold config: {threshold_summary.get('best_threshold_config')}")
     print(f"barrier robustness score: {barrier_score:.2f}")
@@ -362,7 +363,9 @@ def run_robustness_validation(
     print(f"overfit_warning: {overfit_warning}")
 
     print("\n===== PARAMETER STABILITY REPORT =====")
-    print(f"barrier cluster: {barrier_summary.get('barrier_cluster_status')} ({_safe_float(barrier_summary.get('barrier_cluster_score')):.2f})")
+    print(
+        f"barrier cluster: {barrier_summary.get('barrier_cluster_status')} ({_safe_float(barrier_summary.get('barrier_cluster_score')):.2f})"
+    )
     stable_ranges = threshold_summary.get("stable_parameter_ranges", {})
     if isinstance(stable_ranges, dict):
         print("stable threshold ranges:")

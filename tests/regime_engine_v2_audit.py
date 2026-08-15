@@ -6,7 +6,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-
 FEATURE_STORE_FILE = "historical_feature_store.csv"
 SNAPSHOTS_FILE = "historical_forecast_snapshots.csv"
 REALIZED_FILE = "historical_realized_returns.csv"
@@ -116,7 +115,11 @@ def _date_regime_series(frame: pd.DataFrame, model_mode: str = "baseline") -> pd
 
 def _regime_stability(regimes: pd.Series) -> tuple[pd.DataFrame, pd.DataFrame, dict[str, float]]:
     if regimes.empty:
-        return pd.DataFrame(), pd.DataFrame(), {"average_duration": np.nan, "median_duration": np.nan, "stay_probability": np.nan, "switch_probability": np.nan}
+        return (
+            pd.DataFrame(),
+            pd.DataFrame(),
+            {"average_duration": np.nan, "median_duration": np.nan, "stay_probability": np.nan, "switch_probability": np.nan},
+        )
     runs: list[dict[str, object]] = []
     current = str(regimes.iloc[0])
     start = regimes.index[0]
@@ -166,9 +169,7 @@ def _regime_persistence(snapshots: pd.DataFrame, labels: pd.DataFrame) -> pd.Dat
         label_group = pd.DataFrame()
         if not labels.empty and {"regime", "horizon", "selected"}.issubset(labels.columns):
             label_group = labels[
-                labels["regime"].astype(str).eq(str(regime))
-                & labels["horizon"].astype(str).eq("20")
-                & _bool_series(labels["selected"])
+                labels["regime"].astype(str).eq(str(regime)) & labels["horizon"].astype(str).eq("20") & _bool_series(labels["selected"])
             ]
         tp = float((label_group["first_touch_type"].astype(str) == "take_profit").mean()) if not label_group.empty else np.nan
         sl = float((label_group["first_touch_type"].astype(str) == "stop_loss").mean()) if not label_group.empty else np.nan
@@ -176,7 +177,7 @@ def _regime_persistence(snapshots: pd.DataFrame, labels: pd.DataFrame) -> pd.Dat
             {
                 "section": "persistence",
                 "regime": regime,
-                "observations": int(len(returns.dropna())),
+                "observations": len(returns.dropna()),
                 "average_forward_return_20d": float(returns.mean()) if returns.notna().any() else np.nan,
                 "average_volatility": float(returns.std(ddof=0)) if returns.notna().sum() > 1 else np.nan,
                 "Sharpe": _sharpe(returns),
@@ -207,7 +208,7 @@ def _forecast_quality(snapshots: pd.DataFrame) -> pd.DataFrame:
         rows.append(
             {
                 "regime": regime,
-                "observations": int(len(valid)),
+                "observations": len(valid),
                 "MAE": float(valid["error"].abs().mean()),
                 "RMSE": float(np.sqrt(np.mean(np.square(valid["error"])))),
                 "bias": float(valid["error"].mean()),
@@ -228,7 +229,8 @@ def _separability(snapshots: pd.DataFrame) -> pd.DataFrame:
     data = snapshots.copy()
     metrics = {
         "returns": _safe_numeric(data.get("realized_return_20d", pd.Series(index=data.index))),
-        "forecast_error": _safe_numeric(data.get("expected_total_return", pd.Series(index=data.index))) - _safe_numeric(data.get("realized_return_20d", pd.Series(index=data.index))),
+        "forecast_error": _safe_numeric(data.get("expected_total_return", pd.Series(index=data.index)))
+        - _safe_numeric(data.get("realized_return_20d", pd.Series(index=data.index))),
         "signal_strength": _safe_numeric(data.get("signal_strength", pd.Series(index=data.index))),
         "quality_score": _safe_numeric(data.get("quality_score", pd.Series(index=data.index))),
     }
@@ -285,11 +287,7 @@ def _attach_regime_to_labels(labels: pd.DataFrame, snapshots: pd.DataFrame) -> p
     keys = ["date", "ticker", "model_mode"]
     if not set(keys).issubset(labels.columns) or not set(keys + ["regime"]).issubset(snapshots.columns):
         return labels
-    regime_map = (
-        snapshots[keys + ["regime"]]
-        .dropna(subset=["regime"])
-        .drop_duplicates(subset=keys, keep="last")
-    )
+    regime_map = snapshots[keys + ["regime"]].dropna(subset=["regime"]).drop_duplicates(subset=keys, keep="last")
     return labels.merge(regime_map, on=keys, how="left")
 
 
@@ -325,13 +323,21 @@ def _confusion_analysis(snapshots: pd.DataFrame, separability: pd.DataFrame, sta
             "section": "confusion",
             "metric": "switch_probability",
             "value": stability.get("switch_probability", np.nan),
-            "interpretation": "unstable" if _safe_numeric(pd.Series([stability.get("switch_probability", np.nan)])).iloc[0] > 0.35 else "stable",
+            "interpretation": "unstable"
+            if _safe_numeric(pd.Series([stability.get("switch_probability", np.nan)])).iloc[0] > 0.35
+            else "stable",
         }
     )
     return pd.DataFrame(rows)
 
 
-def _governance(stability: dict[str, float], persistence: pd.DataFrame, forecast_quality: pd.DataFrame, separability: pd.DataFrame, confusion: pd.DataFrame) -> pd.DataFrame:
+def _governance(
+    stability: dict[str, float],
+    persistence: pd.DataFrame,
+    forecast_quality: pd.DataFrame,
+    separability: pd.DataFrame,
+    confusion: pd.DataFrame,
+) -> pd.DataFrame:
     weak_reasons: list[str] = []
     stay_prob = stability.get("stay_probability", np.nan)
     if not np.isfinite(stay_prob) or stay_prob < 0.60:
@@ -389,12 +395,7 @@ def run_regime_engine_v2_audit() -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFra
     confusion = _confusion_analysis(snapshots, separability, stability)
     governance = _governance(stability, persistence, forecast_quality, separability, confusion)
 
-    stability_rows = pd.DataFrame(
-        [
-            {"section": "stability", "metric": key, "value": value}
-            for key, value in stability.items()
-        ]
-    )
+    stability_rows = pd.DataFrame([{"section": "stability", "metric": key, "value": value} for key, value in stability.items()])
     if not runs.empty:
         duration_by_regime = runs.groupby("regime")["duration"].agg(["count", "mean", "median"]).reset_index()
         duration_by_regime["section"] = "duration_by_regime"
@@ -436,7 +437,18 @@ def run_regime_engine_v2_audit() -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFra
     if persistence.empty:
         print("insufficient data")
     else:
-        cols = ["regime", "observations", "average_forward_return_20d", "average_volatility", "Sharpe", "Sortino", "max_drawdown", "hit_rate", "TP_rate", "SL_rate"]
+        cols = [
+            "regime",
+            "observations",
+            "average_forward_return_20d",
+            "average_volatility",
+            "Sharpe",
+            "Sortino",
+            "max_drawdown",
+            "hit_rate",
+            "TP_rate",
+            "SL_rate",
+        ]
         print(persistence[cols].to_string(index=False))
 
     print("\n===== FORECAST QUALITY BY REGIME =====")

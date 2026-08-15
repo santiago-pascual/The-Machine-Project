@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+
 import numpy as np
 import pandas as pd
 
@@ -86,7 +87,7 @@ def main() -> None:
         after_cap = min(after_vol, exposure_cap)
         dual_cap = safe_float(v3_row.iloc[-1].get("overlay_cap", np.nan), np.nan) if not v3_row.empty else np.nan
         if pd.isna(dual_cap):
-            dual_cap = actual_exposure if actual_exposure < after_cap else after_cap
+            dual_cap = min(after_cap, actual_exposure)
         after_dual = min(after_cap, dual_cap)
 
         vol_cash = max(0.0, 1.0 - after_vol)

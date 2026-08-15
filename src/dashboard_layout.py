@@ -3,7 +3,15 @@ from __future__ import annotations
 import pandas as pd
 
 from dashboard_components import status_badge
-from dashboard_data_layer import MODEL_NAME, MODEL_VERSION, VARIANT, get_scope_namespace, latest, latest_market_date, next_rebalance_date, official_start_date
+from dashboard_data_layer import (
+    MODEL_VERSION,
+    VARIANT,
+    get_scope_namespace,
+    latest,
+    latest_market_date,
+    next_rebalance_date,
+    official_start_date,
+)
 
 NAV_ITEMS = [
     "Mission Control",
@@ -43,7 +51,10 @@ PAGE_SUBTITLES = {
 
 
 def sidebar(st, data: dict[str, pd.DataFrame]) -> tuple[str, str]:
-    st.sidebar.markdown("<div style='padding:8px 4px 14px 4px'><div style='font-size:1.22rem;font-weight:850;color:#FF9A2E;letter-spacing:-.03em'>La Máquina</div><div style='color:#8B98A5;font-size:.78rem'>Institutional Quant Terminal</div></div>", unsafe_allow_html=True)
+    st.sidebar.markdown(
+        "<div style='padding:8px 4px 14px 4px'><div style='font-size:1.22rem;font-weight:850;color:#FF9A2E;letter-spacing:-.03em'>La Máquina</div><div style='color:#8B98A5;font-size:.78rem'>Institutional Quant Terminal</div></div>",
+        unsafe_allow_html=True,
+    )
     scope = st.sidebar.selectbox("Data scope", ["Official Forward Paper", "Historical 2008 Backtest"], index=0)
     nav = st.sidebar.radio("Navigation", NAV_ITEMS, index=0)
     monitor = latest(data.get("official_monitor", pd.DataFrame()))
@@ -71,7 +82,7 @@ def hero(st, data: dict[str, pd.DataFrame], scope: str) -> None:
         <div class='hero'>
           <h1>Growth Champion Final</h1>
           <p>{MODEL_VERSION} · {VARIANT} · official paper terminal · real capital blocked</p>
-          <p>{status_badge(scope, 'official' if scope == 'Official Forward Paper' else 'diagnostic')} {status_badge(str(integrity), str(integrity))} <span class='small-muted'>Namespace: {get_scope_namespace(scope)} · Latest: {latest_market_date(data)} · Next rebalance: {next_rebalance}</span></p>
+          <p>{status_badge(scope, "official" if scope == "Official Forward Paper" else "diagnostic")} {status_badge(str(integrity), str(integrity))} <span class='small-muted'>Namespace: {get_scope_namespace(scope)} · Latest: {latest_market_date(data)} · Next rebalance: {next_rebalance}</span></p>
         </div>
         """,
         unsafe_allow_html=True,
@@ -88,7 +99,7 @@ def page_header(st, page: str, scope: str, data: dict[str, pd.DataFrame]) -> Non
             <h2 class='page-title'>{page} {status_badge(scope, badge_status)}</h2>
             <div class='page-subtitle'>{subtitle}<br>{scope} | {latest_market_date(data)} | {MODEL_VERSION}</div>
           </div>
-          <div>{status_badge('READ ONLY', 'diagnostic')}</div>
+          <div>{status_badge("READ ONLY", "diagnostic")}</div>
         </div>
         """,
         unsafe_allow_html=True,

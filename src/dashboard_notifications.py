@@ -18,11 +18,11 @@ def render_live_status_bar(st, data: dict[str, pd.DataFrame]) -> None:
     st.markdown(
         f"""
         <div class='status-strip'>
-          <span><b>System Health:</b> {score:.1f}% {status_badge(result['health_label'], state)}</span>
-          <span>{status_badge(f'BLOCKER {blockers}', 'blocked' if blockers else 'pass')}</span>
-          <span>{status_badge(f'CRITICAL {critical}', 'failed' if critical else 'pass')}</span>
-          <span>{status_badge(f'WARNING {warnings}', 'warning' if warnings else 'pass')}</span>
-          <span>{status_badge(f'NOTICE {notices}', 'diagnostic' if notices else 'pass')}</span>
+          <span><b>System Health:</b> {score:.1f}% {status_badge(result["health_label"], state)}</span>
+          <span>{status_badge(f"BLOCKER {blockers}", "blocked" if blockers else "pass")}</span>
+          <span>{status_badge(f"CRITICAL {critical}", "failed" if critical else "pass")}</span>
+          <span>{status_badge(f"WARNING {warnings}", "warning" if warnings else "pass")}</span>
+          <span>{status_badge(f"NOTICE {notices}", "diagnostic" if notices else "pass")}</span>
           <span class='small-muted'>Read-only alert monitor · no orders</span>
         </div>
         """,

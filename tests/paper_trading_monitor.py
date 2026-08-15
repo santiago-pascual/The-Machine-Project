@@ -6,7 +6,6 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
-
 MONITOR_CSV = "paper_trading_monitor_report.csv"
 MONITOR_TXT = "paper_trading_monitor_report.txt"
 
@@ -52,7 +51,7 @@ def _paper_metrics(performance: pd.DataFrame, state: pd.DataFrame, trades: pd.Da
             "paper_max_drawdown": np.nan,
             "paper_cash": np.nan,
             "paper_turnover": np.nan,
-            "number_of_trades": int(len(trades)),
+            "number_of_trades": len(trades),
             "trade_win_rate": np.nan,
             "current_holdings": "",
         }
@@ -98,7 +97,7 @@ def _paper_metrics(performance: pd.DataFrame, state: pd.DataFrame, trades: pd.Da
         "paper_max_drawdown": max_dd,
         "paper_cash": cash,
         "paper_turnover": turnover,
-        "number_of_trades": int(len(trades)),
+        "number_of_trades": len(trades),
         "trade_win_rate": win_rate,
         "current_holdings": holdings,
     }
@@ -137,7 +136,9 @@ def _expected_metrics(larger: pd.DataFrame, clean_eval: pd.DataFrame, dashboard:
     if not clean_eval.empty and "trial_group" in clean_eval.columns:
         governed = clean_eval[clean_eval["trial_group"].astype(str).eq("governed_trials")]
         if not governed.empty:
-            expected["governed_classification"] = str(governed.iloc[-1].get("promotion_classification", expected["governed_classification"]))
+            expected["governed_classification"] = str(
+                governed.iloc[-1].get("promotion_classification", expected["governed_classification"])
+            )
     return expected
 
 
@@ -164,7 +165,16 @@ def _drift_flags(paper: dict[str, Any], expected: dict[str, Any], state: pd.Data
             flags.append("volatility_higher_than_expected")
     if not state.empty and not forecast.empty and {"ticker", "paper_position_weight"}.issubset(state.columns):
         latest_date = state["date"].astype(str).max() if "date" in state.columns else None
-        current_holdings = set(state.loc[state["date"].astype(str).eq(latest_date) & (pd.to_numeric(state["paper_position_weight"], errors="coerce") > 0), "ticker"].astype(str)) if latest_date else set()
+        current_holdings = (
+            set(
+                state.loc[
+                    state["date"].astype(str).eq(latest_date) & (pd.to_numeric(state["paper_position_weight"], errors="coerce") > 0),
+                    "ticker",
+                ].astype(str)
+            )
+            if latest_date
+            else set()
+        )
         expected_selected = set()
         if {"ticker", "selected"}.issubset(forecast.columns):
             expected_selected = set(forecast[forecast["selected"].astype(str).str.lower().isin(["true", "1", "yes"])]["ticker"].astype(str))
@@ -189,10 +199,18 @@ def build_paper_trading_monitor_report() -> pd.DataFrame:
     row = {
         **paper,
         **expected,
-        "paper_sharpe_vs_expected": paper["paper_sharpe"] - expected["expected_sharpe"] if np.isfinite(paper["paper_sharpe"]) and np.isfinite(expected["expected_sharpe"]) else np.nan,
-        "paper_drawdown_vs_expected": paper["paper_max_drawdown"] - expected["expected_max_drawdown"] if np.isfinite(paper["paper_max_drawdown"]) and np.isfinite(expected["expected_max_drawdown"]) else np.nan,
-        "paper_return_vs_expected": paper["paper_cumulative_return"] - expected["expected_return"] if np.isfinite(paper["paper_cumulative_return"]) and np.isfinite(expected["expected_return"]) else np.nan,
-        "paper_turnover_vs_expected": paper["paper_turnover"] - expected["expected_turnover"] if np.isfinite(paper["paper_turnover"]) and np.isfinite(expected["expected_turnover"]) else np.nan,
+        "paper_sharpe_vs_expected": paper["paper_sharpe"] - expected["expected_sharpe"]
+        if np.isfinite(paper["paper_sharpe"]) and np.isfinite(expected["expected_sharpe"])
+        else np.nan,
+        "paper_drawdown_vs_expected": paper["paper_max_drawdown"] - expected["expected_max_drawdown"]
+        if np.isfinite(paper["paper_max_drawdown"]) and np.isfinite(expected["expected_max_drawdown"])
+        else np.nan,
+        "paper_return_vs_expected": paper["paper_cumulative_return"] - expected["expected_return"]
+        if np.isfinite(paper["paper_cumulative_return"]) and np.isfinite(expected["expected_return"])
+        else np.nan,
+        "paper_turnover_vs_expected": paper["paper_turnover"] - expected["expected_turnover"]
+        if np.isfinite(paper["paper_turnover"]) and np.isfinite(expected["expected_turnover"])
+        else np.nan,
         "drift_flags": ", ".join(flags),
         "governance_status": governance_status,
         "promotion_status": promotion_status,

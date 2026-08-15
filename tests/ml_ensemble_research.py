@@ -7,7 +7,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-
 try:
     from sklearn.ensemble import GradientBoostingClassifier, RandomForestClassifier
     from sklearn.linear_model import LogisticRegression
@@ -81,7 +80,18 @@ def _prepare_data(config: MLEnsembleConfig):
     x = x.fillna(x.median(numeric_only=True).fillna(0.0))
     y = _safe_numeric(dataset["meta_label"], 0.0).astype(int)
     split_idx = max(1, min(len(dataset) - 1, int(len(dataset) * (1.0 - config.test_size))))
-    return dataset, features, (x.iloc[:split_idx], x.iloc[split_idx:], y.iloc[:split_idx], y.iloc[split_idx:], dataset.iloc[:split_idx], dataset.iloc[split_idx:])
+    return (
+        dataset,
+        features,
+        (
+            x.iloc[:split_idx],
+            x.iloc[split_idx:],
+            y.iloc[:split_idx],
+            y.iloc[split_idx:],
+            dataset.iloc[:split_idx],
+            dataset.iloc[split_idx:],
+        ),
+    )
 
 
 def _manual_auc(y_true: np.ndarray, probabilities: np.ndarray) -> float:
@@ -171,7 +181,7 @@ def _return_metrics(returns: pd.Series, labels: pd.Series) -> dict[str, float]:
     max_dd = float(drawdown.min()) if len(drawdown) else 0.0
     annual_factor = np.sqrt(252 / 20)
     return {
-        "trades_kept": int(len(returns)),
+        "trades_kept": len(returns),
         "TP_rate": float(labels.eq(1).mean()) if labels.notna().any() else np.nan,
         "SL_rate": float(labels.eq(-1).mean()) if labels.notna().any() else np.nan,
         "hit_rate": float(returns.gt(0).mean()),
@@ -230,7 +240,7 @@ def _calibration_rows(y_test: pd.Series, probabilities: dict[str, np.ndarray], b
                 {
                     "model": model,
                     "bucket": str(bucket),
-                    "sample_size": int(len(group)),
+                    "sample_size": len(group),
                     "avg_predicted_probability": float(group["probability"].mean()),
                     "actual_positive_rate": float(group["actual"].mean()),
                     "calibration_error": float(abs(group["probability"].mean() - group["actual"].mean())),
@@ -269,7 +279,15 @@ def _comparison(results: pd.DataFrame, thresholds: pd.DataFrame, config: MLEnsem
     rows = []
     if not results.empty:
         best = results.sort_values(["roc_auc", "f1"], ascending=False).head(1).iloc[0]
-        rows.append({"item": "ensemble_best_model", "model": best["model"], "roc_auc": best["roc_auc"], "f1": best["f1"], "accuracy": best["accuracy"]})
+        rows.append(
+            {
+                "item": "ensemble_best_model",
+                "model": best["model"],
+                "roc_auc": best["roc_auc"],
+                "f1": best["f1"],
+                "accuracy": best["accuracy"],
+            }
+        )
     if not thresholds.empty:
         best_t = thresholds.sort_values(["Sharpe", "average_realized_return", "hit_rate"], ascending=False).head(1).iloc[0]
         rows.append(
@@ -283,10 +301,22 @@ def _comparison(results: pd.DataFrame, thresholds: pd.DataFrame, config: MLEnsem
             }
         )
     if not core_results.empty:
-        core = core_results[core_results.get("status", "").astype(str).eq("ok")].sort_values(["test_roc_auc", "test_f1"], ascending=False).head(1)
+        core = (
+            core_results[core_results.get("status", "").astype(str).eq("ok")]
+            .sort_values(["test_roc_auc", "test_f1"], ascending=False)
+            .head(1)
+        )
         if not core.empty:
             row = core.iloc[0]
-            rows.append({"item": "ml_core_best_model", "model": row["model"], "roc_auc": row["test_roc_auc"], "f1": row["test_f1"], "accuracy": row["test_accuracy"]})
+            rows.append(
+                {
+                    "item": "ml_core_best_model",
+                    "model": row["model"],
+                    "roc_auc": row["test_roc_auc"],
+                    "f1": row["test_f1"],
+                    "accuracy": row["test_accuracy"],
+                }
+            )
     if not core_thresholds.empty:
         row = core_thresholds.sort_values(["Sharpe", "average_realized_return"], ascending=False).head(1).iloc[0]
         rows.append(
@@ -300,10 +330,22 @@ def _comparison(results: pd.DataFrame, thresholds: pd.DataFrame, config: MLEnsem
             }
         )
     if not previous_meta.empty:
-        prev = previous_meta[previous_meta.get("status", "").astype(str).eq("ok")].sort_values(["test_roc_auc", "test_f1"], ascending=False).head(1)
+        prev = (
+            previous_meta[previous_meta.get("status", "").astype(str).eq("ok")]
+            .sort_values(["test_roc_auc", "test_f1"], ascending=False)
+            .head(1)
+        )
         if not prev.empty:
             row = prev.iloc[0]
-            rows.append({"item": "previous_meta_best_model", "model": row["model"], "roc_auc": row["test_roc_auc"], "f1": row["test_f1"], "accuracy": row["test_accuracy"]})
+            rows.append(
+                {
+                    "item": "previous_meta_best_model",
+                    "model": row["model"],
+                    "roc_auc": row["test_roc_auc"],
+                    "f1": row["test_f1"],
+                    "accuracy": row["test_accuracy"],
+                }
+            )
     comparison = pd.DataFrame(rows)
     comparison.to_csv(OUTPUT_COMPARISON, index=False)
     return comparison
@@ -315,7 +357,9 @@ def _governance(results: pd.DataFrame, thresholds: pd.DataFrame) -> str:
     best = results.sort_values(["roc_auc", "f1"], ascending=False).head(1).iloc[0]
     auc = float(best.get("roc_auc", 0.0) or 0.0)
     f1 = float(best.get("f1", 0.0) or 0.0)
-    threshold_best = thresholds.sort_values(["Sharpe", "average_realized_return"], ascending=False).head(1) if not thresholds.empty else pd.DataFrame()
+    threshold_best = (
+        thresholds.sort_values(["Sharpe", "average_realized_return"], ascending=False).head(1) if not thresholds.empty else pd.DataFrame()
+    )
     sample_ok = False
     if not threshold_best.empty:
         sample_ok = int(threshold_best.iloc[0].get("trades_kept", 0) or 0) >= 100
@@ -345,7 +389,7 @@ def run_ml_ensemble_research(config: MLEnsembleConfig | None = None) -> dict[str
     probabilities = _fit_models(x_train, x_test, y_train)
     rows = []
     for model, probs in probabilities.items():
-        rows.append({"model": model, **_metrics(y_test, probs), "test_size": int(len(y_test)), "status": "ok"})
+        rows.append({"model": model, **_metrics(y_test, probs), "test_size": len(y_test), "status": "ok"})
     results = pd.DataFrame(rows).sort_values(["roc_auc", "f1"], ascending=False)
     results.to_csv(OUTPUT_RESULTS, index=False)
     thresholds = _threshold_rows(test_dataset, probabilities, config)
@@ -372,7 +416,20 @@ def _print_report(
     if thresholds.empty:
         print("No threshold analysis.")
     else:
-        cols = ["model", "threshold", "trades_kept", "sample_reduction", "TP_rate", "SL_rate", "hit_rate", "average_realized_return", "Sharpe", "Sortino", "Calmar", "max_drawdown"]
+        cols = [
+            "model",
+            "threshold",
+            "trades_kept",
+            "sample_reduction",
+            "TP_rate",
+            "SL_rate",
+            "hit_rate",
+            "average_realized_return",
+            "Sharpe",
+            "Sortino",
+            "Calmar",
+            "max_drawdown",
+        ]
         print(thresholds[cols].sort_values(["Sharpe", "average_realized_return"], ascending=False).head(15).to_string(index=False))
 
     print("\n===== ML ENSEMBLE CALIBRATION =====")
@@ -383,7 +440,9 @@ def _print_report(
 
     print("\n===== ML ENSEMBLE GOVERNANCE =====")
     best_model = results.iloc[0]["model"] if not results.empty else "none"
-    best_threshold = thresholds.sort_values(["Sharpe", "average_realized_return"], ascending=False).head(1) if not thresholds.empty else pd.DataFrame()
+    best_threshold = (
+        thresholds.sort_values(["Sharpe", "average_realized_return"], ascending=False).head(1) if not thresholds.empty else pd.DataFrame()
+    )
     print(f"best model: {best_model}")
     if not best_threshold.empty:
         row = best_threshold.iloc[0]

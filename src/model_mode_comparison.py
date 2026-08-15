@@ -1,17 +1,19 @@
 from __future__ import annotations
 
-from pathlib import Path
 import contextlib
 import io
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
-import yfinance as yf
 
 from trend_vs_ema_backtest import _download_reduced_prices
 from triple_barrier_labeling import generate_triple_barrier_labels
-from walk_forward_backtester import DEFAULT_REDUCED_UNIVERSE, WalkForwardConfig, run_walk_forward_backtest
-
+from walk_forward_backtester import (
+    DEFAULT_REDUCED_UNIVERSE,
+    WalkForwardConfig,
+    run_walk_forward_backtest,
+)
 
 DEFAULT_OUTPUT_FILE = "model_mode_comparison.csv"
 REGIME_GATED_OUTPUT_FILE = "regime_gated_full_quant_comparison.csv"
@@ -284,7 +286,11 @@ def _decision_changes(baseline_predictions: pd.DataFrame, quant_predictions: pd.
     rows = []
     dates = sorted(set(baseline_predictions.get("date", [])) | set(quant_predictions.get("date", [])))
     for date in dates:
-        b = set(baseline_predictions[(baseline_predictions["date"] == date) & baseline_predictions["selected"].astype(bool)]["ticker"].astype(str))
+        b = set(
+            baseline_predictions[(baseline_predictions["date"] == date) & baseline_predictions["selected"].astype(bool)]["ticker"].astype(
+                str
+            )
+        )
         q = set(quant_predictions[(quant_predictions["date"] == date) & quant_predictions["selected"].astype(bool)]["ticker"].astype(str))
         overlap = b & q
         rows.append(
@@ -352,19 +358,23 @@ def run_model_mode_comparison(
     print(f"average overlap: {float(decision_changes['jaccard_overlap'].mean()) if not decision_changes.empty else np.nan:.4f}")
     print(decision_changes.head(10).to_string(index=False))
     print("\n===== BASELINE VS FULL QUANT VS REGIME GATED COMPARISON =====")
-    key_metrics = comparison[comparison["metric"].isin([
-        "realized_sharpe",
-        "realized_return",
-        "realized_volatility",
-        "max_drawdown",
-        "Sortino",
-        "Calmar",
-        "average_cash",
-        "average_turnover",
-        "TP_rate",
-        "SL_rate",
-        "TP_minus_SL",
-    ])]
+    key_metrics = comparison[
+        comparison["metric"].isin(
+            [
+                "realized_sharpe",
+                "realized_return",
+                "realized_volatility",
+                "max_drawdown",
+                "Sortino",
+                "Calmar",
+                "average_cash",
+                "average_turnover",
+                "TP_rate",
+                "SL_rate",
+                "TP_minus_SL",
+            ]
+        )
+    ]
     print(key_metrics.to_string(index=False))
     print("\nRegime-gated decision changes:")
     print(f"average overlap: {float(gated_decision_changes['jaccard_overlap'].mean()) if not gated_decision_changes.empty else np.nan:.4f}")

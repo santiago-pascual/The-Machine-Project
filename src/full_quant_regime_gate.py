@@ -58,9 +58,7 @@ def evaluate_full_quant_regime_gate(
     high_noise = np.isfinite(entropy) and entropy > 0.78
     weak_breadth = np.isfinite(breadth_value) and breadth_value < 0.45
     bearish_spy = spy_macro_regime == "bearish" or (np.isfinite(spy_mom_20) and spy_mom_20 < -0.03)
-    high_vol_stress = (np.isfinite(vix_z_value) and vix_z_value > 1.25) or (
-        np.isfinite(vol_ratio) and vol_ratio > 1.35 and score < 0.15
-    )
+    high_vol_stress = (np.isfinite(vix_z_value) and vix_z_value > 1.25) or (np.isfinite(vol_ratio) and vol_ratio > 1.35 and score < 0.15)
     weak_trend = np.isfinite(trend_score) and trend_score < 0.45
 
     if missing_core:

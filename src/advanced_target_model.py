@@ -76,12 +76,7 @@ def generate_targets_advanced(prices_df: pd.DataFrame) -> dict[str, pd.Series]:
     trend_strength = _normalize_series(trend_strength_raw).fillna(0.5)
     signal_strength = _normalize_series(0.5 * momentum_20 + 0.5 * trend_strength_raw).fillna(0.5)
 
-    expected_move = (
-        0.35 * blended_vol
-        + 0.25 * atr_vol
-        + 0.25 * momentum_20
-        + 0.15 * trend_strength
-    )
+    expected_move = 0.35 * blended_vol + 0.25 * atr_vol + 0.25 * momentum_20 + 0.15 * trend_strength
     expected_move = expected_move * (0.5 + signal_strength)
     expected_move = expected_move.clip(-0.2, 0.3)
 
@@ -111,11 +106,7 @@ def generate_targets_advanced(prices_df: pd.DataFrame) -> dict[str, pd.Series]:
     volatility_stability_raw = 1 / (1 + volatility_variance.fillna(volatility_variance.median()).clip(lower=0))
     volatility_stability = _normalize_series(volatility_stability_raw).fillna(0.5)
 
-    target_confidence = (
-        0.4 * signal_strength
-        + 0.3 * trend_consistency
-        + 0.3 * volatility_stability
-    )
+    target_confidence = 0.4 * signal_strength + 0.3 * trend_consistency + 0.3 * volatility_stability
     target_confidence = target_confidence.clip(0.0, 1.0).fillna(0.5)
 
     target_price = target_price.replace([np.inf, -np.inf], np.nan).fillna(current_price)

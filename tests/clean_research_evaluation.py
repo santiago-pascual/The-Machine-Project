@@ -8,7 +8,6 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
-
 OUTPUT_FILE = "clean_research_evaluation.csv"
 
 
@@ -126,7 +125,7 @@ def _governed_summary(
     for col in ["Sharpe", "selected_only_sample_size", "number_of_test_dates", "TP_rate", "SL_rate", "average_turnover"]:
         if col in df.columns:
             df[col] = pd.to_numeric(df[col], errors="coerce")
-    total_trials = int(len(df))
+    total_trials = len(df)
     best_sharpe = float(df["Sharpe"].max()) if "Sharpe" in df.columns else np.nan
     sample_size = int(df["selected_only_sample_size"].max()) if "selected_only_sample_size" in df.columns else 0
     test_dates = int(df["number_of_test_dates"].max()) if "number_of_test_dates" in df.columns else 0
@@ -161,9 +160,8 @@ def _governed_pbo_proxy(df: pd.DataFrame, *, total_trials: int, sample_size: int
     trial_penalty = min(0.15, log(max(1, total_trials)) / 20.0)
     sample_penalty = 0.05 if sample_size >= 150 else 0.25
     consistency_penalty = 0.0
-    if {"TP_rate", "SL_rate"}.issubset(df.columns):
-        if bool((df["TP_rate"] < df["SL_rate"]).fillna(False).any()):
-            consistency_penalty += 0.20
+    if {"TP_rate", "SL_rate"}.issubset(df.columns) and bool((df["TP_rate"] < df["SL_rate"]).fillna(False).any()):
+        consistency_penalty += 0.20
     if "Sharpe" in df.columns and df["Sharpe"].dropna().std() > 0.75:
         consistency_penalty += 0.10
     return float(np.clip(0.10 + trial_penalty + sample_penalty + consistency_penalty, 0.0, 1.0))
@@ -229,9 +227,9 @@ def build_clean_research_evaluation() -> pd.DataFrame:
         config=config,
     )
     result = pd.DataFrame([exploratory, governed])
-    result["governed_has_lower_overfitting_risk"] = (
-        result["trial_group"].eq("governed_trials")
-        & (pd.to_numeric(result["PBO_proxy"], errors="coerce") < pd.to_numeric(result.loc[result["trial_group"].eq("exploratory_trials"), "PBO_proxy"].iloc[0], errors="coerce"))
+    result["governed_has_lower_overfitting_risk"] = result["trial_group"].eq("governed_trials") & (
+        pd.to_numeric(result["PBO_proxy"], errors="coerce")
+        < pd.to_numeric(result.loc[result["trial_group"].eq("exploratory_trials"), "PBO_proxy"].iloc[0], errors="coerce")
     )
     result["registry_rows"] = len(registry)
     return result
@@ -249,8 +247,16 @@ def _update_dashboard_with_clean_risk(evaluation: pd.DataFrame) -> None:
             [
                 {"section": "Clean Research Evaluation", "metric": f"{prefix}_total_trials", "value": row.get("total_trials", np.nan)},
                 {"section": "Clean Research Evaluation", "metric": f"{prefix}_PBO_proxy", "value": row.get("PBO_proxy", np.nan)},
-                {"section": "Clean Research Evaluation", "metric": f"{prefix}_deflated_sharpe", "value": row.get("deflated_sharpe", np.nan)},
-                {"section": "Clean Research Evaluation", "metric": f"{prefix}_promotion_classification", "value": row.get("promotion_classification", "")},
+                {
+                    "section": "Clean Research Evaluation",
+                    "metric": f"{prefix}_deflated_sharpe",
+                    "value": row.get("deflated_sharpe", np.nan),
+                },
+                {
+                    "section": "Clean Research Evaluation",
+                    "metric": f"{prefix}_promotion_classification",
+                    "value": row.get("promotion_classification", ""),
+                },
             ]
         )
     clean = dashboard[dashboard["section"].astype(str).ne("Clean Research Evaluation")]

@@ -5,7 +5,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-
 PRICE_CACHE_DIR = Path("yahoo_ohlcv_price_cache")
 BLACKLIST_FILE = Path("growth_universe_blacklist.csv")
 REPORT_FILE = Path("growth_universe_quality_report.csv")
@@ -76,7 +75,7 @@ def _is_suspicious_symbol(ticker: str) -> bool:
         return True
     # Compact warrant/unit/right symbols are usually longer suffix variants; keep this
     # narrow so ordinary 3-5 letter equity symbols are not falsely excluded.
-    return len(t) >= 6 and (t.endswith("WS") or t.endswith("WT"))
+    return len(t) >= 6 and (t.endswith(("WS", "WT")))
 
 
 def ensure_blacklist() -> pd.DataFrame:
@@ -85,8 +84,16 @@ def ensure_blacklist() -> pd.DataFrame:
     else:
         df = pd.DataFrame(
             [
-                {"ticker": "AFJK", "reason": "manual blacklist: unstable/low-quality growth paper ticker", "date_added": pd.Timestamp.today().date().isoformat()},
-                {"ticker": "AIXI", "reason": "manual blacklist: unstable/low-quality growth paper ticker", "date_added": pd.Timestamp.today().date().isoformat()},
+                {
+                    "ticker": "AFJK",
+                    "reason": "manual blacklist: unstable/low-quality growth paper ticker",
+                    "date_added": pd.Timestamp.today().date().isoformat(),
+                },
+                {
+                    "ticker": "AIXI",
+                    "reason": "manual blacklist: unstable/low-quality growth paper ticker",
+                    "date_added": pd.Timestamp.today().date().isoformat(),
+                },
             ]
         )
         df.to_csv(BLACKLIST_FILE, index=False)
@@ -206,7 +213,14 @@ def _read_cached_ohlcv(ticker: str) -> pd.DataFrame:
     return df
 
 
-def _quality_for_ticker(ticker: str, as_of_date: pd.Timestamp, blacklist: pd.DataFrame, allowlist: set[str] | None = None, yahoo_attempted: bool = False, yahoo_success: bool = False) -> dict[str, object]:
+def _quality_for_ticker(
+    ticker: str,
+    as_of_date: pd.Timestamp,
+    blacklist: pd.DataFrame,
+    allowlist: set[str] | None = None,
+    yahoo_attempted: bool = False,
+    yahoo_success: bool = False,
+) -> dict[str, object]:
     ticker = str(ticker).strip().upper()
     reasons: list[str] = []
     warnings: list[str] = []
@@ -329,7 +343,9 @@ def _quality_for_ticker(ticker: str, as_of_date: pd.Timestamp, blacklist: pd.Dat
     }
 
 
-def apply_growth_universe_quality_filter(candidates: pd.DataFrame, as_of_date: pd.Timestamp, yahoo_fetch_tickers: list[str] | None = None) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+def apply_growth_universe_quality_filter(
+    candidates: pd.DataFrame, as_of_date: pd.Timestamp, yahoo_fetch_tickers: list[str] | None = None
+) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     if candidates.empty or "ticker" not in candidates.columns:
         return candidates.copy(), pd.DataFrame(), pd.DataFrame()
     blacklist = ensure_blacklist()
@@ -346,15 +362,42 @@ def apply_growth_universe_quality_filter(candidates: pd.DataFrame, as_of_date: p
         if hist.empty:
             missing_local.append(ticker)
     yahoo_results = _download_yahoo_ohlcv_batch(missing_local, as_of_date) if missing_local else {}
-    quality = pd.DataFrame([_quality_for_ticker(ticker, as_of_date, blacklist, allowlist, ticker in yahoo_results, yahoo_results.get(ticker, False)) for ticker in tickers])
+    quality = pd.DataFrame(
+        [
+            _quality_for_ticker(ticker, as_of_date, blacklist, allowlist, ticker in yahoo_results, yahoo_results.get(ticker, False))
+            for ticker in tickers
+        ]
+    )
     output = candidates.copy()
     output["ticker"] = output["ticker"].astype(str).str.strip().str.upper()
-    merge_cols = ["ticker", "quality_pass", "passed_tradability_filter", "tradability_exclusion_reason", "exclusion_reason", "final_exclusion_reason", "local_ohlcv_available", "yahoo_fetch_attempted", "yahoo_fetch_success", "median_60d_dollar_volume", "market_cap", "trading_history_days", "realized_vol_60d"]
+    merge_cols = [
+        "ticker",
+        "quality_pass",
+        "passed_tradability_filter",
+        "tradability_exclusion_reason",
+        "exclusion_reason",
+        "final_exclusion_reason",
+        "local_ohlcv_available",
+        "yahoo_fetch_attempted",
+        "yahoo_fetch_success",
+        "median_60d_dollar_volume",
+        "market_cap",
+        "trading_history_days",
+        "realized_vol_60d",
+    ]
     output = output.merge(quality[[c for c in merge_cols if c in quality.columns]], on="ticker", how="left")
     output["quality_pass"] = output["quality_pass"].fillna(False).astype(bool)
     output["exclusion_reason"] = output["exclusion_reason"].fillna("quality data unavailable")
-    exclusions = output[~output["quality_pass"]][["date", "ticker", "exclusion_reason"]].copy() if "date" in output.columns else output[~output["quality_pass"]][["ticker", "exclusion_reason"]].copy()
-    tradability_exclusions = quality[~quality.get("passed_tradability_filter", pd.Series(False, index=quality.index)).fillna(False)].copy() if not quality.empty else pd.DataFrame()
+    exclusions = (
+        output[~output["quality_pass"]][["date", "ticker", "exclusion_reason"]].copy()
+        if "date" in output.columns
+        else output[~output["quality_pass"]][["ticker", "exclusion_reason"]].copy()
+    )
+    tradability_exclusions = (
+        quality[~quality.get("passed_tradability_filter", pd.Series(False, index=quality.index)).fillna(False)].copy()
+        if not quality.empty
+        else pd.DataFrame()
+    )
     quality.to_csv(CURRENT_FILE, index=False)
     quality.to_csv(REPORT_FILE, index=False)
     quality.to_csv(TRADABILITY_REPORT_FILE, index=False)

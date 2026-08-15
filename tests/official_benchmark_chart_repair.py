@@ -5,7 +5,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-
 OFFICIAL_PERFORMANCE = Path("growth_official_paper_performance.csv")
 OLD_BENCHMARK_EQUITY = Path("benchmark_equity_curves.csv")
 OLD_BENCHMARK_DAILY = Path("benchmark_daily_returns.csv")
@@ -29,7 +28,7 @@ def _read_csv(path: Path) -> pd.DataFrame:
     return df
 
 
-def _numeric(series: pd.Series | float | int) -> pd.Series:
+def _numeric(series: pd.Series | float) -> pd.Series:
     return pd.to_numeric(series, errors="coerce").replace([np.inf, -np.inf], np.nan)
 
 

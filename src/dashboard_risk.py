@@ -7,7 +7,14 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 
-from dashboard_components import alert_box, fmt_num, fmt_pct, metric_card, section_header, source_caption
+from dashboard_components import (
+    alert_box,
+    fmt_num,
+    fmt_pct,
+    metric_card,
+    section_header,
+    source_caption,
+)
 from dashboard_risk_calculations import (
     MAX_EXPOSURE,
     MIN_EXPOSURE,
@@ -15,7 +22,18 @@ from dashboard_risk_calculations import (
     build_risk_bundle,
     risk_commentary,
 )
-from dashboard_theme import AMBER, BRIGHT_ORANGE, CHART_COLORS, CYAN, GREEN, INFO, MUTED_ORANGE, ORANGE, RED, apply_plotly_layout
+from dashboard_theme import (
+    AMBER,
+    BRIGHT_ORANGE,
+    CHART_COLORS,
+    CYAN,
+    GREEN,
+    INFO,
+    MUTED_ORANGE,
+    ORANGE,
+    RED,
+    apply_plotly_layout,
+)
 
 RISK_COLOR_SEQUENCE = [ORANGE, BRIGHT_ORANGE, AMBER, MUTED_ORANGE, INFO, CYAN, GREEN, RED]
 
@@ -43,7 +61,7 @@ def _arrow_safe_frame(df: pd.DataFrame) -> pd.DataFrame:
             non_null = series.dropna()
             sample = non_null.head(200).tolist()
             type_names = {type(v).__name__ for v in sample}
-            has_text_like = any(name in type_names for name in {"str", "dict", "list", "tuple"})
+            has_text_like = any(name in type_names for name in ("str", "dict", "list", "tuple"))
             if len(type_names) > 1 or has_text_like:
                 out[col] = series.map(lambda v: "" if pd.isna(v) else str(v))
     return out
@@ -63,6 +81,7 @@ def _safe_df(st, df: pd.DataFrame, columns: list[str] | None = None, height: int
         kwargs["height"] = height
     st.dataframe(view, **kwargs)
 
+
 def _risk_contribution_chart(st, contrib: pd.DataFrame) -> None:
     if contrib.empty or "ticker" not in contrib.columns or "pct_total_portfolio_risk" not in contrib.columns:
         st.warning("Risk contribution unavailable: missing ticker or contribution columns.")
@@ -74,7 +93,9 @@ def _risk_contribution_chart(st, contrib: pd.DataFrame) -> None:
         orientation="h",
         color="ticker",
         color_discrete_sequence=RISK_COLOR_SEQUENCE,
-        text=contrib.sort_values("pct_total_portfolio_risk", ascending=True)["pct_total_portfolio_risk"].map(lambda x: f"{x:.1%}" if pd.notna(x) else ""),
+        text=contrib.sort_values("pct_total_portfolio_risk", ascending=True)["pct_total_portfolio_risk"].map(
+            lambda x: f"{x:.1%}" if pd.notna(x) else ""
+        ),
     )
     fig.update_layout(showlegend=False, xaxis_tickformat=".0%")
     st.plotly_chart(apply_plotly_layout(fig, "Risk contribution by holding"), width="stretch")
@@ -88,15 +109,30 @@ def _exposure_waterfall(st, metrics: dict[str, Any]) -> None:
         [
             {"stage": "Uncapped vol target", "exposure": raw, "limit": "target_vol / realized_vol"},
             {"stage": "Minimum floor", "exposure": max(raw, MIN_EXPOSURE) if pd.notna(raw) else np.nan, "limit": "min 40%"},
-            {"stage": "Exposure cap", "exposure": min(max(raw, MIN_EXPOSURE), MAX_EXPOSURE) if pd.notna(raw) else np.nan, "limit": "max 60%"},
-            {"stage": "Dual trend cap", "exposure": min(max(raw, MIN_EXPOSURE), MAX_EXPOSURE, dual) if pd.notna(raw) and pd.notna(dual) else np.nan, "limit": "60/40/25"},
+            {
+                "stage": "Exposure cap",
+                "exposure": min(max(raw, MIN_EXPOSURE), MAX_EXPOSURE) if pd.notna(raw) else np.nan,
+                "limit": "max 60%",
+            },
+            {
+                "stage": "Dual trend cap",
+                "exposure": min(max(raw, MIN_EXPOSURE), MAX_EXPOSURE, dual) if pd.notna(raw) and pd.notna(dual) else np.nan,
+                "limit": "60/40/25",
+            },
             {"stage": "Final exposure", "exposure": final, "limit": "applied"},
         ]
     )
     if rows["exposure"].notna().sum() == 0:
         st.warning("Exposure waterfall unavailable: missing volatility target diagnostics.")
         return
-    fig = px.bar(rows, x="stage", y="exposure", color="stage", color_discrete_sequence=RISK_COLOR_SEQUENCE, text=rows["exposure"].map(lambda x: f"{x:.1%}" if pd.notna(x) else "n/a"))
+    fig = px.bar(
+        rows,
+        x="stage",
+        y="exposure",
+        color="stage",
+        color_discrete_sequence=RISK_COLOR_SEQUENCE,
+        text=rows["exposure"].map(lambda x: f"{x:.1%}" if pd.notna(x) else "n/a"),
+    )
     fig.update_layout(showlegend=False, yaxis_tickformat=".0%")
     st.plotly_chart(apply_plotly_layout(fig, "Exposure limit stack"), width="stretch")
     _safe_df(st, rows, height=210)
@@ -114,8 +150,10 @@ def _surface(st, matrix: pd.DataFrame, title: str) -> None:
     if matrix.empty or matrix.shape[0] < 2 or matrix.shape[1] < 2:
         st.warning(f"{title} unavailable: need at least two holdings.")
         return
-    fig = go.Figure(data=[go.Surface(z=matrix.values, x=list(range(len(matrix.columns))), y=list(range(len(matrix.index))), colorscale="Oranges")])
-    fig.update_layout(scene=dict(xaxis_title="Asset", yaxis_title="Asset", zaxis_title="Value"))
+    fig = go.Figure(
+        data=[go.Surface(z=matrix.values, x=list(range(len(matrix.columns))), y=list(range(len(matrix.index))), colorscale="Oranges")]
+    )
+    fig.update_layout(scene={"xaxis_title": "Asset", "yaxis_title": "Asset", "zaxis_title": "Value"})
     st.plotly_chart(apply_plotly_layout(fig, title), width="stretch")
 
 
@@ -142,7 +180,7 @@ def _network_graph(st, corr: pd.DataFrame, contrib: pd.DataFrame) -> None:
                     x=[x0, x1],
                     y=[y0, y1],
                     mode="lines",
-                    line=dict(width=max(1, abs(val) * 7), color=f"rgba(255,132,44,{0.15 + abs(val) * 0.55})"),
+                    line={"width": max(1, abs(val) * 7), "color": f"rgba(255,132,44,{0.15 + abs(val) * 0.55})"},
                     hoverinfo="text",
                     text=f"{a}-{b}: corr {val:.2f}",
                     showlegend=False,
@@ -155,7 +193,11 @@ def _network_graph(st, corr: pd.DataFrame, contrib: pd.DataFrame) -> None:
             mode="markers+text",
             text=tickers,
             textposition="top center",
-            marker=dict(size=[18 + 45 * float(risk_map.get(t, 0.05)) for t in tickers], color=CHART_COLORS["growth"], line=dict(color="#ffd29a", width=1)),
+            marker={
+                "size": [18 + 45 * float(risk_map.get(t, 0.05)) for t in tickers],
+                "color": CHART_COLORS["growth"],
+                "line": {"color": "#ffd29a", "width": 1},
+            },
             showlegend=False,
         )
     )
@@ -244,7 +286,13 @@ def render_risk_terminal(st, data: dict[str, pd.DataFrame]) -> None:
     m = bundle.metrics
     cards = st.columns(4)
     with cards[0]:
-        metric_card(st, "Portfolio Vol", fmt_pct(m.get("realized_portfolio_volatility")), f"target {TARGET_VOL:.0%}", state=_status_state(bundle.status))
+        metric_card(
+            st,
+            "Portfolio Vol",
+            fmt_pct(m.get("realized_portfolio_volatility")),
+            f"target {TARGET_VOL:.0%}",
+            state=_status_state(bundle.status),
+        )
     with cards[1]:
         metric_card(st, "Final Exposure", fmt_pct(m.get("final_exposure")), f"uncapped {fmt_pct(m.get('uncapped_vol_target_exposure'))}")
     with cards[2]:
@@ -286,7 +334,15 @@ def render_risk_terminal(st, data: dict[str, pd.DataFrame]) -> None:
             _safe_df(
                 st,
                 bundle.holdings,
-                ["ticker", "weight", "cash_weight", "current_price", "market_cap", "median_60d_dollar_volume", "holding_quality_classification"],
+                [
+                    "ticker",
+                    "weight",
+                    "cash_weight",
+                    "current_price",
+                    "market_cap",
+                    "median_60d_dollar_volume",
+                    "holding_quality_classification",
+                ],
             )
 
     with tabs[1]:
@@ -334,7 +390,9 @@ def render_risk_terminal(st, data: dict[str, pd.DataFrame]) -> None:
     with tabs[5]:
         _safe_df(st, bundle.stress)
         if not bundle.stress.empty:
-            fig = px.bar(bundle.stress, x="scenario", y="estimated_portfolio_loss", color="scenario", color_discrete_sequence=RISK_COLOR_SEQUENCE)
+            fig = px.bar(
+                bundle.stress, x="scenario", y="estimated_portfolio_loss", color="scenario", color_discrete_sequence=RISK_COLOR_SEQUENCE
+            )
             fig.update_layout(showlegend=False, yaxis_tickformat=".1%")
             st.plotly_chart(apply_plotly_layout(fig, "Scenario loss diagnostics"), width="stretch")
 
@@ -350,8 +408,3 @@ def render_risk_terminal(st, data: dict[str, pd.DataFrame]) -> None:
             _safe_df(st, bundle.source_audit)
         with c2:
             _safe_df(st, bundle.integrity)
-
-
-
-
-

@@ -4,7 +4,6 @@ from pathlib import Path
 
 import pandas as pd
 
-
 PAPER_FILE = Path("growth_candidate_paper_performance.csv")
 CACHE_DIR = Path("yahoo_ohlcv_price_cache")
 RETURNS_OUT = Path("benchmark_daily_returns.csv")
@@ -42,7 +41,13 @@ def _download_yahoo(ticker: str, start: pd.Timestamp, end: pd.Timestamp) -> pd.D
         pass
     try:
         # Yahoo end is exclusive; add a few days so the last paper date can be included.
-        df = yf.download(ticker, start=start.strftime("%Y-%m-%d"), end=(end + pd.Timedelta(days=5)).strftime("%Y-%m-%d"), progress=False, auto_adjust=False)
+        df = yf.download(
+            ticker,
+            start=start.strftime("%Y-%m-%d"),
+            end=(end + pd.Timedelta(days=5)).strftime("%Y-%m-%d"),
+            progress=False,
+            auto_adjust=False,
+        )
     except Exception:
         return pd.DataFrame()
     if df is None or df.empty:

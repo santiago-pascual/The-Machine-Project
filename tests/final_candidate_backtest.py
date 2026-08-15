@@ -7,7 +7,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-
 try:
     from sklearn.isotonic import IsotonicRegression
     from sklearn.linear_model import LogisticRegression
@@ -139,9 +138,9 @@ def _build_candidate_trades(config: FinalCandidateConfig) -> pd.DataFrame:
     if "daily_volatility" not in mode_rows.columns:
         tb = _read_csv(config.triple_barrier_path)
         if not tb.empty:
-            vol = tb[tb.get("horizon", pd.Series(dtype=float)).eq(config.horizon)][["date", "ticker", "model_mode", "daily_volatility"]].drop_duplicates(
-                ["date", "ticker", "model_mode"]
-            )
+            vol = tb[tb.get("horizon", pd.Series(dtype=float)).eq(config.horizon)][
+                ["date", "ticker", "model_mode", "daily_volatility"]
+            ].drop_duplicates(["date", "ticker", "model_mode"])
             mode_rows = mode_rows.merge(vol, on=merge_cols, how="left")
     mode_rows["daily_volatility"] = _safe_numeric(mode_rows.get("daily_volatility", pd.Series(index=mode_rows.index)), 0.0)
 
@@ -183,8 +182,7 @@ def _mode_trades(mode: str, config: FinalCandidateConfig) -> pd.DataFrame:
     if snapshots.empty or realized.empty:
         return pd.DataFrame()
     rows = snapshots[
-        snapshots["model_mode"].astype(str).eq(mode)
-        & snapshots["selected"].astype(str).str.lower().isin(["true", "1", "yes"])
+        snapshots["model_mode"].astype(str).eq(mode) & snapshots["selected"].astype(str).str.lower().isin(["true", "1", "yes"])
     ].copy()
     merge_cols = ["date", "ticker", "model_mode"]
     realized_cols = merge_cols + [c for c in realized.columns if c.startswith("realized_return_")]
@@ -217,7 +215,7 @@ def _daily_returns_from_trades(trades: pd.DataFrame, candidate: str, config: Fin
             "selected_count": int((weights > 0).sum()),
             "turnover": turnover / 2.0,
             "sample_reduction": float(1.0 - group["meta_filter_pass"].mean()) if "meta_filter_pass" in group.columns else 0.0,
-            "trades_kept": int(group["meta_filter_pass"].sum()) if "meta_filter_pass" in group.columns else int(len(group)),
+            "trades_kept": int(group["meta_filter_pass"].sum()) if "meta_filter_pass" in group.columns else len(group),
         }
         for horizon in [1, 5, 10, 20, 30]:
             row[f"realized_portfolio_return_{horizon}d"] = _portfolio_return(group, horizon)
@@ -231,8 +229,7 @@ def _label_metrics(trades: pd.DataFrame, config: FinalCandidateConfig) -> dict[s
     if labels.empty or trades.empty:
         return {"TP_rate": np.nan, "SL_rate": np.nan, "TP_minus_SL": np.nan, "hit_rate": np.nan, "direction_accuracy": np.nan}
     labels = labels[
-        labels.get("horizon", pd.Series(dtype=float)).eq(config.horizon)
-        & labels["model_mode"].astype(str).eq("regime_gated_full_quant")
+        labels.get("horizon", pd.Series(dtype=float)).eq(config.horizon) & labels["model_mode"].astype(str).eq("regime_gated_full_quant")
     ][["date", "ticker", "model_mode", "label"]].drop_duplicates(["date", "ticker", "model_mode"])
     merged = trades.merge(labels, on=["date", "ticker", "model_mode"], how="left")
     if "meta_filter_pass" in merged.columns:
@@ -284,10 +281,14 @@ def _performance_metrics(daily: pd.DataFrame, trades: pd.DataFrame, config: Fina
     base.update(
         {
             "average_cash": float(daily["cash_weight"].mean()) if "cash_weight" in daily.columns and not daily.empty else np.nan,
-            "average_selected_count": float(daily["selected_count"].mean()) if "selected_count" in daily.columns and not daily.empty else np.nan,
+            "average_selected_count": float(daily["selected_count"].mean())
+            if "selected_count" in daily.columns and not daily.empty
+            else np.nan,
             "turnover": float(daily["turnover"].mean()) if "turnover" in daily.columns and not daily.empty else np.nan,
-            "trades_kept": int(trades["meta_filter_pass"].sum()) if "meta_filter_pass" in trades.columns else int(len(trades)),
-            "sample_reduction": float(1.0 - trades["meta_filter_pass"].mean()) if "meta_filter_pass" in trades.columns and len(trades) else 0.0,
+            "trades_kept": int(trades["meta_filter_pass"].sum()) if "meta_filter_pass" in trades.columns else len(trades),
+            "sample_reduction": float(1.0 - trades["meta_filter_pass"].mean())
+            if "meta_filter_pass" in trades.columns and len(trades)
+            else 0.0,
         }
     )
     base.update(_label_metrics(trades, config))
@@ -351,7 +352,9 @@ def _governance(results: pd.DataFrame, candidate_trades: pd.DataFrame, config: F
             reasons.append("sample_reduction_too_high")
         if classification != "reject" and not reasons:
             classification = "eligible for paper trading"
-        elif classification != "reject" and float(c.get("Sharpe", 0.0)) > max(b_sharpe if np.isfinite(b_sharpe) else -np.inf, r_sharpe if np.isfinite(r_sharpe) else -np.inf):
+        elif classification != "reject" and float(c.get("Sharpe", 0.0)) > max(
+            b_sharpe if np.isfinite(b_sharpe) else -np.inf, r_sharpe if np.isfinite(r_sharpe) else -np.inf
+        ):
             classification = "candidate for extended paper trading"
         else:
             classification = "research only"

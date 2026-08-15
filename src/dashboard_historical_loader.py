@@ -1,21 +1,23 @@
-
 from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-import numpy as np
 import pandas as pd
 
 try:
     import streamlit as _st
+
     _cache_data = _st.cache_data
 except Exception:
+
     def _cache_data(**_kwargs):
         def deco(func):
             return func
+
         return deco
+
 
 CORE_REPLAY_DATE_KEYS = {"performance", "state", "actions", "benchmark_daily", "monitor"}
 
@@ -58,6 +60,7 @@ EXPECTED_BUT_OPTIONAL = [
 ]
 
 DATE_COLUMNS = ["date", "signal_date", "economic_application_date", "run_time", "timestamp", "latest_date", "expected_date"]
+
 
 @dataclass
 class ReplayData:
@@ -110,21 +113,35 @@ def load_replay_data() -> ReplayData:
                 if key in CORE_REPLAY_DATE_KEYS:
                     for val in d.dropna().dt.normalize().unique():
                         dates.add(pd.Timestamp(val))
-        rows.append({
-            "source_key": key,
-            "source_file": path,
-            "exists": exists,
-            "loaded": not df.empty,
-            "row_count": len(df),
-            "date_min": date_min,
-            "date_max": date_max,
-            "scope": "official_forward_history",
-            "namespace": "official_only",
-        })
+        rows.append(
+            {
+                "source_key": key,
+                "source_file": path,
+                "exists": exists,
+                "loaded": not df.empty,
+                "row_count": len(df),
+                "date_min": date_min,
+                "date_max": date_max,
+                "scope": "official_forward_history",
+                "namespace": "official_only",
+            }
+        )
     for path in EXPECTED_BUT_OPTIONAL:
         if not Path(path).exists():
             missing.append(path)
-            rows.append({"source_key": "optional_expected", "source_file": path, "exists": False, "loaded": False, "row_count": 0, "date_min": "", "date_max": "", "scope": "official_forward_history", "namespace": "missing_optional"})
+            rows.append(
+                {
+                    "source_key": "optional_expected",
+                    "source_file": path,
+                    "exists": False,
+                    "loaded": False,
+                    "row_count": 0,
+                    "date_min": "",
+                    "date_max": "",
+                    "scope": "official_forward_history",
+                    "namespace": "missing_optional",
+                }
+            )
     return ReplayData(frames=frames, source_audit=pd.DataFrame(rows), dates=sorted(dates), missing_sources=missing)
 
 

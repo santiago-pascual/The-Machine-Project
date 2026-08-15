@@ -7,7 +7,6 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
-
 PLAN_OUTPUT = "overfitting_reduction_plan.csv"
 CONFIG_OUTPUT = "constrained_research_config.json"
 
@@ -127,8 +126,8 @@ def identify_overfitting_sources() -> tuple[pd.DataFrame, dict[str, Any]]:
     full_quant = _read_csv("full_quant_robustness_walk_forward.csv")
 
     total_trials = int(pd.to_numeric(trial_log.get("number_of_trials", pd.Series(dtype=float)), errors="coerce").fillna(0).sum())
-    threshold_trials = int(len(thresholds))
-    barrier_trials = int(len(barriers))
+    threshold_trials = len(thresholds)
+    barrier_trials = len(barriers)
     pbo = _safe_float(_dashboard_value(dashboard, "PBO_proxy", np.nan), np.nan)
     robustness_score = _safe_float(_dashboard_value(dashboard, "robustness_score", np.nan), np.nan)
     if not np.isfinite(robustness_score) and not robustness.empty and "robustness_score" in robustness.columns:
@@ -152,9 +151,21 @@ def identify_overfitting_sources() -> tuple[pd.DataFrame, dict[str, Any]]:
         )
 
     if total_trials > 1000:
-        add("excessive_total_trials", "critical", total_trials, "cap total independent trials and require experiment registry", "blocked_until_governed")
+        add(
+            "excessive_total_trials",
+            "critical",
+            total_trials,
+            "cap total independent trials and require experiment registry",
+            "blocked_until_governed",
+        )
     if threshold_trials > 100:
-        add("threshold_grid_too_wide", "critical", threshold_trials, "reduce threshold grid to economically justified values only", "blocked")
+        add(
+            "threshold_grid_too_wide",
+            "critical",
+            threshold_trials,
+            "reduce threshold grid to economically justified values only",
+            "blocked",
+        )
     if barrier_trials > 50:
         add("tp_sl_grid_too_wide", "high", barrier_trials, "restrict TP/SL grid to stable region and avoid repeated mining", "restricted")
     sample_sizes = []
@@ -163,13 +174,31 @@ def identify_overfitting_sources() -> tuple[pd.DataFrame, dict[str, Any]]:
             positive_sizes = pd.to_numeric(df["sample_size"], errors="coerce").dropna()
             sample_sizes.extend(positive_sizes[positive_sizes > 0].tolist())
     if sample_sizes and np.nanmedian(sample_sizes) < 100:
-        add("small_sample_sizes", "critical", float(np.nanmedian(sample_sizes)), "increase walk-forward observations before promotion", "blocked_for_promotion")
+        add(
+            "small_sample_sizes",
+            "critical",
+            float(np.nanmedian(sample_sizes)),
+            "increase walk-forward observations before promotion",
+            "blocked_for_promotion",
+        )
     if np.isfinite(robustness_score) and robustness_score < 60:
-        add("weak_robustness_score", "critical", robustness_score, "do not promote configs below robustness threshold", "blocked_for_promotion")
+        add(
+            "weak_robustness_score",
+            "critical",
+            robustness_score,
+            "do not promote configs below robustness threshold",
+            "blocked_for_promotion",
+        )
     if np.isfinite(pbo) and pbo > 0.3:
         add("high_pbo", "critical", pbo, "treat all optimized configs as research-only", "blocked_for_promotion")
     if np.isfinite(full_quant_wins) and full_quant_wins < 3:
-        add("inconsistent_full_quant_performance", "high", f"{full_quant_wins}/4 windows improved", "keep full quant diagnostic or gated only", "restricted")
+        add(
+            "inconsistent_full_quant_performance",
+            "high",
+            f"{full_quant_wins}/4 windows improved",
+            "keep full quant diagnostic or gated only",
+            "restricted",
+        )
     if not robustness.empty and "rejected" in robustness.columns:
         rejected_rate = robustness["rejected"].astype(str).str.lower().isin(["true", "1", "yes"]).mean()
         if rejected_rate > 0.5:
@@ -258,7 +287,9 @@ def build_reduction_plan() -> tuple[pd.DataFrame, dict[str, Any]]:
         )
 
     add_rule("trial_budget", "max 5 new strategy variants, 24 threshold configs, 12 TP/SL configs per cycle", "allowed_with_limits")
-    add_rule("minimum_evidence", "require sample_size >= 150, 4 independent windows, robustness >= 60, PBO <= 0.30", "required_for_promotion")
+    add_rule(
+        "minimum_evidence", "require sample_size >= 150, 4 independent windows, robustness >= 60, PBO <= 0.30", "required_for_promotion"
+    )
     add_rule("threshold_search", "use constrained grid only; no 14k-grid reruns", "restricted")
     add_rule("tp_sl_search", "use stable TP/SL region only; reject TP<SL unless justified", "restricted")
     add_rule("full_quant_research", "keep diagnostic/gated only; no promotion", "blocked_for_promotion")

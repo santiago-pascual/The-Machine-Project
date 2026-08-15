@@ -1,7 +1,7 @@
-
 from __future__ import annotations
 
 from pathlib import Path
+
 import pandas as pd
 
 from risk_sensitivity_analysis import frontier_tables, run_grid
@@ -26,15 +26,17 @@ def main() -> None:
     summary_rows = []
     for etype in ["exposure_cap", "vol_target", "dual_trend"]:
         sub = grid[grid["experiment_type"].eq(etype)].copy()
-        summary_rows.append({
-            "constraint": etype,
-            "max_CAGR_delta": sub["CAGR_delta_vs_production"].abs().max(),
-            "max_drawdown_delta": sub["max_drawdown_delta_vs_production"].abs().max(),
-            "max_cash_delta": sub["average_cash_delta_vs_production"].abs().max(),
-            "best_CAGR_parameter": sub.sort_values("CAGR", ascending=False).iloc[0]["parameter"],
-            "lowest_drawdown_parameter": sub.sort_values("max_drawdown", ascending=False).iloc[0]["parameter"],
-            "highest_cash_utilization_parameter": sub.sort_values("cash_utilization_pct", ascending=False).iloc[0]["parameter"],
-        })
+        summary_rows.append(
+            {
+                "constraint": etype,
+                "max_CAGR_delta": sub["CAGR_delta_vs_production"].abs().max(),
+                "max_drawdown_delta": sub["max_drawdown_delta_vs_production"].abs().max(),
+                "max_cash_delta": sub["average_cash_delta_vs_production"].abs().max(),
+                "best_CAGR_parameter": sub.sort_values("CAGR", ascending=False).iloc[0]["parameter"],
+                "lowest_drawdown_parameter": sub.sort_values("max_drawdown", ascending=False).iloc[0]["parameter"],
+                "highest_cash_utilization_parameter": sub.sort_values("cash_utilization_pct", ascending=False).iloc[0]["parameter"],
+            }
+        )
     summary = pd.DataFrame(summary_rows)
     summary.to_csv("risk_sensitivity_summary.csv", index=False)
 
@@ -42,15 +44,23 @@ def main() -> None:
     cagr_impact = summary.sort_values("max_CAGR_delta", ascending=False).iloc[0]
     dd_impact = summary.sort_values("max_drawdown_delta", ascending=False).iloc[0]
     cash_impact = summary.sort_values("max_cash_delta", ascending=False).iloc[0]
-    further = cagr_impact if cagr_impact["constraint"] == cash_impact["constraint"] else summary.assign(score=summary["max_CAGR_delta"] + summary["max_cash_delta"] + summary["max_drawdown_delta"]).sort_values("score", ascending=False).iloc[0]
+    further = (
+        cagr_impact
+        if cagr_impact["constraint"] == cash_impact["constraint"]
+        else summary.assign(score=summary["max_CAGR_delta"] + summary["max_cash_delta"] + summary["max_drawdown_delta"])
+        .sort_values("score", ascending=False)
+        .iloc[0]
+    )
 
-    integrity = pd.DataFrame([
-        {"check": "shadow_mode_only", "status": "PASS", "detail": "outputs only; active config unchanged"},
-        {"check": "production_modified", "status": "PASS", "detail": "False"},
-        {"check": "paper_modified", "status": "PASS", "detail": "False"},
-        {"check": "optimizer_modified", "status": "PASS", "detail": "False"},
-        {"check": "parameters_modified", "status": "PASS", "detail": "False"},
-    ])
+    integrity = pd.DataFrame(
+        [
+            {"check": "shadow_mode_only", "status": "PASS", "detail": "outputs only; active config unchanged"},
+            {"check": "production_modified", "status": "PASS", "detail": "False"},
+            {"check": "paper_modified", "status": "PASS", "detail": "False"},
+            {"check": "optimizer_modified", "status": "PASS", "detail": "False"},
+            {"check": "parameters_modified", "status": "PASS", "detail": "False"},
+        ]
+    )
     integrity.to_csv("risk_constraint_lab_integrity.csv", index=False)
     status = "risk_constraint_lab_pass" if integrity["status"].eq("FAIL").sum() == 0 else "risk_constraint_lab_fail"
     report = [

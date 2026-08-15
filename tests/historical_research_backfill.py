@@ -5,7 +5,6 @@ import io
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Iterable
 
 import numpy as np
 import pandas as pd
@@ -14,8 +13,11 @@ import yfinance as yf
 from risk_metrics import compute_return_risk_metrics
 from trend_vs_ema_backtest import _temporary_disable_proxies
 from triple_barrier_labeling import generate_triple_barrier_labels
-from walk_forward_backtester import DEFAULT_REDUCED_UNIVERSE, WalkForwardConfig, run_walk_forward_backtest
-
+from walk_forward_backtester import (
+    DEFAULT_REDUCED_UNIVERSE,
+    WalkForwardConfig,
+    run_walk_forward_backtest,
+)
 
 OUTPUTS = {
     "feature_store": "historical_feature_store.csv",
@@ -99,7 +101,10 @@ def _download_prices(config: HistoricalBackfillConfig) -> pd.DataFrame:
         tickers = DEFAULT_REDUCED_UNIVERSE
     else:
         try:
-            from financial_data_system import NASDAQ_DEFAULT_LIMIT, build_trading_universe
+            from financial_data_system import (
+                NASDAQ_DEFAULT_LIMIT,
+                build_trading_universe,
+            )
 
             tickers = build_trading_universe(include_full_nasdaq=True, nasdaq_limit=NASDAQ_DEFAULT_LIMIT)
         except Exception as exc:
@@ -179,12 +184,9 @@ def _ensure_required_snapshot_columns(snapshots: pd.DataFrame) -> pd.DataFrame:
         if column not in snapshots.columns:
             snapshots[column] = default
     if "cash_weight" in snapshots.columns:
-        cash_by_date_mode = (
-            snapshots.groupby(["date", "model_mode"])["weight"].sum().apply(lambda x: max(0.0, 1.0 - float(x)))
-        )
+        cash_by_date_mode = snapshots.groupby(["date", "model_mode"])["weight"].sum().apply(lambda x: max(0.0, 1.0 - float(x)))
         snapshots["cash_weight"] = [
-            cash_by_date_mode.get((row.date, row.model_mode), np.nan)
-            for row in snapshots[["date", "model_mode"]].itertuples(index=False)
+            cash_by_date_mode.get((row.date, row.model_mode), np.nan) for row in snapshots[["date", "model_mode"]].itertuples(index=False)
         ]
     return snapshots
 
@@ -193,8 +195,7 @@ def _add_realized_returns(snapshots: pd.DataFrame, prices_df: pd.DataFrame) -> p
     realized = snapshots[["date", "ticker", "model_mode", "selected", "weight"]].copy()
     for horizon in REALIZED_HORIZONS:
         realized[f"realized_return_{horizon}d"] = [
-            _future_return(prices_df, str(row.ticker), row.date, horizon)
-            for row in realized[["date", "ticker"]].itertuples(index=False)
+            _future_return(prices_df, str(row.ticker), row.date, horizon) for row in realized[["date", "ticker"]].itertuples(index=False)
         ]
     return realized
 
@@ -213,7 +214,20 @@ def _portfolio_returns_from_snapshots(snapshots: pd.DataFrame, prices_df: pd.Dat
         rows.append(row)
     result = pd.DataFrame(rows)
     if not portfolios.empty:
-        keep = [c for c in ["date", "model_mode", "turnover", "portfolio_expected_return", "portfolio_expected_volatility", "portfolio_expected_sharpe", "gate_decision", "gate_reason"] if c in portfolios.columns]
+        keep = [
+            c
+            for c in [
+                "date",
+                "model_mode",
+                "turnover",
+                "portfolio_expected_return",
+                "portfolio_expected_volatility",
+                "portfolio_expected_sharpe",
+                "gate_decision",
+                "gate_reason",
+            ]
+            if c in portfolios.columns
+        ]
         if keep:
             result = result.merge(portfolios[keep], on=["date", "model_mode"], how="left")
     return result
@@ -255,17 +269,23 @@ def _metrics_for_mode(portfolio: pd.DataFrame, labels: pd.DataFrame, mode: str) 
     risk = compute_return_risk_metrics(returns)
     equity = (1.0 + returns).cumprod() if not returns.empty else pd.Series(dtype=float)
     drawdown = equity / equity.cummax() - 1.0 if not equity.empty else pd.Series(dtype=float)
-    selected_labels = labels[
-        labels.get("model_mode", pd.Series("", index=labels.index)).astype(str).eq(mode)
-        & labels.get("selected", pd.Series(False, index=labels.index)).astype(bool)
-    ] if not labels.empty else pd.DataFrame()
+    selected_labels = (
+        labels[
+            labels.get("model_mode", pd.Series("", index=labels.index)).astype(str).eq(mode)
+            & labels.get("selected", pd.Series(False, index=labels.index)).astype(bool)
+        ]
+        if not labels.empty
+        else pd.DataFrame()
+    )
     tp = float(selected_labels["first_touch_type"].eq("take_profit").mean()) if not selected_labels.empty else np.nan
     sl = float(selected_labels["first_touch_type"].eq("stop_loss").mean()) if not selected_labels.empty else np.nan
     expected = pd.to_numeric(subset.get("portfolio_expected_return", pd.Series(dtype=float)), errors="coerce")
-    valid = pd.concat([expected, pd.to_numeric(subset.get("realized_portfolio_return_5d", pd.Series(dtype=float)), errors="coerce")], axis=1).dropna()
+    valid = pd.concat(
+        [expected, pd.to_numeric(subset.get("realized_portfolio_return_5d", pd.Series(dtype=float)), errors="coerce")], axis=1
+    ).dropna()
     return {
         "model_mode": mode,
-        "sample_size": int(len(subset)),
+        "sample_size": len(subset),
         "realized_return": float((1.0 + returns).prod() - 1.0) if not returns.empty else np.nan,
         "volatility": float(risk["annualized_volatility"]),
         "Sharpe": float(risk["annualized_return_estimate"] / risk["annualized_volatility"]) if risk["annualized_volatility"] > 0 else 0.0,
@@ -273,12 +293,16 @@ def _metrics_for_mode(portfolio: pd.DataFrame, labels: pd.DataFrame, mode: str) 
         "Calmar": float(risk["calmar_ratio"]),
         "max_drawdown": float(drawdown.min()) if not drawdown.empty else np.nan,
         "average_cash": float(subset["cash_weight"].mean()) if "cash_weight" in subset.columns and not subset.empty else np.nan,
-        "average_selected_count": float(subset["selected_count"].mean()) if "selected_count" in subset.columns and not subset.empty else np.nan,
+        "average_selected_count": float(subset["selected_count"].mean())
+        if "selected_count" in subset.columns and not subset.empty
+        else np.nan,
         "turnover": float(subset["turnover"].mean()) if "turnover" in subset.columns and not subset.empty else np.nan,
         "TP_rate": tp,
         "SL_rate": sl,
         "TP_minus_SL": tp - sl if pd.notna(tp) and pd.notna(sl) else np.nan,
-        "hit_rate_5d": float((subset["realized_portfolio_return_5d"] > 0).mean()) if "realized_portfolio_return_5d" in subset.columns else np.nan,
+        "hit_rate_5d": float((subset["realized_portfolio_return_5d"] > 0).mean())
+        if "realized_portfolio_return_5d" in subset.columns
+        else np.nan,
         "direction_accuracy_5d": float((np.sign(valid.iloc[:, 0]) == np.sign(valid.iloc[:, 1])).mean()) if not valid.empty else np.nan,
     }
 
@@ -320,9 +344,9 @@ def _summary_report(
             "number_of_decision_dates": int(snapshots["date"].nunique()) if not snapshots.empty else 0,
             "number_of_tickers": int(snapshots["ticker"].nunique()) if not snapshots.empty else 0,
             "model_modes_processed": ", ".join(config.model_modes),
-            "total_prediction_rows": int(len(snapshots)),
-            "total_selected_rows": int(len(selected_rows)),
-            "selected_only_sample_size": int(len(selected_rows)),
+            "total_prediction_rows": len(snapshots),
+            "total_selected_rows": len(selected_rows),
+            "selected_only_sample_size": len(selected_rows),
             "sample_gte_150": bool(len(selected_rows) >= 150),
             "sample_gte_500": bool(len(selected_rows) >= 500),
             "sample_gte_1000": bool(len(selected_rows) >= 1000),

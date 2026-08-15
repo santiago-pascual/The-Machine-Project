@@ -5,7 +5,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-
 PORTFOLIO_STATE_FILE = "portfolio_state.csv"
 
 
@@ -60,11 +59,7 @@ def build_action_signals(
     state_path: str | Path = PORTFOLIO_STATE_FILE,
 ) -> pd.DataFrame:
     previous_state = load_previous_portfolio_state(state_path)
-    previous_weights = (
-        previous_state.set_index("ticker")["final_weight_percent"]
-        if not previous_state.empty
-        else pd.Series(dtype=float)
-    )
+    previous_weights = previous_state.set_index("ticker")["final_weight_percent"] if not previous_state.empty else pd.Series(dtype=float)
     selected_set = {str(ticker) for ticker in selected_tickers}
     previous_selected = set(previous_weights[previous_weights > 0].index.astype(str)) - {"CASH"}
 
@@ -74,15 +69,7 @@ def build_action_signals(
     selected_assets = current_assets | selected_set
     sell_assets = previous_selected - selected_assets
 
-    universe = pd.Index(
-        sorted(
-            set(diagnostics_df_full.index.astype(str))
-            | current_assets
-            | selected_set
-            | sell_assets
-            | {"CASH"}
-        )
-    )
+    universe = pd.Index(sorted(set(diagnostics_df_full.index.astype(str)) | current_assets | selected_set | sell_assets | {"CASH"}))
     signal_strength = _safe_numeric_series(diagnostics_df_full.get("signal_strength"), universe, default=0.0).fillna(0.0)
     target_confidence = _target_confidence(diagnostics_df_full, universe)
     expected_returns = _safe_numeric_series(expected_daily_returns, universe, default=0.0).fillna(0.0)

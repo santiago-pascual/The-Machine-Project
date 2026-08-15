@@ -10,7 +10,6 @@ import pandas as pd
 
 from advanced_target_model import generate_targets_advanced
 
-
 COVERAGE_FILE = "yahoo_historical_ohlcv_coverage.csv"
 PRODUCTION_PARITY_FILE = "production_parity_growth_daily_returns.csv"
 PRICE_CACHE_DIR = Path("yahoo_ohlcv_price_cache")
@@ -195,7 +194,7 @@ def _metrics(name: str, df: pd.DataFrame, return_col: str = "return") -> dict[st
         "model": name,
         "start_date": data["date"].min().strftime("%Y-%m-%d"),
         "end_date": data["date"].max().strftime("%Y-%m-%d"),
-        "observations": int(len(returns)),
+        "observations": len(returns),
         "total_return": total,
         "CAGR": cagr,
         "volatility": vol,
@@ -399,16 +398,20 @@ def run(universe: str = "normal", sleep_seconds: float = 0.5, retries: int = 1) 
     all_needed = sorted(set(coverage.loc[coverage["download_status"].astype(str).eq("ok"), "ticker"].astype(str)) | {"SPY", "QQQ"})
     prices = _load_or_download_prices(all_needed, sleep_seconds=sleep_seconds, retries=retries)
     if prices.empty:
-        governance = pd.DataFrame([{
-            "classification": "reconstruction_not_reliable",
-            "universe": universe,
-            "production_changed": False,
-            "parameter_tuning": False,
-            "ce_dear_filtering": universe == "cedear",
-            "exact_production_parity": False,
-            "assumption": "Yahoo OHLCV required but download/cache returned no usable prices",
-            "reason": "No OHLCV price panel available; reconstructed backtest not run.",
-        }])
+        governance = pd.DataFrame(
+            [
+                {
+                    "classification": "reconstruction_not_reliable",
+                    "universe": universe,
+                    "production_changed": False,
+                    "parameter_tuning": False,
+                    "ce_dear_filtering": universe == "cedear",
+                    "exact_production_parity": False,
+                    "assumption": "Yahoo OHLCV required but download/cache returned no usable prices",
+                    "reason": "No OHLCV price panel available; reconstructed backtest not run.",
+                }
+            ]
+        )
         governance.to_csv(OUT_GOVERNANCE, index=False)
         pd.DataFrame().to_csv(OUT_RESULTS, index=False)
         pd.DataFrame().to_csv(OUT_DAILY, index=False)
@@ -433,7 +436,17 @@ def run(universe: str = "normal", sleep_seconds: float = 0.5, retries: int = 1) 
             continue
         daily_all.append(daily)
         trades_all.append(trades)
-        result_rows.append({**_metrics(f"reconstructed_growth_{start}", daily), "window_start": start, "ticker_coverage": len(tickers), "average_exposure": float(daily["target_exposure"].mean()), "average_cash": float(daily["cash_weight"].mean()), "average_turnover": float(daily["turnover"].mean()), "average_selected_count": float(daily["selected_count"].mean())})
+        result_rows.append(
+            {
+                **_metrics(f"reconstructed_growth_{start}", daily),
+                "window_start": start,
+                "ticker_coverage": len(tickers),
+                "average_exposure": float(daily["target_exposure"].mean()),
+                "average_cash": float(daily["cash_weight"].mean()),
+                "average_turnover": float(daily["turnover"].mean()),
+                "average_selected_count": float(daily["selected_count"].mean()),
+            }
+        )
         for bench in ["SPY", "QQQ"]:
             bdf = _benchmark_returns(prices, start, daily, bench)
             if not bdf.empty:

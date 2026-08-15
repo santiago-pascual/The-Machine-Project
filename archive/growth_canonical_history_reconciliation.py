@@ -1,8 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-import json
-import math
+
 import numpy as np
 import pandas as pd
 
@@ -89,7 +88,7 @@ def metrics(name: str, df: pd.DataFrame, return_col: str = "net_daily_return", e
     max_dd = float(dd.min()) if not dd.empty else np.nan
     return {
         "series": name,
-        "observations": int(len(returns)),
+        "observations": len(returns),
         "start_date": data["date"].min().strftime("%Y-%m-%d") if "date" in data.columns and not data.empty else "",
         "end_date": data["date"].max().strftime("%Y-%m-%d") if "date" in data.columns and not data.empty else "",
         "total_return": total,

@@ -1,4 +1,3 @@
-
 from __future__ import annotations
 
 import numpy as np
@@ -22,7 +21,8 @@ def _numeric_feature_matrix(df: pd.DataFrame) -> tuple[pd.DataFrame, list[str]]:
         except Exception:
             ok = False
         if ok:
-            cols.append(c); seen.add(c)
+            cols.append(c)
+            seen.add(c)
     if not cols:
         return pd.DataFrame(), []
     x = df.loc[:, cols].copy()
@@ -30,7 +30,9 @@ def _numeric_feature_matrix(df: pd.DataFrame) -> tuple[pd.DataFrame, list[str]]:
     cols = list(x.columns)
     keep = x.notna().mean(axis=1) >= 0.55
     x = x[keep].copy()
-    labels = df.loc[x.index, [c for c in ["ticker", "sector", "holding_quality_classification", "raw_target_selected"] if c in df.columns]].copy()
+    labels = df.loc[
+        x.index, [c for c in ["ticker", "sector", "holding_quality_classification", "raw_target_selected"] if c in df.columns]
+    ].copy()
     x = x.fillna(x.median(numeric_only=True)).replace([np.inf, -np.inf], np.nan).fillna(0)
     std = x.std(ddof=0).replace(0, 1)
     x = (x - x.mean()) / std
@@ -62,15 +64,30 @@ def render_pca_3d(st, data: dict[str, pd.DataFrame]) -> dict[str, object]:
         if isinstance(values, pd.DataFrame):
             values = values.iloc[:, 0]
         plot[c] = values.values
-    color = st.selectbox("PCA color", [c for c in ["raw_target_selected", "sector", "holding_quality_classification"] if c in plot.columns] or ["PC1"], key="qlab_pca_color")
-    fig = px.scatter_3d(plot, x="PC1", y="PC2", z="PC3", color=color, hover_name="ticker" if "ticker" in plot.columns else None, title="PCA 3D Feature Embedding")
+    color = st.selectbox(
+        "PCA color",
+        [c for c in ["raw_target_selected", "sector", "holding_quality_classification"] if c in plot.columns] or ["PC1"],
+        key="qlab_pca_color",
+    )
+    fig = px.scatter_3d(
+        plot,
+        x="PC1",
+        y="PC2",
+        z="PC3",
+        color=color,
+        hover_name="ticker" if "ticker" in plot.columns else None,
+        title="PCA 3D Feature Embedding",
+    )
     apply_plotly_layout(fig, "PCA 3D Feature Embedding")
     fig.update_layout(height=560)
     st.plotly_chart(fig, width="stretch")
     cols_ui = st.columns(3)
-    with cols_ui[0]: metric_card(st, "Sample Count", str(len(plot)))
-    with cols_ui[1]: metric_card(st, "Features Used", str(len(cols)))
-    with cols_ui[2]: metric_card(st, "Variance PC1-3", f"{explained[:3].sum():.1%}")
+    with cols_ui[0]:
+        metric_card(st, "Sample Count", str(len(plot)))
+    with cols_ui[1]:
+        metric_card(st, "Features Used", str(len(cols)))
+    with cols_ui[2]:
+        metric_card(st, "Variance PC1-3", f"{explained[:3].sum():.1%}")
     with st.expander("Feature list"):
         st.write(", ".join(cols))
     source_caption(st, "current_growth_features.csv", "diagnostic embedding — not used in allocation")

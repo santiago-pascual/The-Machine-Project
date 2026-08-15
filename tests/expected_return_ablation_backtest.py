@@ -5,7 +5,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-
 HARMFUL_FILE = "expected_return_harmful_transformations.csv"
 STAGE_ATTRIBUTION_FILE = "expected_return_stage_attribution.csv"
 SNAPSHOTS_FILE = "historical_forecast_snapshots.csv"
@@ -147,7 +146,18 @@ def _prepare_dataset() -> pd.DataFrame:
     data = snapshots.merge(decomp[keys + stage_cols].drop_duplicates(keys, keep="last"), on=keys, how="left")
     data = data.loc[:, ~data.columns.duplicated()]
     for col in data.columns:
-        if col not in {"date", "ticker", "model_mode", "selected", "regime", "timing_model", "target_model", "covariance_method", "gate_decision", "gate_reason"}:
+        if col not in {
+            "date",
+            "ticker",
+            "model_mode",
+            "selected",
+            "regime",
+            "timing_model",
+            "target_model",
+            "covariance_method",
+            "gate_decision",
+            "gate_reason",
+        }:
             converted = pd.to_numeric(data[col], errors="coerce")
             if converted.notna().sum() > 0:
                 data[col] = converted
@@ -158,7 +168,7 @@ def _select_variant(data: pd.DataFrame, variant: str, score_col: str) -> pd.Data
     selected_rows: list[pd.DataFrame] = []
     for date, group in data.groupby("date", sort=True):
         current_selected = group[_bool(group.get("selected", pd.Series(False, index=group.index)))]
-        selected_count = int(len(current_selected)) if len(current_selected) else 4
+        selected_count = len(current_selected) if len(current_selected) else 4
         selected_count = min(4, max(2, selected_count))
         candidates = group[_num(group[score_col]).gt(0)].copy()
         if candidates.empty:
@@ -166,7 +176,9 @@ def _select_variant(data: pd.DataFrame, variant: str, score_col: str) -> pd.Data
         picks = candidates.sort_values(score_col, ascending=False).head(selected_count).copy()
         active_weight = float(_num(group.get("weight", pd.Series(dtype=float))).clip(lower=0.0).sum())
         if not np.isfinite(active_weight) or active_weight <= 0:
-            active_weight = max(0.0, 1.0 - float(_num(group.get("cash_weight", pd.Series([0.5]))).dropna().iloc[0] if "cash_weight" in group else 0.5))
+            active_weight = max(
+                0.0, 1.0 - float(_num(group.get("cash_weight", pd.Series([0.5]))).dropna().iloc[0] if "cash_weight" in group else 0.5)
+            )
         picks["ablation_variant"] = variant
         picks["ablation_score"] = picks[score_col]
         picks["ablation_weight"] = active_weight / max(1, len(picks))
@@ -234,7 +246,7 @@ def _metrics(data: pd.DataFrame, selected: pd.DataFrame, daily: pd.DataFrame, va
         "average_cash": float(_num(daily.get("cash_proxy", pd.Series(dtype=float))).mean()) if not daily.empty else np.nan,
         "selected_count": float(_num(daily.get("selected_count", pd.Series(dtype=float))).mean()) if not daily.empty else np.nan,
         "turnover": float(_num(daily.get("turnover", pd.Series(dtype=float))).mean()) if not daily.empty else np.nan,
-        "sample_size": int(len(selected)),
+        "sample_size": len(selected),
     }
     result.update(_tp_sl(selected))
     return result
@@ -311,7 +323,28 @@ def run_expected_return_ablation_backtest() -> tuple[pd.DataFrame, pd.DataFrame,
     print("capture note: non-baseline variants use diagnostic proxies from expected_return_decomposition.csv")
 
     print("\n===== ABLATION PERFORMANCE COMPARISON =====")
-    cols = ["variant", "capture_type", "realized_return", "volatility", "Sharpe", "Sortino", "Calmar", "max_drawdown", "TP_rate", "SL_rate", "TP_minus_SL", "hit_rate", "IC_5D", "IC_10D", "IC_20D", "monotonicity_20d", "average_cash", "selected_count", "turnover", "sample_size"]
+    cols = [
+        "variant",
+        "capture_type",
+        "realized_return",
+        "volatility",
+        "Sharpe",
+        "Sortino",
+        "Calmar",
+        "max_drawdown",
+        "TP_rate",
+        "SL_rate",
+        "TP_minus_SL",
+        "hit_rate",
+        "IC_5D",
+        "IC_10D",
+        "IC_20D",
+        "monotonicity_20d",
+        "average_cash",
+        "selected_count",
+        "turnover",
+        "sample_size",
+    ]
     print(results[cols].to_string(index=False))
 
     print("\n===== ABLATION GOVERNANCE =====")

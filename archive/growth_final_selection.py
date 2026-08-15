@@ -5,7 +5,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-
 OVERLAY_RESULTS = "growth_crisis_overlay_results.csv"
 OVERLAY_DAILY = "growth_crisis_overlay_daily_returns.csv"
 OVERLAY_STRESS = "growth_crisis_overlay_stress_periods.csv"

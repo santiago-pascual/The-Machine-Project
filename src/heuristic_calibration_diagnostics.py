@@ -91,7 +91,9 @@ def _evaluate_shadow_portfolio(
 
     if covariance_matrix is not None and not covariance_matrix.empty:
         cov = covariance_matrix.reindex(index=selected_assets, columns=selected_assets).replace([np.inf, -np.inf], np.nan).fillna(0.0)
-        variance = float(asset_weights.reindex(selected_assets).to_numpy().T @ cov.to_numpy() @ asset_weights.reindex(selected_assets).to_numpy())
+        variance = float(
+            asset_weights.reindex(selected_assets).to_numpy().T @ cov.to_numpy() @ asset_weights.reindex(selected_assets).to_numpy()
+        )
         volatility = float(np.sqrt(max(variance, 0.0)))
     else:
         aligned_returns = returns_df.reindex(columns=selected_assets).dropna(how="any")

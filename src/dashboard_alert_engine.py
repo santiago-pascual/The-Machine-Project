@@ -9,10 +9,9 @@ import plotly.express as px
 
 from dashboard_alert_history import update_alert_history
 from dashboard_alert_rules import SEVERITY_ORDER, generate_alerts, health_score
-from dashboard_components import fmt_num, metric_card, status_badge
-from dashboard_data_layer import CSV_FILES, latest, latest_market_date
+from dashboard_components import metric_card
+from dashboard_data_layer import CSV_FILES, latest_market_date
 from dashboard_theme import apply_plotly_layout
-
 
 OUTPUTS = {
     "alert_engine_source_audit": "alert_engine_source_audit.csv",
@@ -31,14 +30,16 @@ def _source_audit(data: dict[str, pd.DataFrame]) -> pd.DataFrame:
         if not df.empty and "date" in df.columns:
             dates = pd.to_datetime(df["date"], errors="coerce").dropna()
             latest_date = dates.max().date().isoformat() if not dates.empty else ""
-        rows.append({
-            "source_key": key,
-            "source_file": path,
-            "exists": Path(path).exists(),
-            "row_count": len(df),
-            "column_count": len(df.columns) if not df.empty else 0,
-            "latest_date": latest_date,
-        })
+        rows.append(
+            {
+                "source_key": key,
+                "source_file": path,
+                "exists": Path(path).exists(),
+                "row_count": len(df),
+                "column_count": len(df.columns) if not df.empty else 0,
+                "latest_date": latest_date,
+            }
+        )
     return pd.DataFrame(rows)
 
 
@@ -48,18 +49,22 @@ def _integrity(active: pd.DataFrame, source_audit: pd.DataFrame, runtime_ms: flo
     critical = int(active["severity"].astype(str).str.upper().isin(["CRITICAL"]).sum()) if not active.empty else 0
     warnings = int(active["severity"].astype(str).str.upper().isin(["WARNING"]).sum()) if not active.empty else 0
     status = "alert_engine_fail" if duplicate_ids else "alert_engine_warning" if blockers or critical or warnings else "alert_engine_pass"
-    return pd.DataFrame([{
-        "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-        "status": status,
-        "active_alerts": len(active),
-        "blocker_alerts": blockers,
-        "critical_alerts": critical,
-        "warning_alerts": warnings,
-        "duplicate_alert_ids": duplicate_ids,
-        "sources_checked": len(source_audit),
-        "missing_sources": int((source_audit["exists"] == False).sum()) if not source_audit.empty else 0,
-        "runtime_ms": round(runtime_ms, 2),
-    }])
+    return pd.DataFrame(
+        [
+            {
+                "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                "status": status,
+                "active_alerts": len(active),
+                "blocker_alerts": blockers,
+                "critical_alerts": critical,
+                "warning_alerts": warnings,
+                "duplicate_alert_ids": duplicate_ids,
+                "sources_checked": len(source_audit),
+                "missing_sources": int((source_audit["exists"] == False).sum()) if not source_audit.empty else 0,
+                "runtime_ms": round(runtime_ms, 2),
+            }
+        ]
+    )
 
 
 def build_alert_engine(data: dict[str, pd.DataFrame], write_outputs: bool = True) -> dict[str, object]:
@@ -129,9 +134,19 @@ def render_alert_center(st, data: dict[str, pd.DataFrame]) -> None:
     with cols[1]:
         metric_card(st, "Active Alerts", str(len(active)), "open alerts")
     with cols[2]:
-        metric_card(st, "Critical / Blocker", str(int(active["severity"].astype(str).str.upper().isin(["CRITICAL", "BLOCKER"]).sum())) if not active.empty else "0", "blocking severity")
+        metric_card(
+            st,
+            "Critical / Blocker",
+            str(int(active["severity"].astype(str).str.upper().isin(["CRITICAL", "BLOCKER"]).sum())) if not active.empty else "0",
+            "blocking severity",
+        )
     with cols[3]:
-        metric_card(st, "Warnings", str(int((active["severity"].astype(str).str.upper() == "WARNING").sum())) if not active.empty else "0", "watch items")
+        metric_card(
+            st,
+            "Warnings",
+            str(int((active["severity"].astype(str).str.upper() == "WARNING").sum())) if not active.empty else "0",
+            "watch items",
+        )
     with cols[4]:
         metric_card(st, "Runtime", f"{result['runtime_ms']:.0f} ms", "alert engine")
 
@@ -151,7 +166,19 @@ def render_alert_center(st, data: dict[str, pd.DataFrame]) -> None:
         view = active[active["module"].astype(str).isin(selected_modules) & active["severity"].astype(str).isin(selected_sev)].copy()
         if not show_ack and "acknowledged" in view.columns:
             view = view[~view["acknowledged"].astype(str).str.lower().isin(["true", "1"])]
-        cols = ["severity", "module", "category", "description", "trigger_value", "threshold", "status", "first_seen", "last_seen", "occurrences", "source_file"]
+        cols = [
+            "severity",
+            "module",
+            "category",
+            "description",
+            "trigger_value",
+            "threshold",
+            "status",
+            "first_seen",
+            "last_seen",
+            "occurrences",
+            "source_file",
+        ]
         st.dataframe(view[[c for c in cols if c in view.columns]], width="stretch", height=360)
 
     c1, c2 = st.columns(2)

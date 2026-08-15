@@ -1,12 +1,10 @@
 from __future__ import annotations
 
 import json
-import re
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
-
 
 FILES_TO_AUDIT = [
     "daily_research_run.py",
@@ -159,20 +157,74 @@ def _pipeline_audit() -> pd.DataFrame:
     cfg = _config()
 
     checks = [
-        ("raw_target_return_exact_generation", not raw.empty and "raw_target_return_exact" in raw.columns and _num(raw["raw_target_return_exact"]).notna().any(), "current_raw_target_features.csv / expected return diagnostics"),
+        (
+            "raw_target_return_exact_generation",
+            not raw.empty and "raw_target_return_exact" in raw.columns and _num(raw["raw_target_return_exact"]).notna().any(),
+            "current_raw_target_features.csv / expected return diagnostics",
+        ),
         ("raw_target_ranking", not features.empty and "raw_target_rank" in features.columns, "current_growth_features.csv"),
-        ("soft_exit_rule", not features.empty and "soft_exit_status" in features.columns and "soft_exit" in feature_text, "current_growth_feature_generation.py"),
-        ("volatility_target_22pct", float(cfg.get("volatility_target", np.nan) or np.nan) == TARGET_VOL and not alloc.empty and "volatility_target_exposure" in alloc.columns, "growth_candidate_paper_config.json/current allocation"),
-        ("exposure_cap_60", float(cfg.get("exposure_cap", np.nan) or np.nan) == EXPOSURE_CAP_60 and not alloc.empty and "exposure_cap" in alloc.columns, "growth_candidate_paper_config.json/current allocation"),
-        ("dual_trend_filter", "dual_trend" in feature_text.lower() or "dual_trend" in paper_text.lower(), "current growth pipeline source code"),
-        ("final_weight_construction", not alloc.empty and "final_growth_weight" in alloc.columns and _num(alloc["final_growth_weight"]).sum() > 0, "current_growth_candidate_allocation.csv"),
-        ("paper_state_update", not state.empty and {"ticker", "paper_position_weight"}.issubset(state.columns), "growth_candidate_paper_state.csv"),
-        ("trades_log_update", not trades.empty and {"ticker", "action", "trade_weight_change"}.issubset(trades.columns), "growth_candidate_paper_trades.csv"),
-        ("performance_update", not perf.empty and {"portfolio_value", "daily_return"}.issubset(perf.columns), "growth_candidate_paper_performance.csv"),
-        ("governance_update", not monitor.empty or Path("growth_paper_governance_report.csv").exists(), "growth paper monitor/governance files"),
-        ("daily_runner_generates_growth_features", "current_growth_feature_generation.py" in daily_text, "daily_research_run.py --growth-paper branch"),
-        ("paper_requires_or_warns_exact_raw", "raw_target_return_exact" in paper_text and "proxy raw target" in paper_text, "growth_candidate_paper_trading.py"),
-        ("expected_returns_exposes_raw_diagnostics", "raw_target_return_exact" in expected_text and "signal_strength_adjustment_value" in expected_text, "expected_returns_model.py"),
+        (
+            "soft_exit_rule",
+            not features.empty and "soft_exit_status" in features.columns and "soft_exit" in feature_text,
+            "current_growth_feature_generation.py",
+        ),
+        (
+            "volatility_target_22pct",
+            float(cfg.get("volatility_target", np.nan) or np.nan) == TARGET_VOL
+            and not alloc.empty
+            and "volatility_target_exposure" in alloc.columns,
+            "growth_candidate_paper_config.json/current allocation",
+        ),
+        (
+            "exposure_cap_60",
+            float(cfg.get("exposure_cap", np.nan) or np.nan) == EXPOSURE_CAP_60 and not alloc.empty and "exposure_cap" in alloc.columns,
+            "growth_candidate_paper_config.json/current allocation",
+        ),
+        (
+            "dual_trend_filter",
+            "dual_trend" in feature_text.lower() or "dual_trend" in paper_text.lower(),
+            "current growth pipeline source code",
+        ),
+        (
+            "final_weight_construction",
+            not alloc.empty and "final_growth_weight" in alloc.columns and _num(alloc["final_growth_weight"]).sum() > 0,
+            "current_growth_candidate_allocation.csv",
+        ),
+        (
+            "paper_state_update",
+            not state.empty and {"ticker", "paper_position_weight"}.issubset(state.columns),
+            "growth_candidate_paper_state.csv",
+        ),
+        (
+            "trades_log_update",
+            not trades.empty and {"ticker", "action", "trade_weight_change"}.issubset(trades.columns),
+            "growth_candidate_paper_trades.csv",
+        ),
+        (
+            "performance_update",
+            not perf.empty and {"portfolio_value", "daily_return"}.issubset(perf.columns),
+            "growth_candidate_paper_performance.csv",
+        ),
+        (
+            "governance_update",
+            not monitor.empty or Path("growth_paper_governance_report.csv").exists(),
+            "growth paper monitor/governance files",
+        ),
+        (
+            "daily_runner_generates_growth_features",
+            "current_growth_feature_generation.py" in daily_text,
+            "daily_research_run.py --growth-paper branch",
+        ),
+        (
+            "paper_requires_or_warns_exact_raw",
+            "raw_target_return_exact" in paper_text and "proxy raw target" in paper_text,
+            "growth_candidate_paper_trading.py",
+        ),
+        (
+            "expected_returns_exposes_raw_diagnostics",
+            "raw_target_return_exact" in expected_text and "signal_strength_adjustment_value" in expected_text,
+            "expected_returns_model.py",
+        ),
     ]
     rows = []
     for module, executed, source in checks:
@@ -234,7 +286,9 @@ def _dual_trend_audit(date: pd.Timestamp, actual_vol_exposure: float) -> pd.Data
     alloc = _latest(_read_csv(CURRENT_ALLOCATION_FILE))
     feature_text = _text("current_growth_feature_generation.py").lower()
     paper_text = _text("growth_candidate_paper_trading.py").lower()
-    explicit = (not alloc.empty and "dual_trend_cap" in alloc.columns and "spy_below_200d" in alloc.columns and "qqq_below_200d" in alloc.columns) or ("dual_trend" in feature_text and "dual_trend" in paper_text)
+    explicit = (
+        not alloc.empty and "dual_trend_cap" in alloc.columns and "spy_below_200d" in alloc.columns and "qqq_below_200d" in alloc.columns
+    ) or ("dual_trend" in feature_text and "dual_trend" in paper_text)
     spy = _trend_state("SPY", date)
     qqq = _trend_state("QQQ", date)
     spy_below = spy["below_200dma"] is True
@@ -281,9 +335,15 @@ def _parity_check(dual: pd.DataFrame) -> pd.DataFrame:
     selected = alloc[alloc.get("raw_target_selected", True).astype(bool)].copy() if "raw_target_selected" in alloc.columns else alloc.copy()
     selected = selected.sort_values("raw_target_rank") if "raw_target_rank" in selected.columns else selected
     expected_tickers = selected["ticker"].astype(str).tolist()
-    expected_exposure = float(dual.iloc[0]["final_exposure_after_dual_trend"]) if not dual.empty else float(_num(selected["final_growth_weight"]).sum())
+    expected_exposure = (
+        float(dual.iloc[0]["final_exposure_after_dual_trend"]) if not dual.empty else float(_num(selected["final_growth_weight"]).sum())
+    )
     expected_weight = expected_exposure / len(expected_tickers) if expected_tickers else 0.0
-    actual_weights = selected.set_index("ticker")["final_growth_weight"].pipe(_num) if "final_growth_weight" in selected.columns else pd.Series(dtype=float)
+    actual_weights = (
+        selected.set_index("ticker")["final_growth_weight"].pipe(_num)
+        if "final_growth_weight" in selected.columns
+        else pd.Series(dtype=float)
+    )
     rows = []
     for ticker in expected_tickers:
         actual = float(actual_weights.get(ticker, np.nan))
@@ -328,8 +388,16 @@ def _data_source_audit() -> pd.DataFrame:
     if alloc.empty:
         return pd.DataFrame([{"status": "missing_current_growth_candidate_allocation"}])
     latest_date = pd.Timestamp(alloc["date"].max()).strftime("%Y-%m-%d")
-    source = str(alloc["raw_target_feature_source"].dropna().iloc[0]) if "raw_target_feature_source" in alloc.columns and not alloc["raw_target_feature_source"].dropna().empty else "missing"
-    exact = bool(source == "raw_target_return_exact" and "raw_target_return_exact" in alloc.columns and _num(alloc["raw_target_return_exact"]).notna().all())
+    source = (
+        str(alloc["raw_target_feature_source"].dropna().iloc[0])
+        if "raw_target_feature_source" in alloc.columns and not alloc["raw_target_feature_source"].dropna().empty
+        else "missing"
+    )
+    exact = bool(
+        source == "raw_target_return_exact"
+        and "raw_target_return_exact" in alloc.columns
+        and _num(alloc["raw_target_return_exact"]).notna().all()
+    )
     return pd.DataFrame(
         [
             {
@@ -339,10 +407,14 @@ def _data_source_audit() -> pd.DataFrame:
                 "proxy_used": source != "raw_target_return_exact",
                 "cedear_filter_used": False,
                 "historical_stale_fallback_used": False,
-                "current_allocation_rows": int(len(alloc)),
-                "current_raw_feature_rows": int(len(raw)),
-                "data_source": str(alloc.get("data_source", pd.Series(["missing"])).dropna().iloc[0]) if "data_source" in alloc.columns and not alloc["data_source"].dropna().empty else "missing",
-                "fallback_reason": str(alloc.get("fallback_reason", pd.Series([""])).dropna().iloc[0]) if "fallback_reason" in alloc.columns and not alloc["fallback_reason"].dropna().empty else "",
+                "current_allocation_rows": len(alloc),
+                "current_raw_feature_rows": len(raw),
+                "data_source": str(alloc.get("data_source", pd.Series(["missing"])).dropna().iloc[0])
+                if "data_source" in alloc.columns and not alloc["data_source"].dropna().empty
+                else "missing",
+                "fallback_reason": str(alloc.get("fallback_reason", pd.Series([""])).dropna().iloc[0])
+                if "fallback_reason" in alloc.columns and not alloc["fallback_reason"].dropna().empty
+                else "",
             }
         ]
     )
@@ -370,16 +442,21 @@ def _state_audit() -> pd.DataFrame:
         [
             {
                 "date": date,
-                "same_day_overwrite_supported": "--overwrite-same-day" in _text("daily_research_run.py") and "overwrite_same_day" in _text("growth_candidate_paper_trading.py"),
+                "same_day_overwrite_supported": "--overwrite-same-day" in _text("daily_research_run.py")
+                and "overwrite_same_day" in _text("growth_candidate_paper_trading.py"),
                 "append_only_default": True,
                 "prior_holdings_available_for_soft_exit": prior_available,
-                "state_rows_latest": int(len(state)),
-                "trade_rows_latest": int(len(trades)),
-                "performance_rows_latest": int(len(perf)),
+                "state_rows_latest": len(state),
+                "trade_rows_latest": len(trades),
+                "performance_rows_latest": len(perf),
                 "turnover_from_trades": expected_turnover,
                 "turnover_in_performance": perf_turnover,
-                "turnover_match": bool(np.isfinite(expected_turnover) and np.isfinite(perf_turnover) and abs(expected_turnover - perf_turnover) < 1e-9),
-                "paper_value_available": not perf.empty and "portfolio_value" in perf.columns and _num(perf["portfolio_value"]).notna().any(),
+                "turnover_match": bool(
+                    np.isfinite(expected_turnover) and np.isfinite(perf_turnover) and abs(expected_turnover - perf_turnover) < 1e-9
+                ),
+                "paper_value_available": not perf.empty
+                and "portfolio_value" in perf.columns
+                and _num(perf["portfolio_value"]).notna().any(),
                 "cash_row_present": not state.empty and "ticker" in state.columns and state["ticker"].astype(str).eq("CASH").any(),
             }
         ]
@@ -401,7 +478,11 @@ def run_audit() -> dict[str, object]:
         actual_vol_exposure = 0.0
     else:
         date = pd.Timestamp(alloc["date"].max())
-        actual_vol_exposure = float(_num(alloc.get("uncapped_volatility_target_exposure", alloc.get("volatility_target_exposure", pd.Series([0.0])))).dropna().iloc[0])
+        actual_vol_exposure = float(
+            _num(alloc.get("uncapped_volatility_target_exposure", alloc.get("volatility_target_exposure", pd.Series([0.0]))))
+            .dropna()
+            .iloc[0]
+        )
 
     pipeline = _pipeline_audit()
     optimizer = _optimizer_audit()

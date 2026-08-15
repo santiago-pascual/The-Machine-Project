@@ -10,7 +10,6 @@ import yfinance as yf
 
 from quant_research_features import compute_asset_quant_features
 
-
 TRADING_DAYS_PER_YEAR = 252
 
 
@@ -61,18 +60,17 @@ def get_current_prices(
     for start in range(0, len(ticker_list), max(1, int(chunk_size))):
         chunk = ticker_list[start : start + max(1, int(chunk_size))]
         try:
-            with _temporary_disable_proxies():
-                with redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
-                    raw_data = yf.download(
-                        chunk,
-                        period="1d",
-                        interval="1m",
-                        progress=False,
-                        auto_adjust=False,
-                        group_by="ticker",
-                        threads=False,
-                        timeout=20,
-                    )
+            with _temporary_disable_proxies(), redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
+                raw_data = yf.download(
+                    chunk,
+                    period="1d",
+                    interval="1m",
+                    progress=False,
+                    auto_adjust=False,
+                    group_by="ticker",
+                    threads=False,
+                    timeout=20,
+                )
         except Exception:
             continue
 
@@ -122,11 +120,7 @@ def compute_expected_returns(
     target_series = pd.Series(target_prices, dtype=float)
     collapse_threshold = 1e-4
     fallback_prices = prices_df.ffill().iloc[-1]
-    current_prices = (
-        get_current_prices(prices_df.columns, fallback_prices=fallback_prices)
-        if use_live_prices
-        else fallback_prices
-    )
+    current_prices = get_current_prices(prices_df.columns, fallback_prices=fallback_prices) if use_live_prices else fallback_prices
     quant_features = compute_asset_quant_features(prices_df).reindex(prices_df.columns)
     expected_returns: dict[str, float] = {}
     diagnostics: dict[str, dict[str, float | str]] = {}
@@ -183,10 +177,7 @@ def compute_expected_returns(
         penalization_applied = False
         historical_gap = abs(current_price / historical_last_price - 1) if historical_last_price > 0 else 0.0
         if historical_gap > 0.10:
-            print(
-                f"[WARNING] Live price for {ticker} differs materially from last historical close "
-                f"({historical_gap:.2%})."
-            )
+            print(f"[WARNING] Live price for {ticker} differs materially from last historical close ({historical_gap:.2%}).")
             status = "live_price_gap_warning"
 
         total_return = _clamp((target_price / current_price) - 1, -0.95, 5.0)
@@ -314,16 +305,10 @@ def compute_expected_returns(
     if float(expected_daily_returns.std()) < collapse_threshold:
         historical_fallback = prices_df.pct_change().tail(20).mean().reindex(prices_df.columns).fillna(0.0)
         momentum_fallback = pd.Series(
-            {
-                ticker: _clamp(float(diagnostics[ticker]["momentum"]) * 0.5, -0.05, 0.05)
-                for ticker in prices_df.columns
-            },
+            {ticker: _clamp(float(diagnostics[ticker]["momentum"]) * 0.5, -0.05, 0.05) for ticker in prices_df.columns},
             dtype=float,
         )
-        expected_daily_returns = (
-            0.6 * historical_fallback
-            + 0.4 * momentum_fallback
-        ).replace([np.inf, -np.inf], np.nan).fillna(0.0)
+        expected_daily_returns = (0.6 * historical_fallback + 0.4 * momentum_fallback).replace([np.inf, -np.inf], np.nan).fillna(0.0)
 
         for ticker in prices_df.columns:
             diagnostics[ticker]["expected_daily_return"] = float(expected_daily_returns.loc[ticker])
@@ -395,8 +380,8 @@ def compute_expected_returns(
         diagnostics[ticker]["signal_strength_adjustment_disabled"] = bool(use_raw_target_return)
         diagnostics[ticker]["regime_adjustment_applied"] = False
         baseline_adjusted_expected_return = float(adjusted_expected_return)
-        baseline_adjusted_expected_return *= signal_strength ** 1.5
-        baseline_adjusted_expected_return *= (0.3 + 0.7 * signal_strength)
+        baseline_adjusted_expected_return *= signal_strength**1.5
+        baseline_adjusted_expected_return *= 0.3 + 0.7 * signal_strength
         if signal_strength < 0.3:
             baseline_adjusted_expected_return = min(baseline_adjusted_expected_return, 0.0)
         if diagnostics[ticker].get("status") == "bearish_or_low_probability":
@@ -416,7 +401,9 @@ def compute_expected_returns(
                 baseline_adjusted_expected_return *= 0.7
 
         diagnostics[ticker]["baseline_adjusted_expected_daily_return"] = float(baseline_adjusted_expected_return)
-        diagnostics[ticker]["signal_strength_adjustment_value"] = float(baseline_adjusted_expected_return - diagnostics[ticker].get("pre_signal_adjustment_expected_daily_return", 0.0))
+        diagnostics[ticker]["signal_strength_adjustment_value"] = float(
+            baseline_adjusted_expected_return - diagnostics[ticker].get("pre_signal_adjustment_expected_daily_return", 0.0)
+        )
         if use_raw_target_return:
             adjusted_expected_return = float(diagnostics[ticker]["raw_target_expected_daily_return"])
             diagnostics[ticker]["regime_adjustment_applied"] = False
@@ -430,7 +417,11 @@ def compute_expected_returns(
         expected_daily_returns.loc[ticker] = adjusted_expected_return
 
         for col in quant_features.columns:
-            diagnostics[ticker][col] = float(quant_features.loc[ticker, col]) if ticker in quant_features.index and pd.notna(quant_features.loc[ticker, col]) else 0.0
+            diagnostics[ticker][col] = (
+                float(quant_features.loc[ticker, col])
+                if ticker in quant_features.index and pd.notna(quant_features.loc[ticker, col])
+                else 0.0
+            )
         diagnostics[ticker]["quant_multiplier"] = float(np.clip(quant_multiplier, 0.97, 1.03))
 
     mean_ret = float(expected_daily_returns.mean()) if len(expected_daily_returns) else 0.0

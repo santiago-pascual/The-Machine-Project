@@ -120,7 +120,6 @@ CSV_FILES: dict[str, str] = {
     "phase111_report": "phase111_research_terminal_report.txt",
     "growth_paper_governance_history": "growth_paper_governance_history.csv",
     "canonical_price_history": "canonical_price_history.csv",
-    "garch_model_comparison": "garch_model_comparison.csv",
     "quant_lab_source_audit": "quant_lab_source_audit.csv",
     "quant_lab_surface_integrity": "quant_lab_surface_integrity.csv",
     "quant_lab_performance_audit": "quant_lab_performance_audit.csv",
@@ -199,7 +198,17 @@ SCOPE_CONFIG = {
     },
 }
 
-DATE_COLUMNS = ["date", "Date", "signal_date", "economic_application_date", "entry_date", "exit_date", "start_date", "end_date", "timestamp"]
+DATE_COLUMNS = [
+    "date",
+    "Date",
+    "signal_date",
+    "economic_application_date",
+    "entry_date",
+    "exit_date",
+    "start_date",
+    "end_date",
+    "timestamp",
+]
 
 
 def numeric(x: Any) -> pd.Series:
@@ -233,7 +242,7 @@ def load_csv(path: str) -> tuple[pd.DataFrame, dict[str, Any]]:
             meta["start_date"] = str(dates.min().date()) if dates.notna().any() else ""
             meta["end_date"] = str(dates.max().date()) if dates.notna().any() else ""
         return df, meta
-    except Exception as exc:  # noqa: BLE001
+    except Exception as exc:
         meta["error"] = str(exc)
         return pd.DataFrame(), meta
 
@@ -289,7 +298,9 @@ def _historical_backtest_frame(df: pd.DataFrame) -> pd.DataFrame:
         latest_row = out.tail(1).iloc[0]
         tickers = [t.strip() for t in str(latest_row.get("holdings", "")).split(",") if t.strip()]
         weights_raw = [w.strip() for w in str(latest_row.get("weights", "")).split(",") if w.strip()]
-        equal_weight = float(pd.to_numeric(pd.Series([latest_row.get("exposure", 0)]), errors="coerce").fillna(0).iloc[0]) / max(len(tickers), 1)
+        equal_weight = float(pd.to_numeric(pd.Series([latest_row.get("exposure", 0)]), errors="coerce").fillna(0).iloc[0]) / max(
+            len(tickers), 1
+        )
         weights = []
         for w in weights_raw:
             val = pd.to_numeric(pd.Series([w]), errors="coerce").iloc[0]
@@ -298,14 +309,24 @@ def _historical_backtest_frame(df: pd.DataFrame) -> pd.DataFrame:
             rows = []
             for i, ticker in enumerate(tickers):
                 weight = weights[i] if i < len(weights) and pd.notna(weights[i]) else equal_weight
-                rows.append({
+                rows.append(
+                    {
+                        "date": latest_row.get("date"),
+                        "ticker": ticker,
+                        "paper_position_weight": weight,
+                        "action": "HISTORICAL_BACKTEST_HOLDING",
+                        "data_mode": latest_row.get("data_mode", "reconstructed"),
+                    }
+                )
+            rows.append(
+                {
                     "date": latest_row.get("date"),
-                    "ticker": ticker,
-                    "paper_position_weight": weight,
-                    "action": "HISTORICAL_BACKTEST_HOLDING",
+                    "ticker": "CASH",
+                    "paper_position_weight": latest_row.get("cash", 0),
+                    "action": "HISTORICAL_BACKTEST_CASH",
                     "data_mode": latest_row.get("data_mode", "reconstructed"),
-                })
-            rows.append({"date": latest_row.get("date"), "ticker": "CASH", "paper_position_weight": latest_row.get("cash", 0), "action": "HISTORICAL_BACKTEST_CASH", "data_mode": latest_row.get("data_mode", "reconstructed")})
+                }
+            )
             out.attrs["latest_holdings_frame"] = pd.DataFrame(rows)
     return out
 
@@ -318,7 +339,11 @@ def scope_data(data: dict[str, pd.DataFrame], scope: str) -> dict[str, pd.DataFr
         scoped["performance"] = hist
         scoped["benchmark_equity"] = hist
         scoped["benchmark_daily"] = hist
-        scoped["rebalance"] = hist[hist.get("rebalance_due", pd.Series(False, index=hist.index)).astype(str).str.lower().isin(["true", "1"])] if not hist.empty and "rebalance_due" in hist.columns else hist
+        scoped["rebalance"] = (
+            hist[hist.get("rebalance_due", pd.Series(False, index=hist.index)).astype(str).str.lower().isin(["true", "1"])]
+            if not hist.empty and "rebalance_due" in hist.columns
+            else hist
+        )
         scoped["actions"] = scoped["rebalance"]
         scoped["state"] = hist.attrs.get("latest_holdings_frame", pd.DataFrame())
     return scoped
@@ -344,7 +369,6 @@ def latest_market_date(data: dict[str, pd.DataFrame]) -> str:
             if pd.notna(d):
                 candidates.append(d)
     return str(max(candidates).date()) if candidates else "unavailable"
-
 
 
 def _clean_date_value(value: object) -> str:
@@ -381,7 +405,10 @@ def next_rebalance_date(data: dict[str, pd.DataFrame]) -> str:
         latest_date = work["market_date"].max()
 
     # Prefer an explicit future rebalance from the schedule when available.
-    future = work[(work["market_date"] > latest_date) & work.get("rebalance_due", pd.Series(False, index=work.index)).astype(str).str.lower().isin(["true", "1"])]
+    future = work[
+        (work["market_date"] > latest_date)
+        & work.get("rebalance_due", pd.Series(False, index=work.index)).astype(str).str.lower().isin(["true", "1"])
+    ]
     if not future.empty:
         return str(future.iloc[0]["market_date"].date())
 
@@ -421,10 +448,13 @@ def _benchmark_returns_from_cache(dates: pd.Series) -> pd.DataFrame:
         # Use point-in-time benchmark prices at the same strategy observation dates.
         # Then pct_change across those observation dates captures the whole interval return,
         # instead of incorrectly using only one daily return per rebalance period.
-        aligned = pd.merge_asof(out[["date"]].sort_values("date"), px[["date", col + "_price"]].sort_values("date"), on="date", direction="backward")
+        aligned = pd.merge_asof(
+            out[["date"]].sort_values("date"), px[["date", col + "_price"]].sort_values("date"), on="date", direction="backward"
+        )
         aligned[col] = aligned[col + "_price"].pct_change().fillna(0.0)
         out = out.merge(aligned[["date", col]], on="date", how="left")
     return out
+
 
 def _fill_historical_benchmarks(out: pd.DataFrame) -> pd.DataFrame:
     if out.empty or "date" not in out.columns:
@@ -446,6 +476,7 @@ def _fill_historical_benchmarks(out: pd.DataFrame) -> pd.DataFrame:
                 merged[col] = numeric(merged[col]).where(numeric(merged[col]).notna(), numeric(merged[cache_col]))
             merged = merged.drop(columns=[cache_col])
     return merged
+
 
 def benchmark_curve_for_scope(data: dict[str, pd.DataFrame], scope: str) -> pd.DataFrame:
     scoped = scope_data(data, scope)
@@ -490,10 +521,8 @@ def benchmark_curve_for_scope(data: dict[str, pd.DataFrame], scope: str) -> pd.D
         "growth_estimated_net_return": "Growth Estimated Net",
         "spy_daily_return": "SPY",
         "SPY_return": "SPY",
-        "spy_daily_return": "SPY",
         "qqq_daily_return": "QQQ",
         "QQQ_return": "QQQ",
-        "qqq_daily_return": "QQQ",
     }
     for raw, label in daily_map.items():
         if raw in daily.columns and label not in out.columns:

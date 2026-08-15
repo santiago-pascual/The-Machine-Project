@@ -48,21 +48,55 @@ def audit_backtest_semantics() -> tuple[pd.DataFrame, str]:
         if not sub.empty:
             anchor = pd.to_datetime(sub["date"], errors="coerce").dropna().min().strftime("%Y-%m-%d")
     rows = [
-        {"item": "rebalance_frequency", "value": "every 5 trading sessions", "evidence": "STEP_DAYS = 5 and dates = px.index[LOOKBACK::STEP_DAYS]"},
-        {"item": "scheduling_method", "value": "rolling session count", "evidence": "No fixed weekday; schedule advances by market-data row index."},
+        {
+            "item": "rebalance_frequency",
+            "value": "every 5 trading sessions",
+            "evidence": "STEP_DAYS = 5 and dates = px.index[LOOKBACK::STEP_DAYS]",
+        },
+        {
+            "item": "scheduling_method",
+            "value": "rolling session count",
+            "evidence": "No fixed weekday; schedule advances by market-data row index.",
+        },
         {"item": "anchor_date", "value": anchor, "evidence": "First 2022+ reconstructed decision date after 252-session lookback."},
-        {"item": "signal_timing", "value": "signals use close/history through decision date t", "evidence": "hist = px.iloc[:loc + 1]; raw targets generated from truncated history."},
-        {"item": "execution_lag", "value": DEFAULT_EXECUTION_LAG, "evidence": "entry_date = px.index[loc + 1]; exit_date = loc + STEP_DAYS + 1."},
-        {"item": "holding_period", "value": "target holdings frozen between rebalance dates", "evidence": "Loop only creates weights on decision dates; no daily soft-exit path exists."},
-        {"item": "soft_exit_timing", "value": "rebalance dates only", "evidence": "soft_keep is evaluated inside the decision_date loop only."},
-        {"item": "volatility_target_timing", "value": "rebalance dates only", "evidence": "_target_exposure(prior_returns, previous_exposure) is called inside the decision_date loop."},
-        {"item": "dual_trend_timing", "value": "rebalance dates only in v3 overlay", "evidence": "Crisis overlay is applied to scheduled reconstructed rows, not intra-period daily holdings."},
-        {"item": "turnover_cost_date", "value": "decision/rebalance date", "evidence": "turnover is stored on the decision_date row from current weights vs prior_weights."},
+        {
+            "item": "signal_timing",
+            "value": "signals use close/history through decision date t",
+            "evidence": "hist = px.iloc[:loc + 1]; raw targets generated from truncated history.",
+        },
+        {
+            "item": "execution_lag",
+            "value": DEFAULT_EXECUTION_LAG,
+            "evidence": "entry_date = px.index[loc + 1]; exit_date = loc + STEP_DAYS + 1.",
+        },
+        {
+            "item": "holding_period",
+            "value": "target holdings frozen between rebalance dates",
+            "evidence": "Loop only creates weights on decision dates; no daily soft-exit path exists.",
+        },
+        {
+            "item": "soft_exit_timing",
+            "value": "rebalance dates only",
+            "evidence": "soft_keep is evaluated inside the decision_date loop only.",
+        },
+        {
+            "item": "volatility_target_timing",
+            "value": "rebalance dates only",
+            "evidence": "_target_exposure(prior_returns, previous_exposure) is called inside the decision_date loop.",
+        },
+        {
+            "item": "dual_trend_timing",
+            "value": "rebalance dates only in v3 overlay",
+            "evidence": "Crisis overlay is applied to scheduled reconstructed rows, not intra-period daily holdings.",
+        },
+        {
+            "item": "turnover_cost_date",
+            "value": "decision/rebalance date",
+            "evidence": "turnover is stored on the decision_date row from current weights vs prior_weights.",
+        },
     ]
     audit = pd.DataFrame(rows)
-    report = "===== GROWTH REBALANCE SEMANTICS AUDIT =====\n" + "\n".join(
-        f"{r['item']}: {r['value']} ({r['evidence']})" for r in rows
-    )
+    report = "===== GROWTH REBALANCE SEMANTICS AUDIT =====\n" + "\n".join(f"{r['item']}: {r['value']} ({r['evidence']})" for r in rows)
     audit.to_csv(SEMANTICS_AUDIT_FILE, index=False)
     Path(SEMANTICS_REPORT_FILE).write_text(report + "\n", encoding="utf-8")
     return audit, report

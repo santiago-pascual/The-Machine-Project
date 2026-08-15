@@ -81,10 +81,7 @@ def compute_black_litterman_diagnostics(
     inv_omega = _safe_inverse(omega)
     posterior_cov_inv = inv_tau_sigma + p_matrix.T @ inv_omega @ p_matrix
     posterior_cov = _safe_inverse(posterior_cov_inv)
-    posterior_mean = posterior_cov @ (
-        inv_tau_sigma @ pi.to_numpy(dtype=float)
-        + p_matrix.T @ inv_omega @ q_vector
-    )
+    posterior_mean = posterior_cov @ (inv_tau_sigma @ pi.to_numpy(dtype=float) + p_matrix.T @ inv_omega @ q_vector)
 
     bl_returns = pd.Series(posterior_mean, index=tickers, name="black_litterman_return")
     diagnostics = pd.DataFrame(
@@ -104,8 +101,7 @@ def compute_black_litterman_diagnostics(
         "top10_original": model_returns.sort_values(ascending=False).head(10).index.tolist(),
         "top10_bl": bl_returns.sort_values(ascending=False).head(10).index.tolist(),
         "overlap_count": len(
-            set(model_returns.sort_values(ascending=False).head(10).index)
-            & set(bl_returns.sort_values(ascending=False).head(10).index)
+            set(model_returns.sort_values(ascending=False).head(10).index) & set(bl_returns.sort_values(ascending=False).head(10).index)
         ),
         "largest_positive_adjustments": (bl_returns - model_returns).sort_values(ascending=False).head(10),
         "largest_negative_adjustments": (bl_returns - model_returns).sort_values(ascending=True).head(10),

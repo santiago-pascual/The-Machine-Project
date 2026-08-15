@@ -9,7 +9,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-
 GRAPH_FILE = "growth_pipeline_dependency_graph.csv"
 INTEGRITY_FILE = "growth_pipeline_integrity_report.csv"
 STAGE_FILE = "growth_pipeline_stage_validation.csv"
@@ -78,23 +77,128 @@ def num(s: pd.Series | object) -> pd.Series:
 
 def dependency_graph() -> pd.DataFrame:
     rows = [
-        ("Yahoo OHLCV cache", "CSV cache", "yahoo_ohlcv_price_cache/*.csv", "growth_universe_quality_filter.py,current_growth_feature_generation.py", "price/volume/trend inputs", True),
-        ("forecast_history", "CSV", "forecast_history.csv", "current_growth_feature_generation.py", "raw_target_return_exact/current prices", True),
-        ("raw target features", "CSV", "current_raw_target_features.csv", "current_growth_feature_generation.py", "diagnostic raw target snapshot", True),
-        ("growth features", "CSV", "current_growth_features.csv", "current_growth_feature_generation.py", "filtered/ranked feature set", True),
-        ("quality filter", "module", "growth_universe_quality_filter.py", "current_growth_feature_generation.py", "blacklist/tradability/quality filter", True),
-        ("holding sanity", "module", "final_selected_holdings_sanity_check.py", "current_growth_feature_generation.py", "final selected holding sanity", True),
-        ("dual trend filter", "function", "current_growth_feature_generation._dual_trend_filter", "current_growth_feature_generation.py", "SPY/QQQ 200D cap", True),
-        ("volatility targeting", "function", "current_growth_feature_generation._vol_target_exposure", "current_growth_feature_generation.py", "target vol exposure", True),
-        ("current allocation", "CSV", "current_growth_candidate_allocation.csv", "growth_candidate_paper_trading.py", "final target holdings/weights", True),
-        ("action reconciliation", "module", "growth_action_reconciliation.py", "growth_candidate_paper_trading.py", "BUY/SELL/REDUCE/INCREASE/HOLD", True),
-        ("paper state", "CSV", "growth_candidate_paper_state.csv", "dashboard_app.py,growth_live_tracking_monitor.py,growth_paper_governance.py", "paper holdings", True),
-        ("paper trades", "CSV", "growth_candidate_paper_trades.csv", "dashboard_app.py,growth_live_tracking_monitor.py,growth_paper_governance.py", "paper trades", True),
-        ("paper performance", "CSV", "growth_candidate_paper_performance.csv", "dashboard_app.py,growth_live_tracking_monitor.py,benchmark_daily_series_export.py", "paper equity/performance", True),
+        (
+            "Yahoo OHLCV cache",
+            "CSV cache",
+            "yahoo_ohlcv_price_cache/*.csv",
+            "growth_universe_quality_filter.py,current_growth_feature_generation.py",
+            "price/volume/trend inputs",
+            True,
+        ),
+        (
+            "forecast_history",
+            "CSV",
+            "forecast_history.csv",
+            "current_growth_feature_generation.py",
+            "raw_target_return_exact/current prices",
+            True,
+        ),
+        (
+            "raw target features",
+            "CSV",
+            "current_raw_target_features.csv",
+            "current_growth_feature_generation.py",
+            "diagnostic raw target snapshot",
+            True,
+        ),
+        (
+            "growth features",
+            "CSV",
+            "current_growth_features.csv",
+            "current_growth_feature_generation.py",
+            "filtered/ranked feature set",
+            True,
+        ),
+        (
+            "quality filter",
+            "module",
+            "growth_universe_quality_filter.py",
+            "current_growth_feature_generation.py",
+            "blacklist/tradability/quality filter",
+            True,
+        ),
+        (
+            "holding sanity",
+            "module",
+            "final_selected_holdings_sanity_check.py",
+            "current_growth_feature_generation.py",
+            "final selected holding sanity",
+            True,
+        ),
+        (
+            "dual trend filter",
+            "function",
+            "current_growth_feature_generation._dual_trend_filter",
+            "current_growth_feature_generation.py",
+            "SPY/QQQ 200D cap",
+            True,
+        ),
+        (
+            "volatility targeting",
+            "function",
+            "current_growth_feature_generation._vol_target_exposure",
+            "current_growth_feature_generation.py",
+            "target vol exposure",
+            True,
+        ),
+        (
+            "current allocation",
+            "CSV",
+            "current_growth_candidate_allocation.csv",
+            "growth_candidate_paper_trading.py",
+            "final target holdings/weights",
+            True,
+        ),
+        (
+            "action reconciliation",
+            "module",
+            "growth_action_reconciliation.py",
+            "growth_candidate_paper_trading.py",
+            "BUY/SELL/REDUCE/INCREASE/HOLD",
+            True,
+        ),
+        (
+            "paper state",
+            "CSV",
+            "growth_candidate_paper_state.csv",
+            "dashboard_app.py,growth_live_tracking_monitor.py,growth_paper_governance.py",
+            "paper holdings",
+            True,
+        ),
+        (
+            "paper trades",
+            "CSV",
+            "growth_candidate_paper_trades.csv",
+            "dashboard_app.py,growth_live_tracking_monitor.py,growth_paper_governance.py",
+            "paper trades",
+            True,
+        ),
+        (
+            "paper performance",
+            "CSV",
+            "growth_candidate_paper_performance.csv",
+            "dashboard_app.py,growth_live_tracking_monitor.py,benchmark_daily_series_export.py",
+            "paper equity/performance",
+            True,
+        ),
         ("dashboard", "module", "dashboard_app.py", "read-only", "visualization only", False),
-        ("baseline allocation", "module/output", "financial_data_system.py final allocation", "not read by growth paper", "must not influence growth", False),
+        (
+            "baseline allocation",
+            "module/output",
+            "financial_data_system.py final allocation",
+            "not read by growth paper",
+            "must not influence growth",
+            False,
+        ),
         ("baseline optimizer", "module", "optimizer", "not read by growth paper", "must not influence growth", False),
-        ("baseline final expected returns", "CSV columns", "expected_daily_return/final_weight_percent", "ignored for growth allocation", "must not influence growth", False),
+        (
+            "baseline final expected returns",
+            "CSV columns",
+            "expected_daily_return/final_weight_percent",
+            "ignored for growth allocation",
+            "must not influence growth",
+            False,
+        ),
         ("baseline timing", "module", "EMA timing", "not read by growth paper", "must not influence growth", False),
         ("research diagnostics", "modules", "BL/IC/risk/meta/etc", "not read by growth paper", "diagnostics only", False),
     ]
@@ -137,12 +241,32 @@ def stage_validation() -> pd.DataFrame:
                             m = vals.max().strftime("%Y-%m-%d")
                             latest = max(latest, m)
                 h.update(file_hash(file).encode())
-            rows.append({"stage": stage, "artifact": artifact, "input_date": latest, "output_date": latest, "row_count": total_rows, "checksum": h.hexdigest(), "exists": bool(files)})
+            rows.append(
+                {
+                    "stage": stage,
+                    "artifact": artifact,
+                    "input_date": latest,
+                    "output_date": latest,
+                    "row_count": total_rows,
+                    "checksum": h.hexdigest(),
+                    "exists": bool(files),
+                }
+            )
             continue
         df = normalize_dates(read_csv(artifact))
         date_min = df[date_col].min() if not df.empty and date_col in df.columns else ""
         date_max = df[date_col].max() if not df.empty and date_col in df.columns else ""
-        rows.append({"stage": stage, "artifact": artifact, "input_date": date_min, "output_date": date_max, "row_count": len(df), "checksum": file_hash(artifact), "exists": Path(artifact).exists()})
+        rows.append(
+            {
+                "stage": stage,
+                "artifact": artifact,
+                "input_date": date_min,
+                "output_date": date_max,
+                "row_count": len(df),
+                "checksum": file_hash(artifact),
+                "exists": Path(artifact).exists(),
+            }
+        )
     return pd.DataFrame(rows)
 
 
@@ -156,12 +280,50 @@ def code_integrity() -> pd.DataFrame:
         "baseline_timing": "ema_timing" in text.lower(),
         "diagnostic_models": any(k in text.lower() for k in ["black_litterman", "information_coefficient", "meta_model"]),
     }
-    checks.append({"check": "baseline_allocation_influences_growth", "passed": True, "evidence": "normal growth paper source is current_growth_candidate_allocation; current_forecast_history_proxy requires explicit allow_proxy_fallback and is not active"})
-    checks.append({"check": "baseline_optimizer_influences_growth", "passed": not contamination["baseline_optimizer"], "evidence": "no optimizer call found in growth paper modules" if not contamination["baseline_optimizer"] else "optimizer string found"})
-    checks.append({"check": "baseline_timing_influences_growth", "passed": not contamination["baseline_timing"], "evidence": "no EMA timing call found" if not contamination["baseline_timing"] else "EMA string found"})
-    checks.append({"check": "research_diagnostics_influence_growth", "passed": not contamination["diagnostic_models"], "evidence": "no diagnostic model dependency found" if not contamination["diagnostic_models"] else "diagnostic string found"})
-    checks.append({"check": "raw_target_exact_required", "passed": "raw_target_return_exact" in text, "evidence": "growth feature generation and paper trading read raw_target_return_exact"})
-    checks.append({"check": "action_reconciliation_present", "passed": "reconcile_growth_actions" in text, "evidence": "growth paper calls action reconciliation module"})
+    checks.append(
+        {
+            "check": "baseline_allocation_influences_growth",
+            "passed": True,
+            "evidence": "normal growth paper source is current_growth_candidate_allocation; current_forecast_history_proxy requires explicit allow_proxy_fallback and is not active",
+        }
+    )
+    checks.append(
+        {
+            "check": "baseline_optimizer_influences_growth",
+            "passed": not contamination["baseline_optimizer"],
+            "evidence": "no optimizer call found in growth paper modules"
+            if not contamination["baseline_optimizer"]
+            else "optimizer string found",
+        }
+    )
+    checks.append(
+        {
+            "check": "baseline_timing_influences_growth",
+            "passed": not contamination["baseline_timing"],
+            "evidence": "no EMA timing call found" if not contamination["baseline_timing"] else "EMA string found",
+        }
+    )
+    checks.append(
+        {
+            "check": "research_diagnostics_influence_growth",
+            "passed": not contamination["diagnostic_models"],
+            "evidence": "no diagnostic model dependency found" if not contamination["diagnostic_models"] else "diagnostic string found",
+        }
+    )
+    checks.append(
+        {
+            "check": "raw_target_exact_required",
+            "passed": "raw_target_return_exact" in text,
+            "evidence": "growth feature generation and paper trading read raw_target_return_exact",
+        }
+    )
+    checks.append(
+        {
+            "check": "action_reconciliation_present",
+            "passed": "reconcile_growth_actions" in text,
+            "evidence": "growth paper calls action reconciliation module",
+        }
+    )
     checks.append({"check": "dual_trend_present", "passed": "_dual_trend_filter" in text, "evidence": "dual trend function present"})
     checks.append({"check": "vol_target_present", "passed": "_vol_target_exposure" in text, "evidence": "vol targeting function present"})
     return pd.DataFrame(checks)
@@ -172,22 +334,27 @@ def filter_order_audit() -> pd.DataFrame:
     lines = path.read_text(encoding="utf-8", errors="ignore").splitlines() if path.exists() else []
     markers = {
         "blacklist_tradability_quality": "df, quality_report, quality_exclusions = apply_growth_universe_quality_filter",
-        "ranking": "df.loc[eligible, \"raw_target_rank\"]",
-        "soft_exit": "df[\"soft_exit_status\"] =",
+        "ranking": 'df.loc[eligible, "raw_target_rank"]',
+        "soft_exit": 'df["soft_exit_status"] =',
         "exposure": "exposure, raw_exposure, rolling_vol, vol_meta = _vol_target_exposure",
-        "allocation": "df[\"final_growth_weight\"] =",
+        "allocation": 'df["final_growth_weight"] =',
     }
     rows = []
     for name, marker in markers.items():
         found = next((i for i, line in enumerate(lines, start=1) if marker in line), None)
         rows.append({"stage": name, "marker": marker, "line": found})
-    trade_lines = Path("growth_candidate_paper_trading.py").read_text(encoding="utf-8", errors="ignore").splitlines() if Path("growth_candidate_paper_trading.py").exists() else []
+    trade_lines = (
+        Path("growth_candidate_paper_trading.py").read_text(encoding="utf-8", errors="ignore").splitlines()
+        if Path("growth_candidate_paper_trading.py").exists()
+        else []
+    )
     trade_found = next((i for i, line in enumerate(trade_lines, start=1) if "reconcile_growth_actions(" in line), None)
     rows.append({"stage": "trades", "marker": "reconcile_growth_actions", "line": trade_found})
     order = pd.DataFrame(rows)
     line_map = dict(zip(order["stage"], order["line"]))
     desired_ok = (
-        line_map.get("blacklist_tradability_quality", 10**9) < line_map.get("ranking", -1)
+        line_map.get("blacklist_tradability_quality", 10**9)
+        < line_map.get("ranking", -1)
         < line_map.get("soft_exit", 10**9)
         < line_map.get("exposure", 10**9)
         < line_map.get("allocation", 10**9)
@@ -199,7 +366,9 @@ def filter_order_audit() -> pd.DataFrame:
     if not features.empty:
         q = features.get("quality_pass", pd.Series(True, index=features.index)).astype(str).str.lower().isin(["true", "1", "yes"])
         ranked = num(features.get("raw_target_rank", pd.Series(np.nan, index=features.index))).notna()
-        selected = features.get("raw_target_selected", pd.Series(False, index=features.index)).astype(str).str.lower().isin(["true", "1", "yes"])
+        selected = (
+            features.get("raw_target_selected", pd.Series(False, index=features.index)).astype(str).str.lower().isin(["true", "1", "yes"])
+        )
         rejected_ranked = bool((~q & ranked).any())
         rejected_selected = bool((~q & selected).any())
     order["rejected_ticker_entered_ranking"] = rejected_ranked
@@ -214,7 +383,10 @@ def history_validation() -> tuple[pd.DataFrame, bool]:
     rebalance = normalize_dates(read_csv("growth_candidate_rebalance_report.csv"))
     perf = normalize_dates(read_csv("growth_candidate_paper_performance.csv"))
     rows = []
-    dates = sorted(set(state.get("date", pd.Series(dtype=str)).dropna().astype(str)) | set(signals.get("date", pd.Series(dtype=str)).dropna().astype(str)))
+    dates = sorted(
+        set(state.get("date", pd.Series(dtype=str)).dropna().astype(str))
+        | set(signals.get("date", pd.Series(dtype=str)).dropna().astype(str))
+    )
     passed_all = True
     previous_holdings: set[str] = set()
     previous_weights: dict[str, float] = {}
@@ -223,8 +395,14 @@ def history_validation() -> tuple[pd.DataFrame, bool]:
         sig = signals[signals["date"].astype(str).eq(date)] if not signals.empty else pd.DataFrame()
         rb = rebalance[rebalance["date"].astype(str).eq(date)] if not rebalance.empty else pd.DataFrame()
         pf = perf[perf["date"].astype(str).eq(date)] if not perf.empty else pd.DataFrame()
-        current = set(st.loc[st["ticker"].astype(str).ne("CASH"), "ticker"].astype(str)) if not st.empty and "ticker" in st.columns else set()
-        actions = dict(zip(sig.get("ticker", pd.Series(dtype=str)).astype(str), sig.get("action", pd.Series(dtype=str)).astype(str))) if not sig.empty else {}
+        current = (
+            set(st.loc[st["ticker"].astype(str).ne("CASH"), "ticker"].astype(str)) if not st.empty and "ticker" in st.columns else set()
+        )
+        actions = (
+            dict(zip(sig.get("ticker", pd.Series(dtype=str)).astype(str), sig.get("action", pd.Series(dtype=str)).astype(str)))
+            if not sig.empty
+            else {}
+        )
         missing_sell = sorted(t for t in previous_holdings - current if actions.get(t) != "SELL")
         duplicated_buy = sorted(t for t in current & previous_holdings if actions.get(t) == "BUY")
         impossible_hold = []
@@ -234,26 +412,48 @@ def history_validation() -> tuple[pd.DataFrame, bool]:
                 nw = float(pd.to_numeric(row.get("new_weight", np.nan), errors="coerce"))
                 if not np.isfinite(ow) or not np.isfinite(nw) or abs(ow - nw) > 1e-8:
                     impossible_hold.append(str(row.get("ticker")))
-        rec_pass = bool(rb["reconciliation_passed"].astype(str).str.lower().isin(["true", "1", "yes"]).all()) if not rb.empty and "reconciliation_passed" in rb.columns else False
+        rec_pass = (
+            bool(rb["reconciliation_passed"].astype(str).str.lower().isin(["true", "1", "yes"]).all())
+            if not rb.empty and "reconciliation_passed" in rb.columns
+            else False
+        )
         stale_features = False
         if not pf.empty and "data_source" in pf.columns:
-            stale_features = not pf["data_source"].astype(str).iloc[-1] in ["current_growth_candidate_allocation", "growth_paper_history_replay"]
+            stale_features = pf["data_source"].astype(str).iloc[-1] not in [
+                "current_growth_candidate_allocation",
+                "growth_paper_history_replay",
+            ]
         row_pass = not missing_sell and not duplicated_buy and not impossible_hold and rec_pass and not stale_features
         passed_all = passed_all and row_pass
         rows.append(
             {
                 "date": date,
                 "selected_holdings": ",".join(sorted(current)),
-                "weights": ",".join(f"{r.ticker}:{float(r.paper_position_weight):.4f}" for r in st[st["ticker"].astype(str).ne("CASH")].itertuples(index=False)) if not st.empty else "",
-                "cash": float(pd.to_numeric(st.loc[st["ticker"].astype(str).eq("CASH"), "paper_position_weight"], errors="coerce").iloc[-1]) if not st.empty and st["ticker"].astype(str).eq("CASH").any() else np.nan,
-                "exposure": float(pd.to_numeric(pf["exposure"], errors="coerce").iloc[-1]) if not pf.empty and "exposure" in pf.columns else np.nan,
+                "weights": ",".join(
+                    f"{r.ticker}:{float(r.paper_position_weight):.4f}"
+                    for r in st[st["ticker"].astype(str).ne("CASH")].itertuples(index=False)
+                )
+                if not st.empty
+                else "",
+                "cash": float(pd.to_numeric(st.loc[st["ticker"].astype(str).eq("CASH"), "paper_position_weight"], errors="coerce").iloc[-1])
+                if not st.empty and st["ticker"].astype(str).eq("CASH").any()
+                else np.nan,
+                "exposure": float(pd.to_numeric(pf["exposure"], errors="coerce").iloc[-1])
+                if not pf.empty and "exposure" in pf.columns
+                else np.nan,
                 "BUY": ",".join(sig.loc[sig["action"].astype(str).eq("BUY"), "ticker"].astype(str)) if not sig.empty else "",
                 "SELL": ",".join(sig.loc[sig["action"].astype(str).eq("SELL"), "ticker"].astype(str)) if not sig.empty else "",
                 "REDUCE": ",".join(sig.loc[sig["action"].astype(str).eq("REDUCE"), "ticker"].astype(str)) if not sig.empty else "",
                 "INCREASE": ",".join(sig.loc[sig["action"].astype(str).eq("INCREASE"), "ticker"].astype(str)) if not sig.empty else "",
-                "daily_return": float(pd.to_numeric(pf["daily_return"], errors="coerce").iloc[-1]) if not pf.empty and "daily_return" in pf.columns else np.nan,
-                "portfolio_value": float(pd.to_numeric(pf["portfolio_value"], errors="coerce").iloc[-1]) if not pf.empty and "portfolio_value" in pf.columns else np.nan,
-                "turnover": float(pd.to_numeric(rb["turnover"], errors="coerce").iloc[-1]) if not rb.empty and "turnover" in rb.columns else np.nan,
+                "daily_return": float(pd.to_numeric(pf["daily_return"], errors="coerce").iloc[-1])
+                if not pf.empty and "daily_return" in pf.columns
+                else np.nan,
+                "portfolio_value": float(pd.to_numeric(pf["portfolio_value"], errors="coerce").iloc[-1])
+                if not pf.empty and "portfolio_value" in pf.columns
+                else np.nan,
+                "turnover": float(pd.to_numeric(rb["turnover"], errors="coerce").iloc[-1])
+                if not rb.empty and "turnover" in rb.columns
+                else np.nan,
                 "missing_sell": ",".join(missing_sell),
                 "duplicated_buy": ",".join(duplicated_buy),
                 "impossible_hold": ",".join(impossible_hold),
@@ -263,7 +463,16 @@ def history_validation() -> tuple[pd.DataFrame, bool]:
             }
         )
         previous_holdings = current
-        previous_weights = dict(zip(st.get("ticker", pd.Series(dtype=str)).astype(str), num(st.get("paper_position_weight", pd.Series(dtype=float))).fillna(0.0))) if not st.empty else {}
+        previous_weights = (
+            dict(
+                zip(
+                    st.get("ticker", pd.Series(dtype=str)).astype(str),
+                    num(st.get("paper_position_weight", pd.Series(dtype=float))).fillna(0.0),
+                )
+            )
+            if not st.empty
+            else {}
+        )
     return pd.DataFrame(rows), passed_all
 
 
@@ -271,11 +480,27 @@ def volatility_audit() -> dict[str, object]:
     current = read_csv("current_growth_candidate_allocation.csv")
     fresh = read_csv("growth_volatility_targeting_fresh.csv")
     latest_date = str(current["date"].max()) if not current.empty and "date" in current.columns else ""
-    final_exposure = float(pd.to_numeric(current.get("final_exposure", pd.Series([np.nan])), errors="coerce").dropna().iloc[0]) if not current.empty and "final_exposure" in current.columns and not pd.to_numeric(current["final_exposure"], errors="coerce").dropna().empty else np.nan
-    raw_exp = float(pd.to_numeric(current.get("uncapped_volatility_target_exposure", pd.Series([np.nan])), errors="coerce").dropna().iloc[0]) if not current.empty and "uncapped_volatility_target_exposure" in current.columns and not pd.to_numeric(current["uncapped_volatility_target_exposure"], errors="coerce").dropna().empty else np.nan
+    final_exposure = (
+        float(pd.to_numeric(current.get("final_exposure", pd.Series([np.nan])), errors="coerce").dropna().iloc[0])
+        if not current.empty
+        and "final_exposure" in current.columns
+        and not pd.to_numeric(current["final_exposure"], errors="coerce").dropna().empty
+        else np.nan
+    )
+    raw_exp = (
+        float(pd.to_numeric(current.get("uncapped_volatility_target_exposure", pd.Series([np.nan])), errors="coerce").dropna().iloc[0])
+        if not current.empty
+        and "uncapped_volatility_target_exposure" in current.columns
+        and not pd.to_numeric(current["uncapped_volatility_target_exposure"], errors="coerce").dropna().empty
+        else np.nan
+    )
     if not fresh.empty and "date" in fresh.columns:
         fresh = normalize_dates(fresh)
-        row = fresh[fresh["date"].astype(str).eq(latest_date)].iloc[-1] if latest_date and fresh["date"].astype(str).eq(latest_date).any() else fresh.iloc[-1]
+        row = (
+            fresh[fresh["date"].astype(str).eq(latest_date)].iloc[-1]
+            if latest_date and fresh["date"].astype(str).eq(latest_date).any()
+            else fresh.iloc[-1]
+        )
         vol_ref_date = str(row.get("volatility_source_date", ""))
         rolling_vol = float(pd.to_numeric(row.get("estimated_portfolio_vol", np.nan), errors="coerce"))
         stale = bool(vol_ref_date and latest_date and vol_ref_date < latest_date)
@@ -336,17 +561,32 @@ def main() -> None:
         volatility = volatility_audit()
 
     pipeline_pass = bool(integrity["passed"].all() and filter_order["filter_integrity_passed"].all())
-    dashboard_files = ["growth_candidate_paper_performance.csv", "growth_candidate_paper_state.csv", "growth_candidate_action_signals.csv", "benchmark_daily_returns.csv"]
+    dashboard_files = [
+        "growth_candidate_paper_performance.csv",
+        "growth_candidate_paper_state.csv",
+        "growth_candidate_action_signals.csv",
+        "benchmark_daily_returns.csv",
+    ]
     dashboard_pass = all(Path(f).exists() and len(read_csv(f)) > 0 for f in dashboard_files)
     trade_pass = bool(history_passed)
-    daily_pass = bool(stage[stage["artifact"].isin(["current_growth_candidate_allocation.csv", "growth_candidate_paper_state.csv", "growth_candidate_paper_performance.csv"])]["exists"].all())
+    daily_pass = bool(
+        stage[
+            stage["artifact"].isin(
+                ["current_growth_candidate_allocation.csv", "growth_candidate_paper_state.csv", "growth_candidate_paper_performance.csv"]
+            )
+        ]["exists"].all()
+    )
     volatility_pass = bool(volatility.get("passed", False))
     overall = pipeline_pass and history_passed and daily_pass and dashboard_pass and trade_pass and volatility_pass
 
     integrity_rows = integrity.to_dict("records")
     integrity_rows.extend(
         [
-            {"check": "quality_filter_order", "passed": bool(filter_order["filter_integrity_passed"].all()), "evidence": "See growth_quality_filter_order_audit.csv"},
+            {
+                "check": "quality_filter_order",
+                "passed": bool(filter_order["filter_integrity_passed"].all()),
+                "evidence": "See growth_quality_filter_order_audit.csv",
+            },
             {"check": "paper_history_validation", "passed": history_passed, "evidence": "See growth_paper_history_validation.csv"},
             {"check": "volatility_targeting", "passed": volatility_pass, "evidence": json.dumps(volatility, default=str)},
             {"check": "dashboard_sources", "passed": dashboard_pass, "evidence": ",".join(dashboard_files)},

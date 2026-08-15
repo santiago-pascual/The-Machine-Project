@@ -8,10 +8,8 @@ import numpy as np
 import pandas as pd
 
 from canonical_market_data_manager import get_price_history
-
-from growth_universe_quality_filter import apply_growth_universe_quality_filter
 from final_selected_holdings_sanity_check import audit_and_filter_selected_holdings
-
+from growth_universe_quality_filter import apply_growth_universe_quality_filter
 
 FORECAST_HISTORY_FILE = "forecast_history.csv"
 GROWTH_DAILY_FILE = "growth_volatility_targeting_daily_returns.csv"
@@ -34,8 +32,6 @@ MIN_EXPOSURE = 0.40
 MAX_EXPOSURE = 1.00
 MAX_EXPOSURE_CHANGE = 0.15
 VOL_LOOKBACK_DAYS = 60
-
-
 
 
 def _growth_paper_config() -> dict[str, object]:
@@ -168,6 +164,7 @@ def _latest_forecast(as_of_date: str | pd.Timestamp | None = None) -> pd.DataFra
             latest[col] = _num(latest[col])
     return latest
 
+
 def _prior_growth_tickers() -> set[str]:
     state = _dates(_read_csv(GROWTH_STATE_FILE))
     if state.empty:
@@ -193,7 +190,9 @@ def _legacy_rolling_growth_vol() -> float:
     daily = _dates(_read_csv(GROWTH_DAILY_FILE))
     if daily.empty:
         return np.nan
-    selector = daily.get("vol_target_variant", daily.get("variant", pd.Series(index=daily.index, dtype=str))).astype(str).eq(CANDIDATE_VARIANT)
+    selector = (
+        daily.get("vol_target_variant", daily.get("variant", pd.Series(index=daily.index, dtype=str))).astype(str).eq(CANDIDATE_VARIANT)
+    )
     daily = daily[selector].copy().sort_values("date")
     if daily.empty:
         return np.nan
@@ -229,29 +228,56 @@ def _fresh_portfolio_volatility(selected_tickers: list[str], date: pd.Timestamp)
         prices = _load_cached_price(ticker)
         hist = prices[prices.index <= date].dropna() if not prices.empty else pd.Series(dtype=float)
         snap_price = snapshot_prices.get(ticker, np.nan)
-        if np.isfinite(snap_price) and snap_price > 0:
-            if hist.empty or hist.index[-1].normalize() < date.normalize():
-                hist = pd.concat([hist, pd.Series([float(snap_price)], index=[date.normalize()], name=ticker)]).sort_index()
-                hist = hist[~hist.index.duplicated(keep="last")]
-                used_snapshot.append(ticker)
+        if np.isfinite(snap_price) and snap_price > 0 and (hist.empty or hist.index[-1].normalize() < date.normalize()):
+            hist = pd.concat([hist, pd.Series([float(snap_price)], index=[date.normalize()], name=ticker)]).sort_index()
+            hist = hist[~hist.index.duplicated(keep="last")]
+            used_snapshot.append(ticker)
         if len(hist) < VOL_LOOKBACK_DAYS + 1 or hist.index[-1].normalize() < date.normalize():
             missing.append(ticker)
             continue
         source_dates.append(hist.index[-1])
         price_series.append(hist.rename(ticker))
     if missing:
-        return {"ok": False, "estimated_portfolio_vol": np.nan, "source_date": min(source_dates).strftime("%Y-%m-%d") if source_dates else "", "missing_tickers": ",".join(missing), "sample_size": 0, "used_current_snapshot_prices": ",".join(used_snapshot)}
+        return {
+            "ok": False,
+            "estimated_portfolio_vol": np.nan,
+            "source_date": min(source_dates).strftime("%Y-%m-%d") if source_dates else "",
+            "missing_tickers": ",".join(missing),
+            "sample_size": 0,
+            "used_current_snapshot_prices": ",".join(used_snapshot),
+        }
     if not price_series:
-        return {"ok": False, "estimated_portfolio_vol": np.nan, "source_date": "", "missing_tickers": ",".join(missing), "sample_size": 0, "used_current_snapshot_prices": ",".join(used_snapshot)}
+        return {
+            "ok": False,
+            "estimated_portfolio_vol": np.nan,
+            "source_date": "",
+            "missing_tickers": ",".join(missing),
+            "sample_size": 0,
+            "used_current_snapshot_prices": ",".join(used_snapshot),
+        }
     prices = pd.concat(price_series, axis=1, sort=True).sort_index().ffill().dropna(how="all")
     returns = prices.pct_change().replace([np.inf, -np.inf], np.nan).dropna(how="all")
     aligned = returns.dropna(axis=0, how="any").tail(VOL_LOOKBACK_DAYS)
     if len(aligned) < max(20, min(VOL_LOOKBACK_DAYS, 40)):
-        return {"ok": False, "estimated_portfolio_vol": np.nan, "source_date": min(source_dates).strftime("%Y-%m-%d") if source_dates else "", "missing_tickers": ",".join(missing), "sample_size": len(aligned), "used_current_snapshot_prices": ",".join(used_snapshot)}
+        return {
+            "ok": False,
+            "estimated_portfolio_vol": np.nan,
+            "source_date": min(source_dates).strftime("%Y-%m-%d") if source_dates else "",
+            "missing_tickers": ",".join(missing),
+            "sample_size": len(aligned),
+            "used_current_snapshot_prices": ",".join(used_snapshot),
+        }
     portfolio_returns = aligned.mean(axis=1)
     vol = float(portfolio_returns.std(ddof=0) * np.sqrt(252))
     source_date = min(source_dates).strftime("%Y-%m-%d") if source_dates else ""
-    return {"ok": np.isfinite(vol) and vol > 0 and source_date >= date.strftime("%Y-%m-%d"), "estimated_portfolio_vol": vol, "source_date": source_date, "missing_tickers": ",".join(missing), "sample_size": len(portfolio_returns), "used_current_snapshot_prices": ",".join(used_snapshot)}
+    return {
+        "ok": np.isfinite(vol) and vol > 0 and source_date >= date.strftime("%Y-%m-%d"),
+        "estimated_portfolio_vol": vol,
+        "source_date": source_date,
+        "missing_tickers": ",".join(missing),
+        "sample_size": len(portfolio_returns),
+        "used_current_snapshot_prices": ",".join(used_snapshot),
+    }
 
 
 def _append_or_replace_date(path: str | Path, row: pd.DataFrame, date: str) -> None:
@@ -272,7 +298,9 @@ def _legacy_vol_target_exposure() -> tuple[float, float, float]:
     return exposure, raw, rolling_vol
 
 
-def _vol_target_exposure(selected_tickers: list[str] | None = None, date: pd.Timestamp | None = None, allow_stale: bool = False) -> tuple[float, float, float, dict[str, object]]:
+def _vol_target_exposure(
+    selected_tickers: list[str] | None = None, date: pd.Timestamp | None = None, allow_stale: bool = False
+) -> tuple[float, float, float, dict[str, object]]:
     selected_tickers = selected_tickers or []
     date = pd.Timestamp(date).normalize() if date is not None else pd.Timestamp.today().normalize()
     fresh = _fresh_portfolio_volatility(selected_tickers, date)
@@ -280,7 +308,12 @@ def _vol_target_exposure(selected_tickers: list[str] | None = None, date: pd.Tim
         if not allow_stale:
             raise ValueError("Fresh growth volatility could not be computed. Use --allow-stale-growth-volatility to override.")
         exposure, raw, rolling_vol = _legacy_vol_target_exposure()
-        meta = {**fresh, "volatility_source": "stale_growth_volatility_targeting_daily_returns", "is_fresh": False, "used_stale_fallback": True}
+        meta = {
+            **fresh,
+            "volatility_source": "stale_growth_volatility_targeting_daily_returns",
+            "is_fresh": False,
+            "used_stale_fallback": True,
+        }
         return exposure, raw, rolling_vol, meta
     rolling_vol = float(fresh["estimated_portfolio_vol"])
     raw_unfloored = TARGET_VOL / rolling_vol
@@ -288,11 +321,19 @@ def _vol_target_exposure(selected_tickers: list[str] | None = None, date: pd.Tim
     previous = _previous_exposure()
     change = float(np.clip(raw - previous, -MAX_EXPOSURE_CHANGE, MAX_EXPOSURE_CHANGE))
     exposure = float(np.clip(previous + change, MIN_EXPOSURE, MAX_EXPOSURE))
-    meta = {**fresh, "volatility_source": "fresh_selected_holdings_ohlcv", "is_fresh": str(fresh.get("source_date", "")) >= date.strftime("%Y-%m-%d"), "used_stale_fallback": False, "raw_unfloored_exposure": raw_unfloored}
+    meta = {
+        **fresh,
+        "volatility_source": "fresh_selected_holdings_ohlcv",
+        "is_fresh": str(fresh.get("source_date", "")) >= date.strftime("%Y-%m-%d"),
+        "used_stale_fallback": False,
+        "raw_unfloored_exposure": raw_unfloored,
+    }
     return exposure, raw, rolling_vol, meta
 
 
-def generate_current_growth_features(overwrite_same_day: bool = True, allow_stale_growth_volatility: bool = False, as_of_date: str | pd.Timestamp | None = None) -> dict[str, object]:
+def generate_current_growth_features(
+    overwrite_same_day: bool = True, allow_stale_growth_volatility: bool = False, as_of_date: str | pd.Timestamp | None = None
+) -> dict[str, object]:
     latest = _latest_forecast(as_of_date=as_of_date)
     if latest.empty:
         raise ValueError("forecast_history.csv is missing or empty.")
@@ -320,7 +361,9 @@ def generate_current_growth_features(overwrite_same_day: bool = True, allow_stal
     pre_quality_soft = df[df["ticker"].astype(str).isin(prior) & (df["raw_target_return"] > 0)]["ticker"].astype(str).tolist()
     selected_before_quality = list(dict.fromkeys(pre_quality_base + pre_quality_soft))[:MAX_POSITIONS]
 
-    yahoo_fetch_candidates = list(dict.fromkeys(selected_before_quality + pre_quality_positive.head(20)["ticker"].astype(str).tolist() + list(prior)))
+    yahoo_fetch_candidates = list(
+        dict.fromkeys(selected_before_quality + pre_quality_positive.head(20)["ticker"].astype(str).tolist() + list(prior))
+    )
     df, quality_report, quality_exclusions = apply_growth_universe_quality_filter(df, date, yahoo_fetch_tickers=yahoo_fetch_candidates)
     eligible = df["quality_pass"].fillna(False).astype(bool)
     df["raw_target_rank"] = np.nan
@@ -380,24 +423,28 @@ def generate_current_growth_features(overwrite_same_day: bool = True, allow_stal
     uncapped_exposure = exposure
     final_exposure = float(np.clip(min(uncapped_exposure, exposure_cap, dual_trend_cap), 0.0, 1.0))
     cash = 1.0 - final_exposure
-    vol_row = pd.DataFrame([{
-        "date": date.date().isoformat(),
-        "selected_tickers": ",".join(selected_tickers),
-        "volatility_source": vol_meta.get("volatility_source", ""),
-        "volatility_source_date": vol_meta.get("source_date", ""),
-        "estimated_portfolio_vol": rolling_vol,
-        "target_vol": TARGET_VOL,
-        "uncapped_exposure": vol_meta.get("raw_unfloored_exposure", raw_exposure),
-        "min_exposure": MIN_EXPOSURE,
-        "exposure_cap_60": exposure_cap,
-        "dual_trend_cap": dual_trend_cap,
-        "final_exposure": final_exposure,
-        "is_fresh": vol_meta.get("is_fresh", False),
-        "sample_size": vol_meta.get("sample_size", 0),
-        "missing_tickers": vol_meta.get("missing_tickers", ""),
-        "used_stale_fallback": vol_meta.get("used_stale_fallback", False),
-        "used_current_snapshot_prices": vol_meta.get("used_current_snapshot_prices", ""),
-    }])
+    vol_row = pd.DataFrame(
+        [
+            {
+                "date": date.date().isoformat(),
+                "selected_tickers": ",".join(selected_tickers),
+                "volatility_source": vol_meta.get("volatility_source", ""),
+                "volatility_source_date": vol_meta.get("source_date", ""),
+                "estimated_portfolio_vol": rolling_vol,
+                "target_vol": TARGET_VOL,
+                "uncapped_exposure": vol_meta.get("raw_unfloored_exposure", raw_exposure),
+                "min_exposure": MIN_EXPOSURE,
+                "exposure_cap_60": exposure_cap,
+                "dual_trend_cap": dual_trend_cap,
+                "final_exposure": final_exposure,
+                "is_fresh": vol_meta.get("is_fresh", False),
+                "sample_size": vol_meta.get("sample_size", 0),
+                "missing_tickers": vol_meta.get("missing_tickers", ""),
+                "used_stale_fallback": vol_meta.get("used_stale_fallback", False),
+                "used_current_snapshot_prices": vol_meta.get("used_current_snapshot_prices", ""),
+            }
+        ]
+    )
     _append_or_replace_date(FRESH_VOL_FILE, vol_row, date.date().isoformat())
     _append_or_replace_date(VOL_PIPELINE_AUDIT_FILE, vol_row, date.date().isoformat())
     final_weight = final_exposure / len(selected_tickers) if selected_tickers else 0.0
@@ -647,7 +694,7 @@ def generate_current_growth_features(overwrite_same_day: bool = True, allow_stal
         print("sanity replacements:")
         print(holdings_replacements.to_string(index=False))
     print(f"selected tickers: {', '.join(selected_tickers)}")
-    print(f"growth paper model: {str(_growth_paper_config().get('active_growth_paper_model', 'growth_champion_final'))}")
+    print(f"growth paper model: {_growth_paper_config().get('active_growth_paper_model', 'growth_champion_final')!s}")
     print(f"exposure cap 60: {exposure_cap:.6f}")
     print(f"SPY close / 200D MA / below: {dual_trend['spy_close']:.4f} / {dual_trend['spy_ma_200']:.4f} / {dual_trend['spy_below_200d']}")
     print(f"QQQ close / 200D MA / below: {dual_trend['qqq_close']:.4f} / {dual_trend['qqq_ma_200']:.4f} / {dual_trend['qqq_below_200d']}")
@@ -659,7 +706,11 @@ def generate_current_growth_features(overwrite_same_day: bool = True, allow_stal
     print(f"final exposure: {final_exposure:.6f}")
     print(f"cash: {cash:.6f}")
     print("raw target ranks:")
-    print(df[df["ticker"].astype(str).isin(selected_tickers)][["ticker", "raw_target_return", "raw_target_rank", "soft_exit_status", "final_growth_weight"]].to_string(index=False))
+    print(
+        df[df["ticker"].astype(str).isin(selected_tickers)][
+            ["ticker", "raw_target_return", "raw_target_rank", "soft_exit_status", "final_growth_weight"]
+        ].to_string(index=False)
+    )
     print(f"fallback reason: {df['fallback_reason'].iloc[0]}")
     print(f"Saved: {Path(RAW_FEATURES_FILE).resolve()}")
     print(f"Saved: {Path(GROWTH_FEATURES_FILE).resolve()}")
@@ -669,9 +720,19 @@ def generate_current_growth_features(overwrite_same_day: bool = True, allow_stal
         "selected_tickers_before_quality_filter": selected_before_quality,
         "selected_tickers_after_quality_filter": selected_tickers_after_quality,
         "selected_tickers": selected_tickers,
-        "rejected_holdings": holdings_audit.loc[holdings_audit["holding_quality_classification"].eq("reject_from_growth_universe"), "ticker"].astype(str).tolist() if not holdings_audit.empty and "holding_quality_classification" in holdings_audit.columns else [],
-        "replacement_tickers": holdings_replacements["replacement_ticker"].astype(str).tolist() if not holdings_replacements.empty and "replacement_ticker" in holdings_replacements.columns else [],
-        "excluded_tickers": quality_exclusions["ticker"].astype(str).tolist() if not quality_exclusions.empty and "ticker" in quality_exclusions.columns else [],
+        "rejected_holdings": holdings_audit.loc[
+            holdings_audit["holding_quality_classification"].eq("reject_from_growth_universe"), "ticker"
+        ]
+        .astype(str)
+        .tolist()
+        if not holdings_audit.empty and "holding_quality_classification" in holdings_audit.columns
+        else [],
+        "replacement_tickers": holdings_replacements["replacement_ticker"].astype(str).tolist()
+        if not holdings_replacements.empty and "replacement_ticker" in holdings_replacements.columns
+        else [],
+        "excluded_tickers": quality_exclusions["ticker"].astype(str).tolist()
+        if not quality_exclusions.empty and "ticker" in quality_exclusions.columns
+        else [],
         "exact_growth_features_available": exact_available,
         "raw_target_feature_source": str(df["raw_target_feature_source"].iloc[0]),
         "volatility_source": vol_meta.get("volatility_source", ""),
@@ -700,7 +761,8 @@ def parse_args() -> argparse.Namespace:
 
 if __name__ == "__main__":
     args = parse_args()
-    generate_current_growth_features(overwrite_same_day=args.overwrite_same_day, allow_stale_growth_volatility=args.allow_stale_growth_volatility, as_of_date=args.as_of_date)
-
-
-
+    generate_current_growth_features(
+        overwrite_same_day=args.overwrite_same_day,
+        allow_stale_growth_volatility=args.allow_stale_growth_volatility,
+        as_of_date=args.as_of_date,
+    )

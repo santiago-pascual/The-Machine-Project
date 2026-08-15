@@ -1,11 +1,10 @@
 from __future__ import annotations
 
-import math
+import itertools
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
-
 
 ROLLING_WINDOWS = [5, 20, 60, 126, 252]
 HORIZONS = [1, 5, 10, 20, 40, 60]
@@ -121,7 +120,7 @@ def alpha_decay_curve(df: pd.DataFrame) -> pd.DataFrame:
                     "feature": canonical,
                     "source_column": feature,
                     "horizon": f"{horizon}d",
-                    "dates": int(len(per_date)),
+                    "dates": len(per_date),
                     "mean_rank_ic": float(per_date["ic"].mean()) if not per_date.empty else np.nan,
                     "median_rank_ic": float(per_date["ic"].median()) if not per_date.empty else np.nan,
                     "positive_ic_rate": float((per_date["ic"] > 0).mean()) if not per_date.empty else np.nan,
@@ -185,7 +184,7 @@ def structural_breaks(df: pd.DataFrame) -> pd.DataFrame:
             {
                 "feature": canonical,
                 "source_column": feature,
-                "dates": int(len(ic)),
+                "dates": len(ic),
                 "first_period_mean_ic": float(first.mean()) if len(first) else np.nan,
                 "recent_period_mean_ic": float(second.mean()) if len(second) else np.nan,
                 "mean_ic_change": mean_diff,
@@ -217,7 +216,7 @@ def bai_perron_style_breaks(values: np.ndarray, max_breaks: int = 2) -> tuple[li
     def rss_for(cuts: list[int]) -> float:
         pts = [0] + cuts + [n]
         rss = 0.0
-        for a, b in zip(pts[:-1], pts[1:]):
+        for a, b in itertools.pairwise(pts):
             seg = y[a:b]
             if len(seg) == 0:
                 continue
@@ -231,7 +230,7 @@ def bai_perron_style_breaks(values: np.ndarray, max_breaks: int = 2) -> tuple[li
     for i, cut1 in enumerate(candidates):
         candidate_sets = [[cut1]]
         if max_breaks >= 2:
-            for cut2 in candidates[i + 1:]:
+            for cut2 in candidates[i + 1 :]:
                 if cut2 - cut1 >= min_seg:
                     candidate_sets.append([cut1, cut2])
         for cuts in candidate_sets:
@@ -244,6 +243,7 @@ def bai_perron_style_breaks(values: np.ndarray, max_breaks: int = 2) -> tuple[li
     improvement = float((base_rss - best_rss) / base_rss) if base_rss > 0 else np.nan
     return best_cuts, improvement
 
+
 def distribution_drift(df: pd.DataFrame) -> pd.DataFrame:
     rows = []
     cutoff = df["date"].quantile(0.65)
@@ -253,7 +253,11 @@ def distribution_drift(df: pd.DataFrame) -> pd.DataFrame:
     numeric = [c for c in resolved.values() if c]
     corr_early = early[numeric].apply(pd.to_numeric, errors="coerce").corr(method="spearman") if numeric else pd.DataFrame()
     corr_recent = recent[numeric].apply(pd.to_numeric, errors="coerce").corr(method="spearman") if numeric else pd.DataFrame()
-    redundancy_delta = float((corr_recent.abs().mean().mean() - corr_early.abs().mean().mean())) if not corr_early.empty and not corr_recent.empty else np.nan
+    redundancy_delta = (
+        float(corr_recent.abs().mean().mean() - corr_early.abs().mean().mean())
+        if not corr_early.empty and not corr_recent.empty
+        else np.nan
+    )
     for canonical, feature in resolved.items():
         if not feature:
             rows.append({"feature": canonical, "source_column": "", "status": "missing"})
@@ -289,14 +293,16 @@ def regime_alpha(df: pd.DataFrame) -> pd.DataFrame:
     if target not in df.columns:
         return pd.DataFrame([{"status": "missing realized_return_20d"}])
     tmp = df.copy()
-    tmp["vol_bucket"] = pd.qcut(pd.to_numeric(tmp[target], errors="coerce").abs(), 2, labels=["low_volatility", "high_volatility"], duplicates="drop")
+    tmp["vol_bucket"] = pd.qcut(
+        pd.to_numeric(tmp[target], errors="coerce").abs(), 2, labels=["low_volatility", "high_volatility"], duplicates="drop"
+    )
     for col in ["regime", "vol_bucket"]:
         for val, group in tmp.groupby(col, dropna=True):
             rows.append(
                 {
                     "group_type": col,
                     "group": str(val),
-                    "observations": int(len(group)),
+                    "observations": len(group),
                     "rank_ic_20d": spearman_ic(group, feature, target),
                     "avg_realized_return_20d": float(pd.to_numeric(group[target], errors="coerce").mean()),
                 }
@@ -320,17 +326,19 @@ def governance(rolling: pd.DataFrame, decay: pd.DataFrame, breaks: pd.DataFrame,
     else:
         classification = "mild_decay"
     return pd.DataFrame(
-        [{
-            "classification": classification,
-            "raw_target_rank_ic_20d": raw_ic,
-            "break_warnings": break_warnings,
-            "significant_distribution_drifts": significant_drift,
-            "sign_flips": sign_flips,
-            "production_changed": False,
-            "paper_changed": False,
-            "automatic_retraining": False,
-            "reason": f"break_warnings={break_warnings}; significant_drift={significant_drift}; sign_flips={sign_flips}; raw20_ic={raw_ic}",
-        }]
+        [
+            {
+                "classification": classification,
+                "raw_target_rank_ic_20d": raw_ic,
+                "break_warnings": break_warnings,
+                "significant_distribution_drifts": significant_drift,
+                "sign_flips": sign_flips,
+                "production_changed": False,
+                "paper_changed": False,
+                "automatic_retraining": False,
+                "reason": f"break_warnings={break_warnings}; significant_drift={significant_drift}; sign_flips={sign_flips}; raw20_ic={raw_ic}",
+            }
+        ]
     )
 
 
@@ -338,7 +346,13 @@ def main() -> None:
     df = load_dataset()
     if df.empty:
         empty = pd.DataFrame([{"classification": "retraining_review_required", "reason": "missing historical dataset"}])
-        for path in ["rolling_feature_ic.csv", "alpha_decay_curve.csv", "structural_break_results.csv", "feature_distribution_drift.csv", "alpha_decay_governance.csv"]:
+        for path in [
+            "rolling_feature_ic.csv",
+            "alpha_decay_curve.csv",
+            "structural_break_results.csv",
+            "feature_distribution_drift.csv",
+            "alpha_decay_governance.csv",
+        ]:
             empty.to_csv(path, index=False)
         print("missing historical dataset")
         return
@@ -360,11 +374,10 @@ def main() -> None:
     print(f"raw_target_rank_ic_20d: {gov.iloc[0]['raw_target_rank_ic_20d']}")
     print(f"break_warnings: {gov.iloc[0]['break_warnings']}")
     print(f"significant_distribution_drifts: {gov.iloc[0]['significant_distribution_drifts']}")
-    print("outputs: rolling_feature_ic.csv, alpha_decay_curve.csv, structural_break_results.csv, feature_distribution_drift.csv, alpha_decay_governance.csv")
+    print(
+        "outputs: rolling_feature_ic.csv, alpha_decay_curve.csv, structural_break_results.csv, feature_distribution_drift.csv, alpha_decay_governance.csv"
+    )
 
 
 if __name__ == "__main__":
     main()
-
-
-

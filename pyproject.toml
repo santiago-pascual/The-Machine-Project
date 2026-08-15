@@ -1,0 +1,8 @@
+[tool.ruff]
+# Exclude archived legacy scripts from lint to focus on current src/tests
+exclude = ["archive/**"]
+line-length = 140
+
+[tool.ruff.lint]
+# Temporarily ignore some legacy-rule violations until codebase refactor is planned
+ignore = ["E501", "F841", "BLE001", "RUF046", "UP035", "RUF059"]

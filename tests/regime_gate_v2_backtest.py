@@ -5,7 +5,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-
 REGIME_V2_DAILY_FILE = "regime_v2_daily_state.csv"
 REGIME_V2_PERFORMANCE_FILE = "regime_v2_performance_attribution.csv"
 SNAPSHOTS_FILE = "historical_forecast_snapshots.csv"
@@ -197,8 +196,7 @@ def _trades_for_mode(snapshots: pd.DataFrame, mode: str) -> pd.DataFrame:
     if snapshots.empty:
         return pd.DataFrame()
     data = snapshots[
-        snapshots["model_mode"].astype(str).eq(mode)
-        & _bool(snapshots.get("selected", pd.Series(False, index=snapshots.index)))
+        snapshots["model_mode"].astype(str).eq(mode) & _bool(snapshots.get("selected", pd.Series(False, index=snapshots.index)))
     ].copy()
     data["candidate_model_mode"] = mode
     return data
@@ -256,7 +254,7 @@ def _metrics(daily: pd.DataFrame, trades: pd.DataFrame, labels: pd.DataFrame, mo
             "average_selected_count": float(_num(daily.get("selected_count", pd.Series(dtype=float))).mean()),
             "turnover": float(_num(daily.get("turnover", pd.Series(dtype=float))).mean()),
             "direction_accuracy": float((returns > 0).mean()),
-            "sample_size": int(len(trades)),
+            "sample_size": len(trades),
         }
     base.update(_label_metrics(labels, trades, mode))
     return base
@@ -271,7 +269,7 @@ def _performance_by_regime(candidate_daily: pd.DataFrame) -> pd.DataFrame:
         rows.append(
             {
                 "regime_v2_label": label,
-                "dates": int(len(group)),
+                "dates": len(group),
                 "source_full_quant_share": float(group["source_model_mode"].astype(str).eq("regime_gated_full_quant").mean()),
                 "realized_return": float((1.0 + returns.dropna()).prod() - 1.0) if returns.notna().any() else np.nan,
                 "Sharpe": _sharpe(returns),
@@ -374,8 +372,12 @@ def run_regime_gate_v2_backtest() -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFr
 
     print("\n===== REGIME GATE V2 BACKTEST =====")
     print(f"dates tested: {candidate_daily['date'].nunique() if not candidate_daily.empty else 0}")
-    print(f"full quant allowed dates: {int(candidate_daily['source_model_mode'].astype(str).eq('regime_gated_full_quant').sum()) if not candidate_daily.empty else 0}")
-    print(f"baseline fallback dates: {int(candidate_daily['source_model_mode'].astype(str).eq('baseline').sum()) if not candidate_daily.empty else 0}")
+    print(
+        f"full quant allowed dates: {int(candidate_daily['source_model_mode'].astype(str).eq('regime_gated_full_quant').sum()) if not candidate_daily.empty else 0}"
+    )
+    print(
+        f"baseline fallback dates: {int(candidate_daily['source_model_mode'].astype(str).eq('baseline').sum()) if not candidate_daily.empty else 0}"
+    )
 
     print("\n===== OLD GATE VS V2 GATE =====")
     cols = [

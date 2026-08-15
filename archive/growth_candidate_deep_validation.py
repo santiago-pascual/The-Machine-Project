@@ -5,7 +5,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-
 CANDIDATE = "soft_exit_rule_vol_target_22pct"
 BASE_VARIANT = "soft_exit_rule"
 
@@ -101,7 +100,7 @@ def _metrics(name: str, daily: pd.DataFrame, return_col: str = "return") -> dict
         "model": name,
         "start_date": data["date"].min().date().isoformat(),
         "end_date": data["date"].max().date().isoformat(),
-        "observations": int(len(r)),
+        "observations": len(r),
         "total_return": total,
         "CAGR": float((1.0 + total) ** (1.0 / years) - 1.0),
         "volatility": vol,
@@ -241,7 +240,7 @@ def _monthly_quarterly_returns(daily: pd.DataFrame) -> pd.DataFrame:
                 "period": period,
                 "return": ret,
                 "win_rate": float((_num(group["return"]) > 0).mean()),
-                "observations": int(len(group)),
+                "observations": len(group),
                 "best_period_flag": False,
                 "worst_period_flag": False,
             })

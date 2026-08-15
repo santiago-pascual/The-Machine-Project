@@ -8,7 +8,6 @@ from quant_research_features import (
     kalman_local_level,
 )
 
-
 TRADING_DAYS_PER_YEAR = 252
 EPS = 1e-12
 
@@ -107,8 +106,16 @@ def generate_quant_targets(
 
         returns = _safe_log_returns(series)
         mu = float(returns.tail(60).mean()) if len(returns) else 0.0
-        garch_vol = float(quant_features.loc[ticker].get("garch_volatility", returns.std())) if ticker in quant_features.index else float(returns.std())
-        egarch_vol = float(quant_features.loc[ticker].get("egarch_volatility", returns.std())) if ticker in quant_features.index else float(returns.std())
+        garch_vol = (
+            float(quant_features.loc[ticker].get("garch_volatility", returns.std()))
+            if ticker in quant_features.index
+            else float(returns.std())
+        )
+        egarch_vol = (
+            float(quant_features.loc[ticker].get("egarch_volatility", returns.std()))
+            if ticker in quant_features.index
+            else float(returns.std())
+        )
         sigma = max(float(returns.tail(60).std()) if len(returns) else 0.0, garch_vol, egarch_vol, EPS)
 
         gbm_drift = mu - 0.5 * sigma**2
@@ -136,21 +143,14 @@ def generate_quant_targets(
         entropy_confidence = float(np.clip(1.0 - entropy, 0.0, 1.0))
         hawkes_confidence = float(np.clip(1.0 - hawkes, 0.0, 1.0))
         hurst_confidence = float(np.clip(1.0 - abs(hurst - 0.5), 0.0, 1.0))
-        confidence = (
-            0.35 * volatility_confidence
-            + 0.25 * entropy_confidence
-            + 0.25 * hawkes_confidence
-            + 0.15 * hurst_confidence
-        )
+        confidence = 0.35 * volatility_confidence + 0.25 * entropy_confidence + 0.25 * hawkes_confidence + 0.15 * hurst_confidence
         confidence = float(np.clip(confidence * regime_multiplier, 0.0, 1.0))
 
         trend_weight = float(np.clip(0.50 + (hurst - 0.5), 0.25, 0.75))
         mean_reversion_weight = (1.0 - trend_weight) * (1.25 if regime_type in {"neutral", "risk_off"} else 0.75)
         mean_reversion_weight = float(np.clip(mean_reversion_weight, 0.05, 0.35))
         projected_target = (
-            0.50 * gbm_median_target
-            + 0.35 * kalman_target
-            + 0.15 * (trend_weight * kalman_target + mean_reversion_weight * ou_target)
+            0.50 * gbm_median_target + 0.35 * kalman_target + 0.15 * (trend_weight * kalman_target + mean_reversion_weight * ou_target)
         )
 
         max_move = float(np.clip(3.0 * sigma * np.sqrt(h), 0.03, 0.35))
@@ -171,10 +171,7 @@ def generate_quant_targets(
     quant_target_price = pd.Series(quant_targets, dtype=float).reindex(close.columns).fillna(current)
     old_target = old_target.fillna(current)
     target_blend_weight = pd.Series(float(np.clip(blend_weight, 0.0, 1.0)), index=close.columns, dtype=float)
-    final_blended_target = (
-        (1.0 - target_blend_weight) * old_target
-        + target_blend_weight * quant_target_price
-    )
+    final_blended_target = (1.0 - target_blend_weight) * old_target + target_blend_weight * quant_target_price
 
     return {
         "old_target_price": old_target.astype(float),

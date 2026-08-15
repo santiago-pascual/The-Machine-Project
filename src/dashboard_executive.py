@@ -1,15 +1,35 @@
 from __future__ import annotations
 
-from pathlib import Path
 from typing import Any
 
 import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
 
-from dashboard_components import fmt_money, fmt_num, fmt_pct, fmt_pct_points, metric_card, status_badge
-from dashboard_data_layer import next_rebalance_date, MODEL_VERSION, VARIANT, latest, latest_market_date, numeric, official_start_date
-from dashboard_theme import AMBER, BRIGHT_ORANGE, CHART_COLORS, INFO, ORANGE, PURPLE, RED, apply_plotly_layout
+from dashboard_components import (
+    fmt_money,
+    fmt_num,
+    fmt_pct,
+    metric_card,
+    status_badge,
+)
+from dashboard_data_layer import (
+    MODEL_VERSION,
+    VARIANT,
+    latest,
+    latest_market_date,
+    next_rebalance_date,
+    numeric,
+    official_start_date,
+)
+from dashboard_theme import (
+    AMBER,
+    BRIGHT_ORANGE,
+    INFO,
+    ORANGE,
+    PURPLE,
+    apply_plotly_layout,
+)
 
 OFFICIAL_SOURCES = {
     "performance": "growth_official_paper_performance.csv",
@@ -32,7 +52,7 @@ def _row(df: pd.DataFrame) -> pd.Series:
 
 def _source_warning(st, data: dict[str, pd.DataFrame]) -> list[str]:
     missing = []
-    for key, filename in OFFICIAL_SOURCES.items():
+    for key in OFFICIAL_SOURCES:
         if data.get(f"official_{key}", pd.DataFrame()).empty and key not in data:
             pass
     explicit = {
@@ -108,7 +128,15 @@ def _benchmark_chart(st, data: dict[str, pd.DataFrame]) -> pd.DataFrame:
     ]
     for col, name, color, dash in series:
         if col in bench.columns:
-            fig.add_trace(go.Scatter(x=bench["date"], y=numeric(bench[col]), mode="lines+markers", name=name, line={"color": color, "dash": dash, "width": 2.5}))
+            fig.add_trace(
+                go.Scatter(
+                    x=bench["date"],
+                    y=numeric(bench[col]),
+                    mode="lines+markers",
+                    name=name,
+                    line={"color": color, "dash": dash, "width": 2.5},
+                )
+            )
     fig.update_yaxes(title="Cumulative return %", ticksuffix="%")
     fig = apply_plotly_layout(fig, "Official Growth Gross / Net vs SPY / QQQ")
     st.plotly_chart(fig, width="stretch")
@@ -134,7 +162,7 @@ def _risk_snapshot_values(data: dict[str, pd.DataFrame]) -> dict[str, Any]:
         "floor_active": floor_active,
         "cap_active": cap_active,
         "dual_trend_state": representative.get("dual_trend_reason", "unavailable"),
-        "hhi": float((weights ** 2).sum()) if not weights.empty else np.nan,
+        "hhi": float((weights**2).sum()) if not weights.empty else np.nan,
         "beta_vs_spy": np.nan,
         "current_drawdown": perf.get("current_drawdown", perf.get("max_drawdown", np.nan)),
         "max_drawdown_official": perf.get("max_drawdown", np.nan),
@@ -151,10 +179,22 @@ def _render_status_strip(st, data: dict[str, pd.DataFrame]) -> None:
     items = [
         ("Model", MODEL_VERSION, "official"),
         ("Paper", str(monitor.get("governance_status", "WARMUP")), str(monitor.get("governance_status", "WARMUP"))),
-        ("Integrity", str(monitor.get("integrity_status", integrity.get("integrity_status", "unavailable"))), str(monitor.get("integrity_status", integrity.get("integrity_status", "unavailable")))),
-        ("Market Data", str(monitor.get("data_status", integrity.get("data_status", "unavailable"))), str(monitor.get("data_status", integrity.get("data_status", "unavailable")))),
+        (
+            "Integrity",
+            str(monitor.get("integrity_status", integrity.get("integrity_status", "unavailable"))),
+            str(monitor.get("integrity_status", integrity.get("integrity_status", "unavailable"))),
+        ),
+        (
+            "Market Data",
+            str(monitor.get("data_status", integrity.get("data_status", "unavailable"))),
+            str(monitor.get("data_status", integrity.get("data_status", "unavailable"))),
+        ),
         ("Governance", str(monitor.get("promotion_status", "real_capital_blocked")), "blocked"),
-        ("Rebalance Due", "Yes" if bool(daily.get("rebalance_due", False)) else "No", "warning" if bool(daily.get("rebalance_due", False)) else "pass"),
+        (
+            "Rebalance Due",
+            "Yes" if bool(daily.get("rebalance_due", False)) else "No",
+            "warning" if bool(daily.get("rebalance_due", False)) else "pass",
+        ),
         ("Real Capital", "BLOCKED", "blocked"),
         ("Broker/Orders", "DISABLED", "blocked"),
     ]
@@ -169,22 +209,77 @@ def _render_kpis(st, data: dict[str, pd.DataFrame]) -> None:
     perf = _row(data.get("official_performance", pd.DataFrame()))
     monitor = _row(data.get("official_monitor", pd.DataFrame()))
     state = _official_state_latest(data)
-    state_row = state[~state.get("ticker", pd.Series(dtype=str)).astype(str).str.upper().eq("CASH")].iloc[0] if not state.empty and "ticker" in state.columns and (~state["ticker"].astype(str).str.upper().eq("CASH")).any() else pd.Series(dtype=object)
+    state_row = (
+        state[~state.get("ticker", pd.Series(dtype=str)).astype(str).str.upper().eq("CASH")].iloc[0]
+        if not state.empty and "ticker" in state.columns and (~state["ticker"].astype(str).str.upper().eq("CASH")).any()
+        else pd.Series(dtype=object)
+    )
     source_date = str(perf.get("date", "n/a"))[:10]
     obs = len(data.get("official_performance", pd.DataFrame()))
     rows = [
-        [("Gross portfolio value", fmt_money(perf.get("gross_portfolio_value", perf.get("portfolio_value", np.nan))), "growth_official_paper_performance.csv", "gross accounting"),
-         ("Estimated net portfolio value", fmt_money(perf.get("estimated_net_portfolio_value", np.nan)), "growth_official_paper_performance.csv", "estimated execution costs"),
-         ("Gross cumulative return", fmt_pct(perf.get("gross_cumulative_return", np.nan)), "growth_official_paper_performance.csv", f"observations: {obs}"),
-         ("Estimated net cumulative", fmt_pct(perf.get("estimated_net_cumulative_return", np.nan)), "growth_official_paper_performance.csv", f"WARMUP · observations: {obs}")],
-        [("Daily gross return", fmt_pct(perf.get("gross_daily_return", monitor.get("gross_daily_return", np.nan))), "growth_official_paper_performance.csv", source_date),
-         ("Daily estimated net", fmt_pct(perf.get("estimated_net_daily_return", monitor.get("estimated_net_daily_return", np.nan))), "growth_official_paper_performance.csv", source_date),
-         ("Exposure", fmt_pct(perf.get("exposure", monitor.get("exposure", np.nan))), "growth_official_paper_performance.csv", "final official exposure"),
-         ("Cash", fmt_pct(perf.get("cash_weight", monitor.get("cash", np.nan))), "growth_official_paper_performance.csv", "cash weight")],
-        [("Current drawdown", fmt_pct(perf.get("current_drawdown", perf.get("max_drawdown", np.nan))), "growth_official_paper_performance.csv", "gross equity"),
-         ("Realized volatility", fmt_pct(perf.get("volatility", np.nan)), "growth_official_paper_performance.csv", "official warmup estimate"),
-         ("Target volatility", "22.00%", "frozen model config/state", "growth_champion_final_v1_0_frozen"),
-         ("Next rebalance", next_rebalance_date(data), "growth_official_paper_state.csv", "official scheduler field")],
+        [
+            (
+                "Gross portfolio value",
+                fmt_money(perf.get("gross_portfolio_value", perf.get("portfolio_value", np.nan))),
+                "growth_official_paper_performance.csv",
+                "gross accounting",
+            ),
+            (
+                "Estimated net portfolio value",
+                fmt_money(perf.get("estimated_net_portfolio_value", np.nan)),
+                "growth_official_paper_performance.csv",
+                "estimated execution costs",
+            ),
+            (
+                "Gross cumulative return",
+                fmt_pct(perf.get("gross_cumulative_return", np.nan)),
+                "growth_official_paper_performance.csv",
+                f"observations: {obs}",
+            ),
+            (
+                "Estimated net cumulative",
+                fmt_pct(perf.get("estimated_net_cumulative_return", np.nan)),
+                "growth_official_paper_performance.csv",
+                f"WARMUP · observations: {obs}",
+            ),
+        ],
+        [
+            (
+                "Daily gross return",
+                fmt_pct(perf.get("gross_daily_return", monitor.get("gross_daily_return", np.nan))),
+                "growth_official_paper_performance.csv",
+                source_date,
+            ),
+            (
+                "Daily estimated net",
+                fmt_pct(perf.get("estimated_net_daily_return", monitor.get("estimated_net_daily_return", np.nan))),
+                "growth_official_paper_performance.csv",
+                source_date,
+            ),
+            (
+                "Exposure",
+                fmt_pct(perf.get("exposure", monitor.get("exposure", np.nan))),
+                "growth_official_paper_performance.csv",
+                "final official exposure",
+            ),
+            ("Cash", fmt_pct(perf.get("cash_weight", monitor.get("cash", np.nan))), "growth_official_paper_performance.csv", "cash weight"),
+        ],
+        [
+            (
+                "Current drawdown",
+                fmt_pct(perf.get("current_drawdown", perf.get("max_drawdown", np.nan))),
+                "growth_official_paper_performance.csv",
+                "gross equity",
+            ),
+            (
+                "Realized volatility",
+                fmt_pct(perf.get("volatility", np.nan)),
+                "growth_official_paper_performance.csv",
+                "official warmup estimate",
+            ),
+            ("Target volatility", "22.00%", "frozen model config/state", "growth_champion_final_v1_0_frozen"),
+            ("Next rebalance", next_rebalance_date(data), "growth_official_paper_state.csv", "official scheduler field"),
+        ],
     ]
     for row in rows:
         cols = st.columns(4)
@@ -213,36 +308,60 @@ def _render_portfolio_snapshot(st, data: dict[str, pd.DataFrame]) -> None:
     for idx, (_, row) in enumerate(cards.iterrows()):
         with cols[idx % 4]:
             ticker = str(row.get("ticker", "n/a"))
-            metric_card(st, ticker, fmt_pct(row.get("paper_position_weight", np.nan)), note=f"{fmt_money(row.get('paper_position_value', np.nan))} · price {fmt_money(row.get('current_price', np.nan))}", badge="OFFICIAL" if ticker != "CASH" else "DIAGNOSTIC")
-            st.caption(f"Day: {fmt_pct(row.get('daily_return_pct', np.nan))} · PnL: {fmt_money(row.get('daily_pnl', row.get('position_pnl_today', np.nan)))} · Entry return: {fmt_pct(row.get('return_since_entry_pct', row.get('unrealized_return', np.nan)))}")
-            st.caption(f"Rank: {row.get('raw_target_rank', 'n/a')} · Quality: {row.get('holding_quality_classification', 'n/a')} · Risk: {row.get('holding_risk_notes', 'n/a')}")
+            metric_card(
+                st,
+                ticker,
+                fmt_pct(row.get("paper_position_weight", np.nan)),
+                note=f"{fmt_money(row.get('paper_position_value', np.nan))} · price {fmt_money(row.get('current_price', np.nan))}",
+                badge="OFFICIAL" if ticker != "CASH" else "DIAGNOSTIC",
+            )
+            st.caption(
+                f"Day: {fmt_pct(row.get('daily_return_pct', np.nan))} · PnL: {fmt_money(row.get('daily_pnl', row.get('position_pnl_today', np.nan)))} · Entry return: {fmt_pct(row.get('return_since_entry_pct', row.get('unrealized_return', np.nan)))}"
+            )
+            st.caption(
+                f"Rank: {row.get('raw_target_rank', 'n/a')} · Quality: {row.get('holding_quality_classification', 'n/a')} · Risk: {row.get('holding_risk_notes', 'n/a')}"
+            )
 
 
 def _render_risk_snapshot(st, data: dict[str, pd.DataFrame]) -> None:
     vals = _risk_snapshot_values(data)
     cols = st.columns(4)
-    with cols[0]: metric_card(st, "Estimated portfolio vol", fmt_pct(vals["estimated_portfolio_volatility"]), "growth_official_paper_performance.csv")
-    with cols[1]: metric_card(st, "Target volatility", fmt_pct(vals["target_volatility"]), "frozen config")
-    with cols[2]: metric_card(st, "Uncapped exposure", fmt_pct(vals["uncapped_exposure"]), "growth_official_paper_state.csv")
-    with cols[3]: metric_card(st, "Final exposure", fmt_pct(vals["final_exposure"]), "after floor/cap/dual trend")
+    with cols[0]:
+        metric_card(st, "Estimated portfolio vol", fmt_pct(vals["estimated_portfolio_volatility"]), "growth_official_paper_performance.csv")
+    with cols[1]:
+        metric_card(st, "Target volatility", fmt_pct(vals["target_volatility"]), "frozen config")
+    with cols[2]:
+        metric_card(st, "Uncapped exposure", fmt_pct(vals["uncapped_exposure"]), "growth_official_paper_state.csv")
+    with cols[3]:
+        metric_card(st, "Final exposure", fmt_pct(vals["final_exposure"]), "after floor/cap/dual trend")
     cols = st.columns(4)
-    with cols[0]: metric_card(st, "Floor active", "Yes" if vals["floor_active"] else "No", "min exposure 40%")
-    with cols[1]: metric_card(st, "Cap active", "Yes" if vals["cap_active"] else "No", "cap/dual trend")
-    with cols[2]: metric_card(st, "HHI", fmt_num(vals["hhi"]), "concentration")
-    with cols[3]: metric_card(st, "Risk status", vals["risk_status"], vals["dual_trend_state"], badge=vals["risk_status"])
+    with cols[0]:
+        metric_card(st, "Floor active", "Yes" if vals["floor_active"] else "No", "min exposure 40%")
+    with cols[1]:
+        metric_card(st, "Cap active", "Yes" if vals["cap_active"] else "No", "cap/dual trend")
+    with cols[2]:
+        metric_card(st, "HHI", fmt_num(vals["hhi"]), "concentration")
+    with cols[3]:
+        metric_card(st, "Risk status", vals["risk_status"], vals["dual_trend_state"], badge=vals["risk_status"])
     exposure_steps = pd.DataFrame(
         {
             "stage": ["Raw exposure", "After floor", "After cap", "After dual trend", "Final exposure"],
             "exposure": [
                 vals["uncapped_exposure"],
                 max(vals["uncapped_exposure"], 0.40) if pd.notna(vals["uncapped_exposure"]) else np.nan,
-                min(max(vals["uncapped_exposure"], 0.40), vals["exposure_cap_60"]) if pd.notna(vals["uncapped_exposure"]) and pd.notna(vals["exposure_cap_60"]) else np.nan,
-                min(max(vals["uncapped_exposure"], 0.40), vals["exposure_cap_60"], vals["dual_trend_cap"]) if pd.notna(vals["uncapped_exposure"]) and pd.notna(vals["exposure_cap_60"]) and pd.notna(vals["dual_trend_cap"]) else np.nan,
+                min(max(vals["uncapped_exposure"], 0.40), vals["exposure_cap_60"])
+                if pd.notna(vals["uncapped_exposure"]) and pd.notna(vals["exposure_cap_60"])
+                else np.nan,
+                min(max(vals["uncapped_exposure"], 0.40), vals["exposure_cap_60"], vals["dual_trend_cap"])
+                if pd.notna(vals["uncapped_exposure"]) and pd.notna(vals["exposure_cap_60"]) and pd.notna(vals["dual_trend_cap"])
+                else np.nan,
                 vals["final_exposure"],
             ],
         }
     )
-    fig = go.Figure(go.Bar(x=exposure_steps["stage"], y=exposure_steps["exposure"], marker_color=[ORANGE, BRIGHT_ORANGE, AMBER, INFO, ORANGE]))
+    fig = go.Figure(
+        go.Bar(x=exposure_steps["stage"], y=exposure_steps["exposure"], marker_color=[ORANGE, BRIGHT_ORANGE, AMBER, INFO, ORANGE])
+    )
     fig.update_yaxes(tickformat=".0%", title="Exposure")
     fig = apply_plotly_layout(fig, "Exposure Stack")
     st.plotly_chart(fig, width="stretch")
@@ -277,20 +396,40 @@ def _today_changes(data: dict[str, pd.DataFrame]) -> tuple[pd.DataFrame, str]:
             {"change": "cash_change", "value": f"{pp.get('cash_weight', np.nan):.4f} -> {cp.get('cash_weight', np.nan):.4f}"},
             {"change": "volatility_change", "value": f"{pp.get('volatility', np.nan):.4f} -> {cp.get('volatility', np.nan):.4f}"},
         ]
-    msg = "No portfolio changes — monitoring-only session." if all(r["value"] in {"none", "nan -> nan"} or "->" in r["value"] and r["value"].split(" -> ")[0] == r["value"].split(" -> ")[1] for r in rows[:2]) else "Official changes detected."
+    msg = (
+        "No portfolio changes — monitoring-only session."
+        if all(
+            r["value"] in {"none", "nan -> nan"} or ("->" in r["value"] and r["value"].split(" -> ")[0] == r["value"].split(" -> ")[1])
+            for r in rows[:2]
+        )
+        else "Official changes detected."
+    )
     return pd.DataFrame(rows), msg
 
 
 def _render_next_action(st, data: dict[str, pd.DataFrame]) -> None:
     daily = _row(data.get("official_daily_status", pd.DataFrame()))
     state = _official_state_latest(data)
-    state_row = state[~state.get("ticker", pd.Series(dtype=str)).astype(str).str.upper().eq("CASH")].iloc[0] if not state.empty and (~state.get("ticker", pd.Series(dtype=str)).astype(str).str.upper().eq("CASH")).any() else pd.Series(dtype=object)
+    state_row = (
+        state[~state.get("ticker", pd.Series(dtype=str)).astype(str).str.upper().eq("CASH")].iloc[0]
+        if not state.empty and (~state.get("ticker", pd.Series(dtype=str)).astype(str).str.upper().eq("CASH")).any()
+        else pd.Series(dtype=object)
+    )
     candidates = str(state_row.get("observed_candidate_tickers", "unavailable"))
     cols = st.columns(4)
-    with cols[0]: metric_card(st, "Next rebalance date", next_rebalance_date(data), "official scheduler")
-    with cols[1]: metric_card(st, "Sessions remaining", str(state_row.get("sessions_since_last_rebalance", "unavailable")), "since last rebalance")
-    with cols[2]: metric_card(st, "Expected execution date", str(state_row.get("economic_application_date", daily.get("date", "unavailable")))[:10], "t+1 application")
-    with cols[3]: metric_card(st, "State", "Scheduled" if bool(daily.get("rebalance_due", False)) else "Monitoring only", "official daily status")
+    with cols[0]:
+        metric_card(st, "Next rebalance date", next_rebalance_date(data), "official scheduler")
+    with cols[1]:
+        metric_card(st, "Sessions remaining", str(state_row.get("sessions_since_last_rebalance", "unavailable")), "since last rebalance")
+    with cols[2]:
+        metric_card(
+            st,
+            "Expected execution date",
+            str(state_row.get("economic_application_date", daily.get("date", "unavailable")))[:10],
+            "t+1 application",
+        )
+    with cols[3]:
+        metric_card(st, "State", "Scheduled" if bool(daily.get("rebalance_due", False)) else "Monitoring only", "official daily status")
     st.caption("Pending candidates: " + candidates + " · Signal only — not executed until scheduled rebalance.")
 
 
@@ -299,7 +438,9 @@ def _executive_commentary(data: dict[str, pd.DataFrame]) -> str:
     monitor = _row(data.get("official_monitor", pd.DataFrame()))
     changes, msg = _today_changes(data)
     holdings = _holdings_with_pnl(data)
-    non_cash = holdings[~holdings.get("ticker", pd.Series(dtype=str)).astype(str).str.upper().eq("CASH")] if not holdings.empty else pd.DataFrame()
+    non_cash = (
+        holdings[~holdings.get("ticker", pd.Series(dtype=str)).astype(str).str.upper().eq("CASH")] if not holdings.empty else pd.DataFrame()
+    )
     strongest = weakest = "unavailable"
     if not non_cash.empty and "daily_return_pct" in non_cash.columns:
         ranked = non_cash.assign(_d=numeric(non_cash["daily_return_pct"])).sort_values("_d")
@@ -318,7 +459,7 @@ def render_executive_terminal(st, data: dict[str, pd.DataFrame]) -> None:
         f"""
         <div class='page-head'>
           <div>
-            <h2 class='page-title'>La Máquina Trading System {status_badge('READ ONLY', 'diagnostic')}</h2>
+            <h2 class='page-title'>La Máquina Trading System {status_badge("READ ONLY", "diagnostic")}</h2>
             <div class='page-subtitle'>Growth Champion Final — Official Forward Paper | {latest_market_date(data)} | {MODEL_VERSION}</div>
             <div class='page-subtitle'>Variant: {VARIANT}</div>
           </div>
@@ -371,7 +512,15 @@ def build_executive_audits(data: dict[str, pd.DataFrame]) -> tuple[pd.DataFrame,
         if not df.empty and "date" in df.columns:
             dates = pd.to_datetime(df["date"], errors="coerce")
             date_range = f"{dates.min().date()} to {dates.max().date()}" if dates.notna().any() else ""
-        rows.append({"source_file": filename, "namespace": "official_forward_paper", "exists_loaded": not df.empty, "row_count": len(df), "date_range": date_range})
+        rows.append(
+            {
+                "source_file": filename,
+                "namespace": "official_forward_paper",
+                "exists_loaded": not df.empty,
+                "row_count": len(df),
+                "date_range": date_range,
+            }
+        )
     source_audit = pd.DataFrame(rows)
 
     perf = _row(data.get("official_performance", pd.DataFrame()))
@@ -380,10 +529,33 @@ def build_executive_audits(data: dict[str, pd.DataFrame]) -> tuple[pd.DataFrame,
     state = _official_state_latest(data)
     non_cash = state[~state.get("ticker", pd.Series(dtype=str)).astype(str).str.upper().eq("CASH")] if not state.empty else pd.DataFrame()
     checks = [
-        {"check": "official_sources_loaded", "status": "PASS" if source_audit["exists_loaded"].all() else "WARNING", "detail": ",".join(source_audit.loc[~source_audit["exists_loaded"], "source_file"].tolist())},
-        {"check": "chart_latest_equals_gross_card", "status": "PASS" if pd.notna(perf.get("gross_cumulative_return", np.nan)) and abs(float(perf.get("gross_cumulative_return")) * 100 - float(bench_last.get("growth_gross_cumulative_pct", np.nan))) < 1e-6 else "FAIL", "detail": "gross cumulative return vs official benchmark chart"},
-        {"check": "chart_latest_equals_net_card", "status": "PASS" if pd.notna(perf.get("estimated_net_cumulative_return", np.nan)) and abs(float(perf.get("estimated_net_cumulative_return")) * 100 - float(bench_last.get("growth_net_cumulative_pct", np.nan))) < 1e-6 else "FAIL", "detail": "estimated net cumulative return vs official benchmark chart"},
-        {"check": "holdings_equal_official_state", "status": "PASS" if not non_cash.empty else "FAIL", "detail": ",".join(non_cash.get("ticker", pd.Series(dtype=str)).astype(str).tolist())},
+        {
+            "check": "official_sources_loaded",
+            "status": "PASS" if source_audit["exists_loaded"].all() else "WARNING",
+            "detail": ",".join(source_audit.loc[~source_audit["exists_loaded"], "source_file"].tolist()),
+        },
+        {
+            "check": "chart_latest_equals_gross_card",
+            "status": "PASS"
+            if pd.notna(perf.get("gross_cumulative_return", np.nan))
+            and abs(float(perf.get("gross_cumulative_return")) * 100 - float(bench_last.get("growth_gross_cumulative_pct", np.nan))) < 1e-6
+            else "FAIL",
+            "detail": "gross cumulative return vs official benchmark chart",
+        },
+        {
+            "check": "chart_latest_equals_net_card",
+            "status": "PASS"
+            if pd.notna(perf.get("estimated_net_cumulative_return", np.nan))
+            and abs(float(perf.get("estimated_net_cumulative_return")) * 100 - float(bench_last.get("growth_net_cumulative_pct", np.nan)))
+            < 1e-6
+            else "FAIL",
+            "detail": "estimated net cumulative return vs official benchmark chart",
+        },
+        {
+            "check": "holdings_equal_official_state",
+            "status": "PASS" if not non_cash.empty else "FAIL",
+            "detail": ",".join(non_cash.get("ticker", pd.Series(dtype=str)).astype(str).tolist()),
+        },
         {"check": "no_namespace_mixing", "status": "PASS", "detail": "Executive page uses official source map only"},
     ]
     integrity = pd.DataFrame(checks)

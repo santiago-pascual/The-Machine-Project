@@ -10,7 +10,6 @@ import pandas as pd
 
 from canonical_market_data_manager import (
     CANONICAL_CACHE_DIR,
-    get_latest_market_date,
     get_price_history,
     latest_dates_summary,
     refresh_tickers,
@@ -89,7 +88,13 @@ def current_growth_tickers() -> list[str]:
     forecast = dates(read("forecast_history.csv"))
     if not forecast.empty and "ticker" in forecast.columns:
         day = forecast[forecast["date"].eq(forecast["date"].max())].copy()
-        score_col = "raw_target_return_exact" if "raw_target_return_exact" in day.columns else "expected_daily_return" if "expected_daily_return" in day.columns else None
+        score_col = (
+            "raw_target_return_exact"
+            if "raw_target_return_exact" in day.columns
+            else "expected_daily_return"
+            if "expected_daily_return" in day.columns
+            else None
+        )
         if score_col:
             day[score_col] = pd.to_numeric(day[score_col], errors="coerce")
             day = day.sort_values(score_col, ascending=False).head(20)
@@ -108,36 +113,41 @@ def audit_paths(tickers: list[str]) -> pd.DataFrame:
             dt = latest(p, "Date")
             if pd.notna(dt):
                 latest_dates.append(dt)
-        rows.append({
-            "source_name": d.name,
-            "filesystem_path": str(d.resolve()),
-            "cache_directory": str(d.resolve()),
-            "file_format": "csv" if files else "missing_or_empty",
-            "latest_date": max(latest_dates).date().isoformat() if latest_dates else "missing",
-            "ticker_count": len(files),
-            "adjusted_vs_unadjusted_close": "yahoo adjusted+close" if d.name == CANONICAL_CACHE_DIR.name else "auxiliary/cache metadata",
-            "data_origin": "canonical_yahoo_cache" if d.name == CANONICAL_CACHE_DIR.name else "auxiliary_or_secondary_cache",
-            "duplicate_cache_directory": d.name != CANONICAL_CACHE_DIR.name,
-        })
+        rows.append(
+            {
+                "source_name": d.name,
+                "filesystem_path": str(d.resolve()),
+                "cache_directory": str(d.resolve()),
+                "file_format": "csv" if files else "missing_or_empty",
+                "latest_date": max(latest_dates).date().isoformat() if latest_dates else "missing",
+                "ticker_count": len(files),
+                "adjusted_vs_unadjusted_close": "yahoo adjusted+close"
+                if d.name == CANONICAL_CACHE_DIR.name
+                else "auxiliary/cache metadata",
+                "data_origin": "canonical_yahoo_cache" if d.name == CANONICAL_CACHE_DIR.name else "auxiliary_or_secondary_cache",
+                "duplicate_cache_directory": d.name != CANONICAL_CACHE_DIR.name,
+            }
+        )
     for ticker in tickers:
         ph = get_price_history(ticker)
-        rows.append({
-            "source_name": f"canonical_{ticker}",
-            "filesystem_path": str(ph.cache_path.resolve()),
-            "cache_directory": str(CANONICAL_CACHE_DIR.resolve()),
-            "file_format": "csv_ohlcv_yahoo_schema",
-            "latest_date": ph.latest_date.date().isoformat() if pd.notna(ph.latest_date) else "missing",
-            "ticker_count": 1,
-            "adjusted_vs_unadjusted_close": "Adj Close preferred; Close available=" + str(ph.close_available),
-            "data_origin": ph.source,
-            "duplicate_cache_directory": False,
-            "row_count": len(ph.data),
-            "volume_available": ph.volume_available,
-        })
+        rows.append(
+            {
+                "source_name": f"canonical_{ticker}",
+                "filesystem_path": str(ph.cache_path.resolve()),
+                "cache_directory": str(CANONICAL_CACHE_DIR.resolve()),
+                "file_format": "csv_ohlcv_yahoo_schema",
+                "latest_date": ph.latest_date.date().isoformat() if pd.notna(ph.latest_date) else "missing",
+                "ticker_count": 1,
+                "adjusted_vs_unadjusted_close": "Adj Close preferred; Close available=" + str(ph.close_available),
+                "data_origin": ph.source,
+                "duplicate_cache_directory": False,
+                "row_count": len(ph.data),
+                "volume_available": ph.volume_available,
+            }
+        )
     out = pd.DataFrame(rows)
     out.to_csv(PATH_AUDIT, index=False)
     return out
-
 
 
 def write_path_audit_report(path_audit: pd.DataFrame) -> None:
@@ -151,7 +161,11 @@ def write_path_audit_report(path_audit: pd.DataFrame) -> None:
         return
     cache_rows = path_audit[path_audit["source_name"].astype(str).str.startswith("canonical_")].copy()
     stale_or_missing = cache_rows[cache_rows["latest_date"].astype(str).eq("missing")]
-    duplicate_dirs = path_audit[path_audit.get("duplicate_cache_directory", False).astype(bool)] if "duplicate_cache_directory" in path_audit.columns else pd.DataFrame()
+    duplicate_dirs = (
+        path_audit[path_audit.get("duplicate_cache_directory", False).astype(bool)]
+        if "duplicate_cache_directory" in path_audit.columns
+        else pd.DataFrame()
+    )
     latest_dates = sorted([x for x in cache_rows.get("latest_date", pd.Series(dtype=str)).dropna().astype(str).unique() if x != "missing"])
     lines = [
         "===== MARKET DATA PATH AUDIT =====",
@@ -166,24 +180,43 @@ def write_path_audit_report(path_audit: pd.DataFrame) -> None:
         "paper_trading_logic_changed: False",
     ]
     if not stale_or_missing.empty:
-        lines.append("missing_tickers: " + ",".join(stale_or_missing["source_name"].astype(str).str.replace("canonical_", "", regex=False).tolist()))
+        lines.append(
+            "missing_tickers: " + ",".join(stale_or_missing["source_name"].astype(str).str.replace("canonical_", "", regex=False).tolist())
+        )
     PATH_AUDIT_REPORT.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
 
 def dependency_audit() -> pd.DataFrame:
     rows = []
-    patterns = ["yahoo_ohlcv_price_cache", ".yfinance_cache", "yf_cache", "yfinance", "forecast_history", "current_growth", "growth_official"]
+    patterns = [
+        "yahoo_ohlcv_price_cache",
+        ".yfinance_cache",
+        "yf_cache",
+        "yfinance",
+        "forecast_history",
+        "current_growth",
+        "growth_official",
+    ]
     for module in MODULES:
         p = Path(module)
         text = p.read_text(encoding="utf-8", errors="ignore") if p.exists() else ""
         for pat in patterns:
             if pat.lower() in text.lower():
-                rows.append({
-                    "module": module,
-                    "dependency_pattern": pat,
-                    "uses_canonical_manager": "canonical_market_data_manager" in text,
-                    "allowed_for_growth_official": module in {"canonical_market_data_manager.py", "daily_research_run.py", "current_growth_feature_generation.py", "multi_source_market_data_validation.py"},
-                    "notes": "direct market data dependency detected",
-                })
+                rows.append(
+                    {
+                        "module": module,
+                        "dependency_pattern": pat,
+                        "uses_canonical_manager": "canonical_market_data_manager" in text,
+                        "allowed_for_growth_official": module
+                        in {
+                            "canonical_market_data_manager.py",
+                            "daily_research_run.py",
+                            "current_growth_feature_generation.py",
+                            "multi_source_market_data_validation.py",
+                        },
+                        "notes": "direct market data dependency detected",
+                    }
+                )
     out = pd.DataFrame(rows)
     out.to_csv(DEPENDENCY, index=False)
     return out
@@ -203,16 +236,26 @@ def repair_official(expected_tickers: list[str]) -> tuple[pd.DataFrame, dict[str
     if perf.empty:
         audit = pd.DataFrame(columns=["date", "fresh_prices_available", "exact_raw_target_available", "valid_official_date", "reason"])
         audit.to_csv(DATE_REPAIR, index=False)
-        pd.DataFrame([{
-            "date": datetime.now().date().isoformat(),
-            "fresh_prices_available": np.nan,
-            "exact_raw_target_available": np.nan,
-            "valid_official_date": False,
-            "reason": "official namespace has no valid forward rows after stale-data repair",
-            "history_classification": "official_forward_blocked",
-            "governance": "official_forward_blocked_waiting_for_next_exact_forward_date",
-        }]).to_csv(QUALITY, index=False)
-        return audit, {"backup_dir": "", "invalid_dates": [], "valid_dates": [], "rows_archived": 0, "official_start_after_repair": "blocked_no_official_rows"}
+        pd.DataFrame(
+            [
+                {
+                    "date": datetime.now().date().isoformat(),
+                    "fresh_prices_available": np.nan,
+                    "exact_raw_target_available": np.nan,
+                    "valid_official_date": False,
+                    "reason": "official namespace has no valid forward rows after stale-data repair",
+                    "history_classification": "official_forward_blocked",
+                    "governance": "official_forward_blocked_waiting_for_next_exact_forward_date",
+                }
+            ]
+        ).to_csv(QUALITY, index=False)
+        return audit, {
+            "backup_dir": "",
+            "invalid_dates": [],
+            "valid_dates": [],
+            "rows_archived": 0,
+            "official_start_after_repair": "blocked_no_official_rows",
+        }
     forecast = dates(read("forecast_history.csv"))
     all_invalid_dates = []
     valid_dates = []
@@ -225,22 +268,36 @@ def repair_official(expected_tickers: list[str]) -> tuple[pd.DataFrame, dict[str
             fday = forecast[forecast["date"].eq(d)].copy()
             exact = bool(not fday.empty and pd.to_numeric(fday["raw_target_return_exact"], errors="coerce").notna().any())
         valid = fresh and exact
-        reason = "ok" if valid else ";".join([x for x, flag in [("stale_or_missing_canonical_prices", not fresh), ("missing_exact_raw_target", not exact)] if flag])
-        rows.append({
-            "date": d.date().isoformat(),
-            "tickers_checked": ",".join(tickers),
-            "fresh_prices_available": fresh,
-            "exact_raw_target_available": exact,
-            "valid_official_date": valid,
-            "reason": reason,
-        })
+        reason = (
+            "ok"
+            if valid
+            else ";".join(
+                [x for x, flag in [("stale_or_missing_canonical_prices", not fresh), ("missing_exact_raw_target", not exact)] if flag]
+            )
+        )
+        rows.append(
+            {
+                "date": d.date().isoformat(),
+                "tickers_checked": ",".join(tickers),
+                "fresh_prices_available": fresh,
+                "exact_raw_target_available": exact,
+                "valid_official_date": valid,
+                "reason": reason,
+            }
+        )
         (valid_dates if valid else all_invalid_dates).append(d)
     audit = pd.DataFrame(rows)
     audit.to_csv(DATE_REPAIR, index=False)
     invalid_set = set(all_invalid_dates)
     valid_set = set(valid_dates)
     if not invalid_set:
-        return audit, {"backup_dir": "", "invalid_dates": [], "valid_dates": [d.date().isoformat() for d in valid_dates], "rows_archived": 0, "official_start_after_repair": min(valid_dates).date().isoformat() if valid_dates else "blocked"}
+        return audit, {
+            "backup_dir": "",
+            "invalid_dates": [],
+            "valid_dates": [d.date().isoformat() for d in valid_dates],
+            "rows_archived": 0,
+            "official_start_after_repair": min(valid_dates).date().isoformat() if valid_dates else "blocked",
+        }
     backup_dir = Path("official_paper_backup_" + datetime.now().strftime("%Y%m%d_%H%M%S"))
     backup_dir.mkdir(exist_ok=True)
     rows_archived = 0
@@ -264,19 +321,25 @@ def repair_official(expected_tickers: list[str]) -> tuple[pd.DataFrame, dict[str
         for name, path in OFFICIAL_FILES.items():
             df = read(backup_dir / Path(path).name)
             df.iloc[0:0].to_csv(path, index=False)
-        pd.DataFrame([{
-            "date": datetime.now().date().isoformat(),
-            "model": "growth_champion_final",
-            "data_mode": "official_forward_blocked",
-            "days_tracked": 0,
-            "portfolio_value": np.nan,
-            "cumulative_return": np.nan,
-            "governance_status": "official_forward_blocked",
-            "promotion_status": "real_capital_blocked",
-            "reason": "all official rows invalidated by stale canonical market data; waiting for fresh exact forward date",
-        }]).to_csv(OFFICIAL_FILES["tracking"], index=False)
+        pd.DataFrame(
+            [
+                {
+                    "date": datetime.now().date().isoformat(),
+                    "model": "growth_champion_final",
+                    "data_mode": "official_forward_blocked",
+                    "days_tracked": 0,
+                    "portfolio_value": np.nan,
+                    "cumulative_return": np.nan,
+                    "governance_status": "official_forward_blocked",
+                    "promotion_status": "real_capital_blocked",
+                    "reason": "all official rows invalidated by stale canonical market data; waiting for fresh exact forward date",
+                }
+            ]
+        ).to_csv(OFFICIAL_FILES["tracking"], index=False)
     quality = audit.copy()
-    quality["history_classification"] = np.where(quality["valid_official_date"], "official_forward_candidate", "historical_debug_reconstruction")
+    quality["history_classification"] = np.where(
+        quality["valid_official_date"], "official_forward_candidate", "historical_debug_reconstruction"
+    )
     quality["governance"] = np.where(quality["valid_official_date"], "official_forward_warmup", "official_forward_blocked_stale_data")
     quality.to_csv(QUALITY, index=False)
     return audit, {
@@ -284,7 +347,9 @@ def repair_official(expected_tickers: list[str]) -> tuple[pd.DataFrame, dict[str
         "invalid_dates": [d.date().isoformat() for d in all_invalid_dates],
         "valid_dates": [d.date().isoformat() for d in valid_dates],
         "rows_archived": rows_archived,
-        "official_start_after_repair": min(valid_dates).date().isoformat() if valid_dates else "blocked_waiting_for_fresh_exact_forward_date",
+        "official_start_after_repair": min(valid_dates).date().isoformat()
+        if valid_dates
+        else "blocked_waiting_for_fresh_exact_forward_date",
     }
 
 
@@ -308,7 +373,7 @@ def main() -> None:
     final_gov.to_csv("official_market_data_governance.csv", index=False)
     lines = [
         "===== PHASE 100 MARKET DATA INTEGRITY REPORT =====",
-        f"cause_of_mismatch: official/forecast dates advanced beyond canonical yahoo cache; latest canonical date before refresh was stale relative to official signal date",
+        "cause_of_mismatch: official/forecast dates advanced beyond canonical yahoo cache; latest canonical date before refresh was stale relative to official signal date",
         f"canonical_cache_path: {CANONICAL_CACHE_DIR.resolve()}",
         f"expected_signal_date: {expected}",
         f"latest_valid_market_date: {canonical_latest}",

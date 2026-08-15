@@ -1,17 +1,20 @@
 from __future__ import annotations
 
-from pathlib import Path
 import contextlib
 import io
 import os
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
 import yfinance as yf
 
 from triple_barrier_labeling import generate_triple_barrier_labels
-from walk_forward_backtester import DEFAULT_REDUCED_UNIVERSE, WalkForwardConfig, run_walk_forward_backtest
-
+from walk_forward_backtester import (
+    DEFAULT_REDUCED_UNIVERSE,
+    WalkForwardConfig,
+    run_walk_forward_backtest,
+)
 
 DEFAULT_OUTPUT_FILE = "trend_vs_ema_backtest.csv"
 
@@ -147,15 +150,9 @@ def _selection_changes(ema_predictions: pd.DataFrame, trend_predictions: pd.Data
     rows = []
     dates = sorted(set(ema_predictions.get("date", [])) | set(trend_predictions.get("date", [])))
     for date in dates:
-        ema_set = set(
-            ema_predictions[
-                (ema_predictions["date"] == date) & (ema_predictions["selected"].astype(bool))
-            ]["ticker"].astype(str)
-        )
+        ema_set = set(ema_predictions[(ema_predictions["date"] == date) & (ema_predictions["selected"].astype(bool))]["ticker"].astype(str))
         trend_set = set(
-            trend_predictions[
-                (trend_predictions["date"] == date) & (trend_predictions["selected"].astype(bool))
-            ]["ticker"].astype(str)
+            trend_predictions[(trend_predictions["date"] == date) & (trend_predictions["selected"].astype(bool))]["ticker"].astype(str)
         )
         overlap = ema_set & trend_set
         rows.append(

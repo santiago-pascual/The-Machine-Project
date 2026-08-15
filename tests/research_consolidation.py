@@ -5,7 +5,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-
 REGISTRY_FILE = "model_lifecycle_status.csv"
 SUMMARY_FILE = "final_research_summary.txt"
 
@@ -77,7 +76,9 @@ def _build_registry() -> pd.DataFrame:
     baseline_sharpe = _metric_from_results("raw_target_research_backtest_results.csv", "model_mode", "baseline", "Sharpe")
     gated_sharpe = _metric_from_results("raw_target_research_backtest_results.csv", "model_mode", "regime_gated_full_quant", "Sharpe")
     baseline_return = _metric_from_results("raw_target_research_backtest_results.csv", "model_mode", "baseline", "realized_return")
-    gated_return = _metric_from_results("raw_target_research_backtest_results.csv", "model_mode", "regime_gated_full_quant", "realized_return")
+    gated_return = _metric_from_results(
+        "raw_target_research_backtest_results.csv", "model_mode", "regime_gated_full_quant", "realized_return"
+    )
     baseline_dd = _metric_from_results("raw_target_research_backtest_results.csv", "model_mode", "baseline", "max_drawdown")
     gated_dd = _metric_from_results("raw_target_research_backtest_results.csv", "model_mode", "regime_gated_full_quant", "max_drawdown")
     baseline_sample = _metric_from_results("raw_target_research_backtest_results.csv", "model_mode", "baseline", "sample_size")
@@ -107,7 +108,9 @@ def _build_registry() -> pd.DataFrame:
             "return impact": "positive",
             "risk impact": "negative" if raw_dd < gated_dd else "neutral",
             "evidence strength": "moderate",
-            "sample size": _metric_from_results("raw_target_research_backtest_results.csv", "model_mode", "raw_target_research", "sample_size"),
+            "sample size": _metric_from_results(
+                "raw_target_research_backtest_results.csv", "model_mode", "raw_target_research", "sample_size"
+            ),
             "final decision": str(raw_gov.get("classification", "research only")),
             "reason": str(raw_gov.get("reason", "higher return but drawdown/sharpe not production-ready")),
         }
@@ -131,7 +134,11 @@ def _build_registry() -> pd.DataFrame:
         )
 
     regime_v2_comp = _read_csv("regime_v2_comparison_vs_old.csv")
-    v2_row = regime_v2_comp[regime_v2_comp["system"].astype(str).eq("regime_v2")].iloc[0] if not regime_v2_comp.empty and "system" in regime_v2_comp.columns and (regime_v2_comp["system"].astype(str).eq("regime_v2")).any() else pd.Series(dtype=object)
+    v2_row = (
+        regime_v2_comp[regime_v2_comp["system"].astype(str).eq("regime_v2")].iloc[0]
+        if not regime_v2_comp.empty and "system" in regime_v2_comp.columns and (regime_v2_comp["system"].astype(str).eq("regime_v2")).any()
+        else pd.Series(dtype=object)
+    )
     rows.append(
         {
             "module": "regime_engine_v2",
@@ -170,7 +177,9 @@ def _build_registry() -> pd.DataFrame:
             "return impact": "mixed",
             "risk impact": "negative",
             "evidence strength": "limited",
-            "sample size": _metric_from_results("calibrated_forecast_research_backtest_results.csv", "model_mode", "calibrated_forecast_research", "sample_size"),
+            "sample size": _metric_from_results(
+                "calibrated_forecast_research_backtest_results.csv", "model_mode", "calibrated_forecast_research", "sample_size"
+            ),
             "final decision": str(cal_gov.get("classification", "reject")),
             "reason": str(cal_gov.get("reason", "calibrated portfolio worsened Sharpe/drawdown")),
         }
@@ -192,7 +201,11 @@ def _build_registry() -> pd.DataFrame:
     )
 
     factor = _read_csv("factor_alpha_model_results.csv")
-    best_factor = factor.sort_values("Sharpe", ascending=False).iloc[0] if not factor.empty and "Sharpe" in factor.columns else pd.Series(dtype=object)
+    best_factor = (
+        factor.sort_values("Sharpe", ascending=False).iloc[0]
+        if not factor.empty and "Sharpe" in factor.columns
+        else pd.Series(dtype=object)
+    )
     rows.append(
         {
             "module": "factor_alpha_model",

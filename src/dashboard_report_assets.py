@@ -1,4 +1,3 @@
-
 from __future__ import annotations
 
 from html import escape
@@ -23,6 +22,7 @@ def esc(value: Any) -> str:
 def fmt_pct(value: Any, digits: int = 2) -> str:
     try:
         import pandas as pd
+
         if pd.isna(value):
             return "n/a"
         return f"{float(value) * 100:.{digits}f}%"
@@ -33,6 +33,7 @@ def fmt_pct(value: Any, digits: int = 2) -> str:
 def fmt_pct_points(value: Any, digits: int = 2) -> str:
     try:
         import pandas as pd
+
         if pd.isna(value):
             return "n/a"
         return f"{float(value):.{digits}f}%"
@@ -43,6 +44,7 @@ def fmt_pct_points(value: Any, digits: int = 2) -> str:
 def fmt_money(value: Any) -> str:
     try:
         import pandas as pd
+
         if pd.isna(value):
             return "n/a"
         return f"${float(value):,.2f}"
@@ -53,6 +55,7 @@ def fmt_money(value: Any) -> str:
 def fmt_num(value: Any, digits: int = 3) -> str:
     try:
         import pandas as pd
+
         if pd.isna(value):
             return "n/a"
         return f"{float(value):.{digits}f}"
@@ -75,9 +78,9 @@ def simple_svg_line(series: list[float], width: int = 760, height: int = 190, co
     return f"""
     <svg viewBox='0 0 {width} {height}' class='line-chart' role='img' aria-label='{esc(label)}'>
       <rect x='0' y='0' width='{width}' height='{height}' rx='12' fill='rgba(255,255,255,0.025)' stroke='rgba(255,255,255,0.08)'/>
-      <polyline fill='none' stroke='{color}' stroke-width='3' points='{' '.join(points)}'/>
+      <polyline fill='none' stroke='{color}' stroke-width='3' points='{" ".join(points)}'/>
       <text x='14' y='24' fill='{MUTED}' font-size='12'>{esc(label)}</text>
-      <text x='14' y='{height-12}' fill='{MUTED}' font-size='11'>min {mn:.2f} · max {mx:.2f}</text>
+      <text x='14' y='{height - 12}' fill='{MUTED}' font-size='11'>min {mn:.2f} · max {mx:.2f}</text>
     </svg>
     """
 

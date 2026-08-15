@@ -7,7 +7,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-
 TARGET_VOLS = [0.18, 0.20, 0.22, 0.24, 0.26]
 EXPOSURE_CAPS = [0.50, 0.55, 0.60, 0.65, 0.70]
 MIN_EXPOSURES = [0.20, 0.30, 0.40, None]
@@ -55,7 +54,7 @@ def perf_metrics(df: pd.DataFrame) -> dict[str, float]:
     dd = equity / equity.cummax() - 1
     max_dd = float(dd.min())
     return {
-        "observations": int(len(r)),
+        "observations": len(r),
         "total_return": total,
         "CAGR": cagr,
         "volatility": vol,
