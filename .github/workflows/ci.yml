@@ -40,7 +40,7 @@ jobs:
       - name: Run tests
         run: |
           if [ -d tests ]; then
-            pytest -q
+            pytest -q tests
           else
             echo "No tests/ directory yet — skipping. See README Roadmap."
           fi
