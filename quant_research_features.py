@@ -3,9 +3,13 @@
 Original module moved to src/quant_research_features.py — this shim re-exports public API.
 """
 
+import importlib
+import importlib.machinery
+import importlib.util
+import os
 from importlib import import_module
-import importlib, importlib.util, importlib.machinery, os
-n_mod = None
+
+n_mod = None
 try:
     _mod = import_module("src.quant_research_features")
 except Exception:

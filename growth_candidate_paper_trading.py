@@ -3,9 +3,9 @@
 Original module moved to src/growth_candidate_paper_trading.py — this shim re-exports public API.
 """
 
-from importlib import import_module
 import importlib.util
 import os
+from importlib import import_module
 
 _mod = None
 try:

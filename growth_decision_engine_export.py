@@ -3,9 +3,9 @@
 Original module moved to src/growth_decision_engine_export.py — this shim re-exports public API.
 """
 
-from importlib import import_module
 import importlib.util
 import os
+from importlib import import_module
 
 _mod = None
 try:

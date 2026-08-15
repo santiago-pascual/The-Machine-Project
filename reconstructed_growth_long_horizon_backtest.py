@@ -3,9 +3,9 @@
 Original module moved to src/reconstructed_growth_long_horizon_backtest.py — this shim re-exports public API.
 """
 
-from importlib import import_module
 import importlib.util
 import os
+from importlib import import_module
 
 _mod = None
 try:
