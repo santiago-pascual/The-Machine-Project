@@ -1,0 +1,2 @@
+994b4ba5304bc703952d2de2f433cfb710983b7eedb6dde49f4169708eb85778  architecture_volume_I_es.pdf
+f4b058bf8e0b2f0ced951b0a708a4ceb08f992e3572ecf1e9ebb9e1e27e7c1d0  original_whitepaper_es.docx
