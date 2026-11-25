@@ -82,7 +82,28 @@ Activate the virtual environment first (`.venv\Scripts\Activate.ps1` on Windows,
 - [Portfolio metrics](docs/portfolio/portfolio_metrics.csv) and [input hashes](docs/portfolio/source_hashes.txt)
 - [Rolling risk](docs/portfolio/aligned_head_to_head_rolling_vol.png), [reconstructed drawdown](docs/portfolio/long_reconstruction_drawdown.png), [CSCV summary](docs/portfolio/cscv_summary.csv)
 
-Dashboard screenshots and the original technical whitepaper are unavailable for verification in this snapshot; no substitute images or document have been fabricated.
+## Dashboard demonstration
+
+Actual captures from an isolated repository checkout, taken on November 25, 2026. Forward paper records end August 13, 2026; the research panels show historical diagnostics. These are not live trading results. The demonstration required temporary repository compatibility workarounds; clean-clone runtime validation remains pending.
+
+![Research governance and CSCV diagnostics](docs/dashboard/research_governance.png)
+
+![Parameter stability research surface](docs/dashboard/parameter_stability.png)
+
+![Forward paper performance snapshot](docs/dashboard/forward_performance.png)
+
+![Portfolio allocation snapshot](docs/dashboard/portfolio_allocation.png)
+
+See the [dashboard gallery and limitations](docs/dashboard/README.md) for additional views.
+
+## Historical whitepaper
+
+- [English executive research summary](docs/whitepaper/executive_research_summary_en.md)
+- [Original comprehensive Spanish whitepaper](docs/whitepaper/original_whitepaper_es.docx)
+- [Architecture Volume I (Spanish PDF)](docs/whitepaper/architecture_volume_I_es.pdf)
+- [November scientific review and errata](docs/whitepaper/REVIEW.md)
+
+The July documents are historical references, not current validation certificates. The November audit takes precedence for interpretation of performance and methodology.
 
 ## Author and license
 
