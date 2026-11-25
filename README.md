@@ -1,14 +1,14 @@
-# ARCH? | Exploratory Quantitative Equity Research
+# ARCHÉ | Exploratory Quantitative Equity Research
 
 [![CI](https://github.com/santiago-pascual/ARCHE/actions/workflows/ci.yml/badge.svg)](https://github.com/santiago-pascual/ARCHE/actions/workflows/ci.yml)
 
 *From experimentation to scientific rigor.*
 
-ARCH?, formerly known as The Machine Project, was my first project in quantitative finance. Its name comes from the Greek ???? (arch?), meaning origin or first principle.
+ARCHÉ, formerly known as The Machine Project, was my first project in quantitative finance. Its name comes from the Greek ἀρχή (archē), meaning origin or first principle.
 
 ## Project History & Research Philosophy
 
-I started ARCH? before I knew how to program. Driven by my interest in financial markets, mathematics, and systematic trading, I used artificial intelligence to translate quantitative concepts into a functioning research platform.
+I started ARCHÉ before I knew how to program. Driven by my interest in financial markets, mathematics, and systematic trading, I used artificial intelligence to translate quantitative concepts into a functioning research platform.
 
 The original codebase was generated entirely through AI. My role focused on defining research questions, exploring methodologies, comparing experiments, and evaluating results rather than independently implementing the underlying software.
 
@@ -24,7 +24,7 @@ A subsequent scientific audit identified several important weaknesses:
 
 These findings changed my approach to quantitative research. I began prioritizing mathematical understanding, programming fundamentals, causal validation, reproducibility, and independent implementation over model complexity.
 
-ARCH? is preserved as an exploratory research prototype and a record of that learning process, rather than a production-ready investment system.
+ARCHÉ is preserved as an exploratory research prototype and a record of that learning process, rather than a production-ready investment system.
 
 ## Research Objective
 
