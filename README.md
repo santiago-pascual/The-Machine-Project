@@ -1,8 +1,36 @@
-# The Machine Project | Quantitative Equity Research
+# ARCH? | Exploratory Quantitative Equity Research
 
-[![CI](https://github.com/santiago-pascual/The-Machine-Project/actions/workflows/ci.yml/badge.svg)](https://github.com/santiago-pascual/The-Machine-Project/actions/workflows/ci.yml)
+[![CI](https://github.com/santiago-pascual/ARCHE/actions/workflows/ci.yml/badge.svg)](https://github.com/santiago-pascual/ARCHE/actions/workflows/ci.yml)
 
-Independent, AI-assisted quantitative research and paper-trading engineering project by Santiago Pascual. The central question is whether a concentrated equity ranking strategy can retain meaningful historical performance under exposure constraints, trading costs and research-selection scrutiny. No institutional affiliation, real-money performance or independently demonstrated coding proficiency is claimed.
+*From experimentation to scientific rigor.*
+
+ARCH?, formerly known as The Machine Project, was my first project in quantitative finance. Its name comes from the Greek ???? (arch?), meaning origin or first principle.
+
+## Project History & Research Philosophy
+
+I started ARCH? before I knew how to program. Driven by my interest in financial markets, mathematics, and systematic trading, I used artificial intelligence to translate quantitative concepts into a functioning research platform.
+
+The original codebase was generated entirely through AI. My role focused on defining research questions, exploring methodologies, comparing experiments, and evaluating results rather than independently implementing the underlying software.
+
+As the project expanded, it exposed the limitations of developing complex quantitative systems without sufficient programming and statistical foundations. Adding more sophisticated mathematical models did not necessarily produce more reliable predictions or stronger evidence.
+
+A subsequent scientific audit identified several important weaknesses:
+
+- Data leakage and insufficient separation between training and evaluation.
+- Survivorship bias risk and incomplete point-in-time data coverage.
+- Extensive historical experimentation and elevated overfitting risk.
+- Inconsistent performance measurement and annualization conventions.
+- Software engineering and reproducibility limitations.
+
+These findings changed my approach to quantitative research. I began prioritizing mathematical understanding, programming fundamentals, causal validation, reproducibility, and independent implementation over model complexity.
+
+ARCH? is preserved as an exploratory research prototype and a record of that learning process, rather than a production-ready investment system.
+
+## Research Objective
+
+The central research question is whether a concentrated equity ranking strategy can retain meaningful historical performance under exposure constraints, trading costs, and research-selection scrutiny.
+
+No institutional affiliation, real-money performance, or independent authorship of the original codebase is claimed.
 
 ## Selected findings
 
